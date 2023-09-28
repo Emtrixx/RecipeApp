@@ -32,14 +32,17 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.recipeapp.Navigation.BottomNavGraph
-import com.example.recipeapp.Navigation.ShitPissBar
+import com.example.recipeapp.Navigation.BottomNavigationBar
 import com.example.recipeapp.R
 
 data class Item(val name: String, val quantity: String, val expiryDate: String)
@@ -48,8 +51,28 @@ data class Item(val name: String, val quantity: String, val expiryDate: String)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeView() {
-
     val navController = rememberNavController()
+
+    Scaffold(
+        bottomBar = {
+            BottomNavigationBar(navController = navController)
+        },
+        content = {
+            NavHost(
+                navController = navController,
+                startDestination = "home" // Set the starting destination
+            ) {
+                // Define your navigation graph here
+                composable("home") {
+                    HomeListView()
+                }
+            }
+        }
+    )
+}
+
+@Composable
+fun HomeListView() {
 
     val itemList = listOf(
         Item(name = "Egg", quantity = "7 qty", expiryDate = "19.9.2023"),
@@ -59,52 +82,37 @@ fun HomeView() {
         Item(name = "Egg", quantity = "7 qty", expiryDate = "19.9.2023"),
     )
 
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                title = {
-                    Text(
-                        "RecipeApp",
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis
-                    )
-                },
-            )
-        },
-        content = { innerPadding ->
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(innerPadding)
-            ) {
-                // First LazyColumn, filling half of the screen
-                LazyColumn(
-                    modifier = Modifier
-                        .weight(1f)
-                        .fillMaxHeight()
-                ) {
-                    items(itemList) { item ->
-                        ItemCard(itemName = item.name,
-                            itemQuantity = item.quantity,
-                            expiryDate =  item.expiryDate)
-                    }
-                    item {
-                        Text(text = "expiring soon")
-                    }
-                    items(itemList) { item ->
-                        ExpiringItemCard(itemName = item.name,
-                            itemQuantity = item.quantity,
-                            expiryDate =  item.expiryDate)
-                    }
-                }
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(4.dp)
+    ) {
+        // First LazyColumn, filling half of the screen
+        LazyColumn(
+            modifier = Modifier
+                .weight(1f)
+                .fillMaxHeight()
+        ) {
+            items(itemList) { item ->
+                ItemCard(
+                    itemName = item.name,
+                    itemQuantity = item.quantity,
+                    expiryDate = item.expiryDate
+                )
             }
-            BottomNavGraph(navController = navController)
-        }, bottomBar = {
-            ShitPissBar(navController = navController)
+            item {
+                Text(text = "expiring soon")
+            }
+            items(itemList) { item ->
+                ExpiringItemCard(
+                    itemName = item.name,
+                    itemQuantity = item.quantity,
+                    expiryDate = item.expiryDate
+                )
+            }
         }
-    )
+    }
 }
-
 @Composable
 fun ItemCard(itemName: String, itemQuantity: String, expiryDate: String) {
     ElevatedCard(

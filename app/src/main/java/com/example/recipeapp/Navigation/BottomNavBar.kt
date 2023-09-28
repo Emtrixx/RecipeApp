@@ -23,9 +23,10 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import com.example.recipeapp.HomeView.HomeView
 
 
-sealed class BottomNavItem(var title:String, var icon: ImageVector, var screen_route:String){
+sealed class BottomNavItem(var title:String, var icon: ImageVector, var screen:String){
 
     object Home : BottomNavItem("Home",Icons.Default.Home,"home")
+
     object ShoppingList: BottomNavItem("Shopping List", Icons.Default.List,"home")
     object AddItem: BottomNavItem("Empty",Icons.Default.Add,"home")
     object Recipes: BottomNavItem("Empty",Icons.Default.Info,"home")
@@ -34,28 +35,28 @@ sealed class BottomNavItem(var title:String, var icon: ImageVector, var screen_r
 
 @Composable
 fun BottomNavGraph(navController: NavHostController) {
-    NavHost(navController = navController, startDestination = BottomNavItem.Home.screen_route)
+    NavHost(navController = navController, startDestination = BottomNavItem.Home.screen)
     {
-        composable(route = BottomNavItem.Home.screen_route) {
+        composable(route = BottomNavItem.Home.screen) {
             HomeView()
         }
-        composable(route = BottomNavItem.Home.screen_route) {
+        composable(route = BottomNavItem.Home.screen) {
             HomeView()
         }
-        composable(route = BottomNavItem.Home.screen_route) {
+        composable(route = BottomNavItem.Home.screen) {
             HomeView()
         }
-        composable(route = BottomNavItem.Home.screen_route) {
+        composable(route = BottomNavItem.Home.screen) {
             HomeView()
         }
-        composable(route = BottomNavItem.Home.screen_route) {
+        composable(route = BottomNavItem.Home.screen) {
             HomeView()
         }
     }
 }
 
 @Composable
-fun ShitPissBar(navController: NavHostController) {
+fun BottomNavigationBar(navController: NavHostController) {
     val screens = listOf(
         BottomNavItem.Home,
         BottomNavItem.ShoppingList,
@@ -92,10 +93,10 @@ fun RowScope.AddItem(
                 contentDescription = "Navigation icon")
         },
         selected = currentDestination?.hierarchy?.any {
-            it.route == screen.screen_route
+            it.route == screen.screen
         } == true,
         onClick = {
-            navController.navigate(screen.screen_route)
+            navController.navigate(screen.screen)
         }
     )
 }
