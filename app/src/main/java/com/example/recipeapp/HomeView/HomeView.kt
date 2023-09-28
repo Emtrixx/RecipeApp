@@ -1,10 +1,9 @@
 package com.example.recipeapp.HomeView
 
+import android.annotation.SuppressLint
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -12,8 +11,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -39,13 +36,20 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import androidx.navigation.compose.rememberNavController
+import com.example.recipeapp.Navigation.BottomNavGraph
+import com.example.recipeapp.Navigation.ShitPissBar
 import com.example.recipeapp.R
 
 data class Item(val name: String, val quantity: String, val expiryDate: String)
 
+@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeView() {
+
+    val navController = rememberNavController()
 
     val itemList = listOf(
         Item(name = "Egg", quantity = "7 qty", expiryDate = "19.9.2023"),
@@ -84,28 +88,19 @@ fun HomeView() {
                             itemQuantity = item.quantity,
                             expiryDate =  item.expiryDate)
                     }
-                }
-
-                // Divider or Spacer if you want a separation between the two lists
-                Spacer(modifier = Modifier.height(16.dp))
-                Text(text = "expiring soon")
-                Spacer(modifier = Modifier.height(16.dp))
-
-                // Second LazyColumn, filling the rest of the screen
-                LazyColumn(
-                    modifier = Modifier
-                        .weight(1f)
-                        .fillMaxHeight()
-                ) {
+                    item {
+                        Text(text = "expiring soon")
+                    }
                     items(itemList) { item ->
-                        ExpiringItemCard(
-                            itemName = item.name,
+                        ExpiringItemCard(itemName = item.name,
                             itemQuantity = item.quantity,
-                            expiryDate = item.expiryDate
-                        )
+                            expiryDate =  item.expiryDate)
                     }
                 }
             }
+            BottomNavGraph(navController = navController)
+        }, bottomBar = {
+            ShitPissBar(navController = navController)
         }
     )
 }
@@ -127,7 +122,7 @@ fun ItemCard(itemName: String, itemQuantity: String, expiryDate: String) {
                 Spacer(modifier = Modifier.height(4.dp))
                 Text(text = itemQuantity)
                 Spacer(modifier = Modifier.height(4.dp))
-                Text(text = expiryDate, modifier = Modifier
+                Text(text = "Expiring in $expiryDate", modifier = Modifier
                     .padding(10.dp))
             }
             Card(modifier = Modifier
@@ -160,7 +155,7 @@ fun ExpiringItemCard(itemName: String, itemQuantity: String, expiryDate: String)
                 .fillMaxWidth()) {
                 Text(text = itemName, fontWeight = FontWeight.Bold)
                 Spacer(modifier = Modifier.height(4.dp))
-                Text(text = itemQuantity)
+                Text(text = itemQuantity, fontSize = 12.sp)
                 Text(text = expiryDate)
             }
             Spacer(modifier = Modifier.height(8.dp))
