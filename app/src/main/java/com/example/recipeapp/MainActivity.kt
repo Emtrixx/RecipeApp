@@ -10,11 +10,16 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import com.example.recipeapp.product.BarcodeScannerView
+import com.example.recipeapp.product.BarcodeViewModel
 import com.example.recipeapp.ui.theme.RecipeAppTheme
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        val barcodeViewModel = BarcodeViewModel()
+
         setContent {
             RecipeAppTheme {
                 // A surface container using the 'background' color from the theme
@@ -22,7 +27,7 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    Greeting("Android")
+                    BarcodeScannerView(barcodeViewModel)
                 }
             }
         }
