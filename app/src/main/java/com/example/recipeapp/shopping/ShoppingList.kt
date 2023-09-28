@@ -98,8 +98,8 @@ fun ShoppingList() {
                     }
                 }
                 composable("shoppingForm") {
-                    ShoppingForm(onItemAdded = { itemName ->
-                        items.add(ShoppingItem(itemName))
+                    ShoppingForm(onItemAdded = { itemName, itemAmount ->
+                        items.add(ShoppingItem(itemName, itemAmount))
                         navController.popBackStack()
                     })
                 }
@@ -135,13 +135,19 @@ fun ShoppingCard(item: ShoppingItem) {
                     .padding(start = 16.dp),
                 color = if (checkedState) Color.Gray else Color.Black
             )
+            Text(
+                text = item.amount.toString(),
+                modifier = Modifier
+                    .padding(start = 16.dp),
+                color = if (checkedState) Color.Gray else Color.Black
+            )
         }
     }
 }
 
 data class ShoppingItem(
     val name: String,
-    //val amount: Int,
+    val amount: Int,
 )
 
 @Preview

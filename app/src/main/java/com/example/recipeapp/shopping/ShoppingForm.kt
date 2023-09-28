@@ -18,15 +18,20 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ShoppingForm(
-    onItemAdded: (String) -> Unit
+    onItemAdded: (String, Int) -> Unit
 ){
     var newItem by remember { mutableStateOf("") }
+    var newAmount by remember { mutableStateOf("") }
+
+    var isItemInvalid by remember { mutableStateOf(false) }
+    var isAmountInvalid by remember { mutableStateOf(false) }
 
     Column(
         modifier = Modifier
@@ -46,20 +51,66 @@ fun ShoppingForm(
             style = MaterialTheme.typography.bodyLarge
         )
 
-        //Text Field for adding items to ShoppingList
+        //TextField for adding items to ShoppingList
         TextField(
             modifier = Modifier.fillMaxWidth(),
             value = newItem,
-            onValueChange = { newItem = it },
-            placeholder = { Text(text = "e.g. Milk") }
+            onValueChange = {
+                newItem = it },
+            placeholder = { Text(text = "e.g. Milk") },
+            isError = isItemInvalid,
+            singleLine = true
         )
+
+        //Error handling
+        if (isItemInvalid) {
+            Text(
+                text = "Invalid item. Please enter a valid item name.",
+                color = Color.Red,
+                modifier = Modifier.padding(top = 4.dp)
+            )
+        }
+
+        Text(
+            text = "Quantity",
+            style = MaterialTheme.typography.bodyLarge
+        )
+
+        //TextField for adding the amount of items to ShoppingList
+        TextField(
+            modifier = Modifier.fillMaxWidth(),
+            value = newAmount,
+            onValueChange = { newAmount = it },
+            placeholder = { Text(text = "e.g. 2") },
+            isError = isAmountInvalid,
+            singleLine = true
+        )
+
+        //Error handling
+        if (isAmountInvalid) {
+            Text(
+                text = "Invalid amount. Please enter a valid number.",
+                color = Color.Red,
+                modifier = Modifier.padding(top = 4.dp)
+            )
+        }
 
         //Button for adding items to list
         Button(
             onClick = {
-                if (newItem.isNotBlank()) {
-                    onItemAdded(newItem)
+                val amountValue = newAmount.toIntOrNull()
+                val hasNonNumeric = newItem.any { it.isLetter() }
+
+                //Checks that the user puts required values
+                if (newItem.isNotBlank() && hasNonNumeric && amountValue != null) {
+                    onItemAdded(newItem, amountValue)
                     newItem = ""
+                    newAmount = ""
+                    isItemInvalid = false // Reset item name error flag
+                    isAmountInvalid = false // Reset amount error flag
+                } else {
+                    isItemInvalid = newItem.isBlank() || !hasNonNumeric
+                    isAmountInvalid = amountValue == null
                 }
             },
             modifier = Modifier
