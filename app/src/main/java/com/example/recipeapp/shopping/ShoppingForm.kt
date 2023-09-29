@@ -3,12 +3,18 @@ package com.example.recipeapp.shopping
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
@@ -17,16 +23,16 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ShoppingForm(
     onItemAdded: (String, Int) -> Unit
-){
+) {
     var newItem by remember { mutableStateOf("") }
     var newAmount by remember { mutableStateOf("") }
 
@@ -39,12 +45,7 @@ fun ShoppingForm(
             .verticalScroll(rememberScrollState()),
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
-        Text(
-            text = "Add to shopping list",
-            fontWeight = FontWeight.Bold,
-            style = MaterialTheme.typography.displaySmall
-        )
-        Spacer(modifier = Modifier.padding(8.dp))
+        Spacer(modifier = Modifier.padding(top = 65.dp))
 
         Text(
             text = "Item name",
@@ -56,7 +57,8 @@ fun ShoppingForm(
             modifier = Modifier.fillMaxWidth(),
             value = newItem,
             onValueChange = {
-                newItem = it },
+                newItem = it
+            },
             placeholder = { Text(text = "e.g. Milk") },
             isError = isItemInvalid,
             singleLine = true
@@ -70,6 +72,8 @@ fun ShoppingForm(
                 modifier = Modifier.padding(top = 4.dp)
             )
         }
+
+        Spacer(modifier = Modifier.padding(10.dp))
 
         Text(
             text = "Quantity",
@@ -95,28 +99,42 @@ fun ShoppingForm(
             )
         }
 
-        //Button for adding items to list
-        Button(
-            onClick = {
-                val amountValue = newAmount.toIntOrNull()
-                val hasNonNumeric = newItem.any { it.isLetter() }
+        Spacer(modifier = Modifier.padding(10.dp))
 
-                //Checks that the user puts required values
-                if (newItem.isNotBlank() && hasNonNumeric && amountValue != null) {
-                    onItemAdded(newItem, amountValue)
-                    newItem = ""
-                    newAmount = ""
-                    isItemInvalid = false // Reset item name error flag
-                    isAmountInvalid = false // Reset amount error flag
-                } else {
-                    isItemInvalid = newItem.isBlank() || !hasNonNumeric
-                    isAmountInvalid = amountValue == null
-                }
-            },
-            modifier = Modifier
-                .padding(top = 8.dp)
+        //Button for adding items to list
+        Column(
+            horizontalAlignment = Alignment.End,
+            modifier = Modifier.fillMaxWidth()
         ) {
-            Text("Add")
+            Spacer(modifier = Modifier.fillMaxWidth())
+
+            Button(
+                onClick = {
+                    val amountValue = newAmount.toIntOrNull()
+                    val hasNonNumeric = newItem.any { it.isLetter() }
+
+                    //Checks that the user puts required values
+                    if (newItem.isNotBlank() && hasNonNumeric && amountValue != null) {
+                        onItemAdded(newItem, amountValue)
+                        newItem = ""
+                        newAmount = ""
+                        isItemInvalid = false // Reset item name error flag
+                        isAmountInvalid = false // Reset amount error flag
+                    } else {
+                        isItemInvalid = newItem.isBlank() || !hasNonNumeric
+                        isAmountInvalid = amountValue == null
+                    }
+                },
+                modifier = Modifier
+                    .size(70.dp),
+                shape = CircleShape,
+            ) {
+                Icon(
+                    Icons.Filled.Add,
+                    contentDescription = null,
+                    modifier = Modifier.fillMaxSize()
+                )
+            }
         }
     }
 }
