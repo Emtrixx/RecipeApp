@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">RecipeApp</string>
+    <string name="addProductNameLabel">Name</string>
+    <string name="addProductDescriptionLabel">Description</string>
 </resources>
