@@ -72,13 +72,13 @@ interface ProductRecipeDao {
     suspend  fun GetProducts(): List<Product>
 
     @Query("SELECT * FROM Recipe")
-    suspend  fun GetRecips(): List<Recipe>
+    suspend  fun GetRecipes(): List<Recipe>
 
     @Query("SELECT * FROM Product WHERE barcode = :barcode")
     suspend fun GetProductInfo(barcode: String): Product
 
     @Query("SELECT * FROM Recipe WHERE name = :name")
-    suspend fun GetrecipeInfo(name: String): Recipe
+    suspend fun GetRecipeInfo(name: String): Recipe
 
     @Insert
     suspend  fun InsertRecipe(vararg recipe: Recipe)
