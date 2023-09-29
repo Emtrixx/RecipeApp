@@ -5,7 +5,7 @@ plugins {
 
 android {
     namespace = "com.example.recipeapp"
-    compileSdk = 33
+    compileSdk = 34
 
     defaultConfig {
         applicationId = "com.example.recipeapp"
@@ -58,9 +58,11 @@ dependencies {
     implementation("androidx.lifecycle:lifecycle-runtime-compose:2.6.2")
     implementation("androidx.compose.runtime:runtime-livedata:1.3.2")
     // Navigation
-    implementation("androidx.navigation:navigation-compose:2.5.3")
+    val nav_version = "2.5.3"
+    implementation("androidx.navigation:navigation-compose:$nav_version")
     // Material Design
     implementation("androidx.compose.material3:material3:1.2.0-alpha02")
+
 
 
     implementation("androidx.core:core-ktx:1.9.0")
@@ -71,7 +73,6 @@ dependencies {
     implementation("androidx.compose.ui:ui-graphics")
     implementation("androidx.compose.ui:ui-tooling-preview")
     implementation("androidx.compose.material3:material3")
-    implementation("androidx.camera:camera-lifecycle:1.2.3")
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
