@@ -28,20 +28,15 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
+import androidx.navigation.NavController
 import coil.compose.rememberImagePainter
 import com.google.android.datatransport.BuildConfig
 import java.io.File
 import java.util.Date
 import java.util.Objects
 
-class ImageAnalyzer {
-
-}
-
 @Composable
-fun BarcodeScannerView(viewModel: BarcodeViewModel) {
-    Text("BarcodeScanner")
-
+fun BarcodeScannerView(viewModel: BarcodeViewModel, navController: NavController) {
     val scanResult by viewModel.scanResult.observeAsState("")
 
     val context = LocalContext.current
@@ -84,6 +79,7 @@ fun BarcodeScannerView(viewModel: BarcodeViewModel) {
             .padding(10.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
+        Text("BarcodeScanner")
         Text(text = "Barcode result: ${scanResult}")
         Button(onClick = {
             val permissionCheckResult =
@@ -97,15 +93,19 @@ fun BarcodeScannerView(viewModel: BarcodeViewModel) {
         }) {
             Text(text = "Capture Image From Camera")
         }
-    }
-
-    if (capturedImageUri.path?.isNotEmpty() == true) {
-        Image(
-            modifier = Modifier
-                .padding(16.dp, 8.dp),
-            painter =  rememberImagePainter(capturedImageUri),
-            contentDescription = null
-        )
+        if (scanResult != "") {
+            Button(onClick = {
+                navController.navigate("add?barcode=${scanResult}")
+            }) {
+                Text(text = "Continue")
+            }
+            Image(
+                modifier = Modifier
+                    .padding(16.dp, 8.dp),
+                painter = rememberImagePainter(capturedImageUri),
+                contentDescription = null
+            )
+        }
     }
 
 }
