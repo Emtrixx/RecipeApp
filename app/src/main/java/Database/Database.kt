@@ -118,7 +118,7 @@ class RecipeappViewModel(application: Application) : AndroidViewModel(applicatio
 
     fun fetchRecipes() {
         viewModelScope.launch(Dispatchers.IO) {
-            val recipes = db.RecipeappDao().GetRecips()
+            val recipes = db.RecipeappDao().GetRecipes()
             recipesLiveData.postValue(recipes)
         }
     }
