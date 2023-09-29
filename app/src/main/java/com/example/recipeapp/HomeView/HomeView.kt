@@ -19,7 +19,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.MaterialTheme.colors
-import androidx.compose.material.SnackbarDefaults.backgroundColor
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material3.BottomAppBar
@@ -72,14 +71,7 @@ fun HomeView() {
             BottomNavigationBar(navController = navController)
         },
         content = {
-            NavHost(
-                navController = navController,
-                startDestination = "home"
-            ) {
-                composable("home") {
-                    HomeListView()
-                }
-            }
+            BottomNavGraph(navController = navController)
         }
     )
 }

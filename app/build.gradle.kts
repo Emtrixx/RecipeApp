@@ -62,7 +62,7 @@ dependencies {
     implementation("androidx.navigation:navigation-compose:$nav_version")
     // Material Design
     implementation("androidx.compose.material3:material3:1.2.0-alpha02")
-
+    implementation("androidx.compose.material:material:1.5.2")
 
 
     implementation("androidx.core:core-ktx:1.9.0")

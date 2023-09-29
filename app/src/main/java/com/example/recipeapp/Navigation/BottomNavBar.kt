@@ -1,5 +1,6 @@
 package com.example.recipeapp.Navigation
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.material.BottomNavigation
@@ -23,16 +24,23 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
+import androidx.navigation.navArgument
+import com.example.recipeapp.HomeView.HomeListView
 import com.example.recipeapp.HomeView.HomeView
+import com.example.recipeapp.product.AddProductForm
+import com.example.recipeapp.product.AddProductViewModel
+import com.example.recipeapp.product.BarcodeScannerView
+import com.example.recipeapp.product.BarcodeViewModel
 
 sealed class BottomNavItem(var title:String, var icon: ImageVector, var screen:String){
 
     object Home : BottomNavItem("Home",Icons.Default.Home,"home")
 
     object ShoppingList: BottomNavItem("Shopping List", Icons.Default.List,"home")
-    object AddItem: BottomNavItem("Empty",Icons.Default.Add,"home")
+    object AddItem: BottomNavItem("Add Item",Icons.Default.Add,"scanner")
     object Recipes: BottomNavItem("Empty",Icons.Default.Info,"home")
     object Settings: BottomNavItem("Empty",Icons.Default.Settings,"home")
+
 }
 
 @Composable
@@ -40,19 +48,19 @@ fun BottomNavGraph(navController: NavHostController) {
     NavHost(navController = navController, startDestination = BottomNavItem.Home.screen)
     {
         composable(route = BottomNavItem.Home.screen) {
-            HomeView()
+            HomeListView()
         }
-        composable(route = BottomNavItem.Home.screen) {
-            HomeView()
+        composable(route = BottomNavItem.AddItem.screen) {
+            val barcodeViewModel = BarcodeViewModel()
+            BarcodeScannerView(barcodeViewModel, navController)
         }
-        composable(route = BottomNavItem.Home.screen) {
-            HomeView()
-        }
-        composable(route = BottomNavItem.Home.screen) {
-            HomeView()
-        }
-        composable(route = BottomNavItem.Home.screen) {
-            HomeView()
+        composable(
+            "add?barcode={barcode}",
+            arguments = listOf(navArgument("barcode") { nullable = true })
+        ) {
+            val barcode = it.arguments?.getString("barcode")
+            val productViewModel = AddProductViewModel(barcode)
+            AddProductForm(productViewModel)
         }
     }
 }
@@ -92,6 +100,7 @@ fun RowScope.AddItem(
                 contentDescription = "Navigation icon")
         },
         selected = currentDestination?.hierarchy?.any {
+            Log.d("DBG", screen.screen ?: "empty")
             it.route == screen.screen
         } == true,
         onClick = {
