@@ -19,6 +19,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.MaterialTheme.colors
+import androidx.compose.material.SnackbarDefaults.backgroundColor
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material3.BottomAppBar
@@ -26,6 +27,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Divider
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -102,7 +104,13 @@ fun HomeListView() {
                 .fillMaxHeight()
         ) {
             item {
-                Text(text = "In your fridge")
+                Text(
+                    text = "In your Fridge",
+                    fontSize = 24.sp,
+                    modifier = Modifier
+                        .padding(8.dp)
+                )
+                Divider(thickness = 1.dp, color = Color.White)
             }
             items(itemList) { item ->
                 ItemCard(
@@ -112,7 +120,21 @@ fun HomeListView() {
                 )
             }
             item {
-                Text(text = "expiring soon")
+                Button(
+                    onClick = {/* TODO */ },
+                    modifier = Modifier
+                        .padding(8.dp)
+                ) {
+                    Text("See all (21)")
+                }
+            }
+            item {
+                Text(
+                    text = "expiring soon",
+                    fontSize = 24.sp,
+                    modifier = Modifier
+                        .padding(8.dp)
+                )
             }
             items(itemList) { item ->
                 ExpiringItemCard(
@@ -121,9 +143,13 @@ fun HomeListView() {
                     expiryDate = item.expiryDate
                 )
             }
+            item {
+                Spacer(modifier = Modifier.height(48.dp))
+            }
         }
     }
 }
+
 @Composable
 fun ItemCard(
     itemName: String,
@@ -141,10 +167,17 @@ fun ItemCard(
         ) {
             // Background Image
             Image(
-                painter = painterResource(id = R.drawable.egg), // Replace with your image resource
+                painter = painterResource(id = R.drawable.egg),
                 contentDescription = "Product image",
                 contentScale = ContentScale.Crop,
-                colorFilter = ColorFilter.colorMatrix(ColorMatrix().apply{setToScale(0.5f,0.5f,0.5f,1f)}),
+                colorFilter = ColorFilter.colorMatrix(ColorMatrix().apply {
+                    setToScale(
+                        0.5f,
+                        0.5f,
+                        0.5f,
+                        1f
+                    )
+                }),
                 modifier = Modifier
                     .height(200.dp)
                     .blur(
@@ -233,15 +266,17 @@ fun ItemCard(
 fun ExpiringItemCard(itemName: String, itemQuantity: String, expiryDate: String) {
     ElevatedCard(
         colors = CardDefaults.cardColors(
-            containerColor = Color.Red,
+            containerColor = Color(0xFFFF4444),
         ),
         modifier = Modifier
             .padding(12.dp)
     ) {
         Column {
-            Column(modifier = Modifier
-                .padding(all = 8.dp)
-                .fillMaxWidth()) {
+            Column(
+                modifier = Modifier
+                    .padding(all = 8.dp)
+                    .fillMaxWidth()
+            ) {
                 Text(text = itemName, fontWeight = FontWeight.Bold)
                 Spacer(modifier = Modifier.height(4.dp))
                 Text(text = itemQuantity, fontSize = 12.sp)

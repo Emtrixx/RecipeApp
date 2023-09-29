@@ -1,5 +1,6 @@
 package com.example.recipeapp.Navigation
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.material.BottomNavigation
 import androidx.compose.material.BottomNavigationItem
@@ -13,6 +14,8 @@ import androidx.compose.material.icons.filled.List
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.navigation.NavDestination
 import androidx.navigation.NavDestination.Companion.hierarchy
@@ -21,7 +24,6 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import com.example.recipeapp.HomeView.HomeView
-
 
 sealed class BottomNavItem(var title:String, var icon: ImageVector, var screen:String){
 
@@ -85,9 +87,6 @@ fun RowScope.AddItem(
     navController: NavHostController
 ) {
     BottomNavigationItem(
-        label = {
-            Text(text = screen.title)
-        },
         icon = {
             Icon(imageVector = screen.icon,
                 contentDescription = "Navigation icon")
@@ -97,6 +96,7 @@ fun RowScope.AddItem(
         } == true,
         onClick = {
             navController.navigate(screen.screen)
-        }
+        },
+        modifier = Modifier.background(Color(0xFF3C3C3C))
     )
 }
