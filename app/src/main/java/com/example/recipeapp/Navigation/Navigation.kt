@@ -127,6 +127,7 @@ fun RowScope.AddItem(
         onClick = {
             navController.navigate(screen.screen)
         },
-        modifier = Modifier.background(Color(0xFF3C3C3C))
+        modifier = Modifier.background(Color(0xFF3C3C3C)),
+        selectedContentColor = Color(0xFF3CC1FF)
     )
 }

@@ -2,6 +2,7 @@ package com.example.recipeapp.HomeView
 
 import Database.Product
 import android.annotation.SuppressLint
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -19,10 +20,15 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.FabPosition
 import androidx.compose.material.MaterialTheme.colors
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.ShoppingCart
+import androidx.compose.material.rememberScaffoldState
+import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -31,10 +37,12 @@ import androidx.compose.material3.Divider
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -45,7 +53,9 @@ import androidx.compose.ui.draw.blur
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.ColorMatrix
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -73,32 +83,37 @@ fun HomeView() {
     val productList: List<Product>? by homeViewModel.getProductsLiveData().observeAsState()
     val homePageProductList = productList?.take(3)
 
+    val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
 
     LaunchedEffect(Unit) {
         homeViewModel.fetchProducts()
         homeViewModel.addProduct()
     }
 
+    /*
     Scaffold(
+        topBar = { TopAppBar(
+            title = {Text("home")},
+            scrollBehavior = scrollBehavior
+        )  },
+        bottomBar = { BottomNavigationBar(navController = navController) },
+        { NavGraph(navController = navController, homePageProductList)},
+        )*/
+
+    Scaffold(
+        modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
         topBar = {
             TopAppBar(
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = Color(0xFF3C3C3C),
-                    titleContentColor = Color.White,
-                ),
-                title = {
-                    Text("Home")
-                }
+                title = { Text(text = "Home") },
+                scrollBehavior = scrollBehavior
             )
         },
-        bottomBar = {
-            BottomNavigationBar(navController = navController)
-        },
-        content = {
-            NavGraph(navController = navController, homePageProductList)
-        }
-    )
+        bottomBar = { BottomNavigationBar(navController = navController) },
+    ) {
+        NavGraph(navController = navController, homePageProductList)
+    }
 }
+
 
 @Composable
 fun HomeListView(productList: List<Product>?, navController: NavController) {
@@ -117,14 +132,17 @@ fun HomeListView(productList: List<Product>?, navController: NavController) {
                     .fillMaxHeight()
             ) {
                 item {
-                    Spacer(modifier = Modifier.height(64.dp))
+                    Spacer(modifier = Modifier.size(60.dp))
                 }
                 item {
-                    Row (modifier = Modifier.fillMaxWidth(),
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
                         verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.SpaceBetween) {
-                        Text (text = "Time to get more",
-                            fontSize = 24.sp,
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        Text(
+                            text = "Time to get more",
+                            fontSize = 20.sp,
                         )
                         Button(
                             onClick = { navController.navigate("allItems") },
@@ -171,6 +189,7 @@ fun ItemCard(
 ) {
     val homeViewModel: HomeViewModel = viewModel()
     val dateFormatter = SimpleDateFormat("MM.dd", Locale.getDefault())
+    val context = LocalContext.current
     Card(
         modifier = Modifier
             .padding(12.dp)
@@ -247,24 +266,53 @@ fun ItemCard(
 
                 Row(
                     modifier = Modifier
-                        .padding(top = 8.dp),
-                    horizontalArrangement = Arrangement.SpaceBetween
+                        .padding(top = 4.dp)
+                        .fillMaxWidth(),
+                    verticalAlignment = Alignment.Bottom,
+                    horizontalArrangement = Arrangement.SpaceBetween,
                 ) {
-                    Button(
-                        onClick = {
-                            homeViewModel.removeProduct(product)
-                            homeViewModel.fetchProducts()
-                        },
-                        modifier = Modifier
-                            .height(36.dp)
-                            .padding(start = 4.dp),
-                        colors = ButtonDefaults.buttonColors(
-                            colors.primary,
-                            contentColor = Color.White
-                        )
-                    ) {
-                        Icon(Icons.Default.Delete, contentDescription = "remove item")
+                    Row {
+                        Button(
+                            onClick = {
+                                /* TODO
+                                *   navigate to recipe screen with this item */
+                            },
+                            modifier = Modifier
+                                .height(36.dp)
+                                .padding(start = 4.dp),
+                            colors = ButtonDefaults.buttonColors(
+                                colors.primary,
+                                contentColor = Color.White
+                            )
+                        ) {
+                            Text(
+                                "Recipe",
+                            )
+                        }
+                        Button(
+                            onClick = {
+                                Toast.makeText(
+                                    context, "Item added to shopping list",
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                                /* TODO
+                                *   add item to the shopping list*/
+                            },
+                            modifier = Modifier
+                                .height(36.dp)
+                                .padding(start = 4.dp),
+                            colors = ButtonDefaults.buttonColors(
+                                colors.primary,
+                                contentColor = Color.White
+                            )
+                        ) {
+                            Icon(
+                                Icons.Default.ShoppingCart,
+                                contentDescription = "add to shopping list"
+                            )
+                        }
                     }
+
                     Button(
                         onClick = {
                             homeViewModel.removeProduct(product)
