@@ -3,6 +3,7 @@ package com.example.recipeapp.HomeView
 import Database.Product
 import android.annotation.SuppressLint
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -40,7 +41,13 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
+import androidx.navigation.NavType
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
+import com.example.recipeapp.ItemView.ItemDetailView
 import com.example.recipeapp.Navigation.BottomNavGraph
 import com.example.recipeapp.Navigation.BottomNavigationBar
 import com.example.recipeapp.R
@@ -62,18 +69,37 @@ fun HomeView() {
         homeViewModel.addProduct()
     }
 
-    Scaffold(
-        bottomBar = {
-            BottomNavigationBar(navController = navController)
-        },
-        content = {
-            BottomNavGraph(navController = navController, productList = productList)
+    // Set up the navigation route
+    NavHost(navController, startDestination = "home") {
+        composable("home") {
+            Scaffold(
+                bottomBar = {
+                    BottomNavigationBar(navController = navController)
+                },
+                content = {
+                    HomeListView(productList = productList, navController = navController)
+                }
+            )
         }
-    )
+        composable(
+            route = "itemDetail/{itemId}",
+            arguments = listOf(navArgument("itemId") { type = NavType.StringType })
+        ) { backStackEntry ->
+            // Extract the itemId from the route and find the corresponding item
+            val itemId = backStackEntry.arguments?.getString("itemId")
+            val selectedItem = productList?.find { it.barcode == itemId }
+
+            if (selectedItem != null) {
+                ItemDetailView(item = selectedItem)
+            } else {
+                Text("Item not found")
+            }
+        }
+    }
 }
 
 @Composable
-fun HomeListView(productList : List<Product>?) {
+fun HomeListView(productList : List<Product>?, navController: NavController) {
 
     if(productList.isNullOrEmpty()) {
         Text(text = "No products in your fridge yet")
@@ -99,9 +125,8 @@ fun HomeListView(productList : List<Product>?) {
                 }
                 items(productList) { item ->
                     ItemCard(
-                        itemName = item.name,
-                        itemQuantity = item.amount,
-                        expiryDate = item.bestbefore
+                        product = item,
+                        navController = navController
                     )
                 }
                 item {
@@ -138,14 +163,15 @@ fun HomeListView(productList : List<Product>?) {
 
 @Composable
 fun ItemCard(
-    itemName: String,
-    itemQuantity: Double,
-    expiryDate: Date,
-) {
+    product: Product,
+    navController : NavController) {
     Card(
         modifier = Modifier
             .padding(12.dp)
-            .fillMaxWidth(),
+            .fillMaxWidth()
+            .clickable {
+                navController.navigate("itemDetail/${product.barcode}")
+            }
     ) {
         Box(
             modifier = Modifier
@@ -185,7 +211,7 @@ fun ItemCard(
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
                     Text(
-                        text = itemName,
+                        text = product.name,
                         fontWeight = FontWeight.Bold,
                         fontSize = 20.sp,
                         color = Color.White,
@@ -196,13 +222,13 @@ fun ItemCard(
                 }
 
                 Text(
-                    text = itemQuantity.toString(),
+                    text = product.amount.toString(),
                     fontSize = 16.sp,
                     color = Color.White
                 )
 
                 Text(
-                    text = "Expiring in $expiryDate",
+                    text = "Expiring in ${product.bestbefore}",
                     modifier = Modifier.padding(top = 8.dp),
                     color = Color.White
                 )

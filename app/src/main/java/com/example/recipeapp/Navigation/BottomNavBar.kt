@@ -22,12 +22,14 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.navigation.NavDestination
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.navArgument
 import com.example.recipeapp.HomeView.HomeListView
 import com.example.recipeapp.HomeView.HomeView
+import com.example.recipeapp.ItemView.ItemDetailView
 import com.example.recipeapp.product.AddProductForm
 import com.example.recipeapp.product.AddProductViewModel
 import com.example.recipeapp.product.BarcodeScannerView
@@ -36,7 +38,6 @@ import com.example.recipeapp.product.BarcodeViewModel
 sealed class BottomNavItem(var title:String, var icon: ImageVector, var screen:String){
 
     object Home : BottomNavItem("Home",Icons.Default.Home,"home")
-
     object ShoppingList: BottomNavItem("Shopping List", Icons.Default.List,"home")
     object AddItem: BottomNavItem("Add Item",Icons.Default.Add,"scanner")
     object Recipes: BottomNavItem("Empty",Icons.Default.Info,"home")
@@ -49,7 +50,7 @@ fun BottomNavGraph(navController: NavHostController, productList : List<Product>
     NavHost(navController = navController, startDestination = BottomNavItem.Home.screen)
     {
         composable(route = BottomNavItem.Home.screen) {
-            HomeListView(productList)
+            HomeListView(productList, navController = navController)
         }
         composable(route = BottomNavItem.AddItem.screen) {
             val barcodeViewModel = BarcodeViewModel()
