@@ -248,7 +248,6 @@ fun ItemCard(
                             .height(36.dp)
                             .padding(end = 4.dp), // Add padding here
                         colors = ButtonDefaults.buttonColors(
-                            colors.primary,
                             contentColor = Color.White
                         )
                     ) {
@@ -262,7 +261,7 @@ fun ItemCard(
                             .height(36.dp)
                             .padding(start = 4.dp), // Add padding here
                         colors = ButtonDefaults.buttonColors(
-                            colors.error,
+                            colors.primary,
                             contentColor = Color.White
                         )
                     ) {
