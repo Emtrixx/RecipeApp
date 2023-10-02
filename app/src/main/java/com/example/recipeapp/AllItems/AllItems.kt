@@ -2,6 +2,7 @@ package com.example.recipeapp.AllItems
 
 import Database.Product
 import android.annotation.SuppressLint
+import android.app.Application
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -30,12 +31,16 @@ import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.blur
@@ -80,17 +85,6 @@ fun AllItems() {
     NavHost(navController, startDestination = "allItemsList") {
         composable("allItemsList") {
             Scaffold(
-                topBar = {
-                    TopAppBar(
-                        colors = TopAppBarDefaults.topAppBarColors(
-                            containerColor = Color(0xFF3C3C3C),
-                            titleContentColor = Color.White,
-                        ),
-                        title = {
-                            Text("Products")
-                        }
-                    )
-                },
                 bottomBar = {
                     BottomNavigationBar(navController = navController)
                 },
@@ -119,6 +113,8 @@ fun AllItems() {
 @Composable
 fun AllItemsListView(productList: List<Product>?, navController: NavController) {
 
+    var searchText by remember { mutableStateOf("") }
+
     if (productList.isNullOrEmpty()) {
         Text(text = "No products in your fridge yet")
     } else {
@@ -135,7 +131,17 @@ fun AllItemsListView(productList: List<Product>?, navController: NavController) 
                 item {
                     Spacer(modifier = Modifier.height(64.dp))
                 }
-                items(productList) { item ->
+                item {
+                    TextField(
+                        value = searchText,
+                        onValueChange = { newQuery ->
+                            searchText = newQuery
+                        },
+                        label = { Text("Search Products") },
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                }
+                items(productList.filter{ it.name.contains(searchText, ignoreCase = true) }) { item ->
                     ItemCard(
                         product = item,
                         navController = navController

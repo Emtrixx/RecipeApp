@@ -1,6 +1,7 @@
 package com.example.recipeapp.Navigation
 
 import Database.Product
+import Database.Recipe
 import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.RowScope
@@ -30,6 +31,8 @@ import androidx.navigation.navArgument
 import com.example.recipeapp.AllItems.AllItems
 import com.example.recipeapp.HomeView.HomeListView
 import com.example.recipeapp.ItemView.ItemDetailView
+import com.example.recipeapp.RecipeView.RecipeView
+import com.example.recipeapp.RecipeView.RecipeViewModel
 import com.example.recipeapp.product.AddProductForm
 import com.example.recipeapp.product.AddProductViewModel
 import com.example.recipeapp.product.BarcodeScannerView
@@ -40,7 +43,7 @@ sealed class BottomNavItem(var title:String, var icon: ImageVector, var screen:S
     object Home : BottomNavItem("Home",Icons.Default.Home,"home")
     object ShoppingList: BottomNavItem("Shopping List", Icons.Default.List,"home")
     object AddItem: BottomNavItem("Add Item",Icons.Default.Add,"scanner")
-    object Recipes: BottomNavItem("Empty",Icons.Default.Info,"home")
+    object Recipes: BottomNavItem("Empty",Icons.Default.Info,"recipe")
     object Settings: BottomNavItem("Empty",Icons.Default.Settings,"home")
 
 }
@@ -55,6 +58,9 @@ fun NavGraph(navController: NavHostController, productList : List<Product>?) {
         composable(route = BottomNavItem.AddItem.screen) {
             val barcodeViewModel = BarcodeViewModel()
             BarcodeScannerView(barcodeViewModel, navController)
+        }
+        composable(route = BottomNavItem.Recipes.screen) {
+            RecipeView()
         }
         composable(
             "add?barcode={barcode}",

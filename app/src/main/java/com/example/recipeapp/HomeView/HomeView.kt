@@ -90,16 +90,6 @@ fun HomeView() {
         homeViewModel.addProduct()
     }
 
-    /*
-    Scaffold(
-        topBar = { TopAppBar(
-            title = {Text("home")},
-            scrollBehavior = scrollBehavior
-        )  },
-        bottomBar = { BottomNavigationBar(navController = navController) },
-        { NavGraph(navController = navController, homePageProductList)},
-        )*/
-
     Scaffold(
         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
         topBar = {
@@ -113,7 +103,6 @@ fun HomeView() {
         NavGraph(navController = navController, homePageProductList)
     }
 }
-
 
 @Composable
 fun HomeListView(productList: List<Product>?, navController: NavController) {

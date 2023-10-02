@@ -6,6 +6,7 @@ import android.app.Application
 import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.example.recipeapp.R
 import kotlinx.coroutines.Dispatchers
@@ -19,6 +20,12 @@ class AllItemsViewModel(application: Application) : AndroidViewModel(application
     // LiveData to hold the list of products
     private val productsLiveData: LiveData<List<Product>> = recipeappViewModel.getProductsAsLiveData()
 
+    private val filteredProductsLiveData: MutableLiveData<List<Product>> = MutableLiveData()
+
+    fun getFilteredProductsLiveData(): LiveData<List<Product>> {
+        return filteredProductsLiveData
+    }
+
     fun getProductsLiveData(): LiveData<List<Product>> {
         return productsLiveData
     }
@@ -29,11 +36,5 @@ class AllItemsViewModel(application: Application) : AndroidViewModel(application
         }
     }
 
-    fun removeProduct(product: Product) {
-        viewModelScope.launch(Dispatchers.IO) {
-            recipeappViewModel.removeProduct(product.barcode)
-            Log.d("REMOVE", "removed product ${product.barcode}")
-            recipeappViewModel.fetchProducts()
-        }
-    }
+
 }
