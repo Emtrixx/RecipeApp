@@ -1,27 +1,19 @@
-package com.example.recipeapp.HomeView
+package com.example.recipeapp.AllItems
 
 import Database.Product
-import Database.Recipeapp
 import Database.RecipeappViewModel
 import android.app.Application
-import android.content.Context
-import android.content.res.Resources
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
 import android.util.Log
-import androidx.core.content.ContentProviderCompat.requireContext
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.viewModelScope
 import com.example.recipeapp.R
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import java.io.ByteArrayOutputStream
-import java.time.LocalDate
 import java.util.Date
 import kotlin.random.Random
 
-class HomeViewModel(application: Application) : AndroidViewModel(application) {
+class AllItemsViewModel(application: Application) : AndroidViewModel(application) {
     private val recipeappViewModel = RecipeappViewModel(application)
 
     // LiveData to hold the list of products
@@ -29,18 +21,6 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
 
     fun getProductsLiveData(): LiveData<List<Product>> {
         return productsLiveData
-    }
-
-    fun addProduct() {
-        recipeappViewModel.addProduct(
-            name = "egg ${Random.Default.nextInt(1, 100)}",
-            bestbefore = Date(),
-            amount = 2.0,
-            barcode = Random.Default.nextInt(1, 1000000).toString(),
-            description = "pirkka eggs, the best ones",
-            image = R.drawable.egg,
-            tags =  listOf("egg")
-        )
     }
 
     fun fetchProducts() {
@@ -53,7 +33,7 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
         viewModelScope.launch(Dispatchers.IO) {
             recipeappViewModel.removeProduct(product.barcode)
             Log.d("REMOVE", "removed product ${product.barcode}")
-            getProductsLiveData()
+            recipeappViewModel.fetchProducts()
         }
     }
 }

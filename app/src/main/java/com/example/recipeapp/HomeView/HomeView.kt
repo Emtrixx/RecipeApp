@@ -3,6 +3,7 @@ package com.example.recipeapp.HomeView
 import Database.Product
 import android.annotation.SuppressLint
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -14,9 +15,14 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.MaterialTheme.colors
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.DateRange
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -24,12 +30,16 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Divider
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.blur
 import androidx.compose.ui.graphics.Color
@@ -42,16 +52,14 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import androidx.navigation.NavType
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import androidx.navigation.navArgument
-import com.example.recipeapp.ItemView.ItemDetailView
-import com.example.recipeapp.Navigation.BottomNavGraph
+import com.example.recipeapp.Navigation.NavGraph
 import com.example.recipeapp.Navigation.BottomNavigationBar
 import com.example.recipeapp.R
+import java.text.SimpleDateFormat
+import java.time.format.DateTimeFormatter
 import java.util.Date
+import java.util.Locale
 
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
@@ -63,45 +71,39 @@ fun HomeView() {
     val homeViewModel: HomeViewModel = viewModel()
 
     val productList: List<Product>? by homeViewModel.getProductsLiveData().observeAsState()
+    val homePageProductList = productList?.take(3)
+
 
     LaunchedEffect(Unit) {
         homeViewModel.fetchProducts()
         homeViewModel.addProduct()
     }
 
-    // Set up the navigation route
-    NavHost(navController, startDestination = "home") {
-        composable("home") {
-            Scaffold(
-                bottomBar = {
-                    BottomNavigationBar(navController = navController)
-                },
-                content = {
-                    HomeListView(productList = productList, navController = navController)
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = Color(0xFF3C3C3C),
+                    titleContentColor = Color.White,
+                ),
+                title = {
+                    Text("Home")
                 }
             )
+        },
+        bottomBar = {
+            BottomNavigationBar(navController = navController)
+        },
+        content = {
+            NavGraph(navController = navController, homePageProductList)
         }
-        composable(
-            route = "itemDetail/{itemId}",
-            arguments = listOf(navArgument("itemId") { type = NavType.StringType })
-        ) { backStackEntry ->
-            // Extract the itemId from the route and find the corresponding item
-            val itemId = backStackEntry.arguments?.getString("itemId")
-            val selectedItem = productList?.find { it.barcode == itemId }
-
-            if (selectedItem != null) {
-                ItemDetailView(item = selectedItem)
-            } else {
-                Text("Item not found")
-            }
-        }
-    }
+    )
 }
 
 @Composable
-fun HomeListView(productList : List<Product>?, navController: NavController) {
+fun HomeListView(productList: List<Product>?, navController: NavController) {
 
-    if(productList.isNullOrEmpty()) {
+    if (productList.isNullOrEmpty()) {
         Text(text = "No products in your fridge yet")
     } else {
         Column(
@@ -115,28 +117,29 @@ fun HomeListView(productList : List<Product>?, navController: NavController) {
                     .fillMaxHeight()
             ) {
                 item {
-                    Text(
-                        text = "In your Fridge",
-                        fontSize = 24.sp,
-                        modifier = Modifier
-                            .padding(8.dp)
-                    )
-                    Divider(thickness = 1.dp, color = Color.White)
+                    Spacer(modifier = Modifier.height(64.dp))
+                }
+                item {
+                    Row (modifier = Modifier.fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceBetween) {
+                        Text (text = "Time to get more",
+                            fontSize = 24.sp,
+                        )
+                        Button(
+                            onClick = { navController.navigate("allItems") },
+                            modifier = Modifier
+                                .padding(4.dp)
+                        ) {
+                            Text("See all (21)")
+                        }
+                    }
                 }
                 items(productList) { item ->
                     ItemCard(
                         product = item,
                         navController = navController
                     )
-                }
-                item {
-                    Button(
-                        onClick = {/* TODO */ },
-                        modifier = Modifier
-                            .padding(8.dp)
-                    ) {
-                        Text("See all (21)")
-                    }
                 }
                 item {
                     Text(
@@ -164,7 +167,10 @@ fun HomeListView(productList : List<Product>?, navController: NavController) {
 @Composable
 fun ItemCard(
     product: Product,
-    navController : NavController) {
+    navController: NavController
+) {
+    val homeViewModel: HomeViewModel = viewModel()
+    val dateFormatter = SimpleDateFormat("MM.dd", Locale.getDefault())
     Card(
         modifier = Modifier
             .padding(12.dp)
@@ -173,7 +179,7 @@ fun ItemCard(
                 navController.navigate("itemDetail/${product.barcode}")
             }
     ) {
-        Box(
+        Column(
             modifier = Modifier
                 .fillMaxSize()
         ) {
@@ -182,33 +188,22 @@ fun ItemCard(
                 painter = painterResource(id = R.drawable.egg),
                 contentDescription = "Product image",
                 contentScale = ContentScale.Crop,
-                colorFilter = ColorFilter.colorMatrix(ColorMatrix().apply {
-                    setToScale(
-                        0.5f,
-                        0.5f,
-                        0.5f,
-                        1f
-                    )
-                }),
                 modifier = Modifier
-                    .height(200.dp)
-                    .blur(
-                        radiusX = 5.dp,
-                        radiusY = 5.dp,
-                    )
+                    .height(120.dp)
             )
 
             // Card Content
             Column(
                 modifier = Modifier
                     .padding(16.dp)
-                    .fillMaxSize()
+                    .fillMaxSize(),
             ) {
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(bottom = 8.dp),
-                    horizontalArrangement = Arrangement.SpaceBetween
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
                         text = product.name,
@@ -219,53 +214,71 @@ fun ItemCard(
                             .weight(1f)
                             .padding(end = 8.dp)
                     )
+
+                    Box(
+                        modifier = Modifier
+                            .background(
+                                color = Color.Gray,
+                                shape = RoundedCornerShape(16.dp)
+                            )
+                            .padding(4.dp)
+                    ) {
+                        Row(
+                            modifier = Modifier
+                                .padding(4.dp),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.Center
+                        ) {
+                            Icon(
+                                Icons.Default.DateRange,
+                                contentDescription = "Best before date",
+                                modifier = Modifier.size(14.dp)
+                            )
+                            Text(
+                                text = dateFormatter.format(product.bestbefore),
+                                fontSize = 10.sp,
+                                modifier = Modifier
+                                    .padding(start = 4.dp),
+                                color = Color.White
+                            )
+                        }
+                    }
                 }
-
-                Text(
-                    text = product.amount.toString(),
-                    fontSize = 16.sp,
-                    color = Color.White
-                )
-
-                Text(
-                    text = "Expiring in ${product.bestbefore}",
-                    modifier = Modifier.padding(top = 8.dp),
-                    color = Color.White
-                )
-
-                Spacer(modifier = Modifier.height(16.dp))
 
                 Row(
                     modifier = Modifier
-                        .fillMaxWidth()
                         .padding(top = 8.dp),
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
                     Button(
-                        onClick = { /* TODO */ },
+                        onClick = {
+                            homeViewModel.removeProduct(product)
+                            homeViewModel.fetchProducts()
+                        },
                         modifier = Modifier
-                            .weight(1f)
                             .height(36.dp)
-                            .padding(end = 4.dp), // Add padding here
-                        colors = ButtonDefaults.buttonColors(
-                            contentColor = Color.White
-                        )
-                    ) {
-                        Text(text = "Edit")
-                    }
-
-                    Button(
-                        onClick = { /* TODO */ },
-                        modifier = Modifier
-                            .weight(1f)
-                            .height(36.dp)
-                            .padding(start = 4.dp), // Add padding here
+                            .padding(start = 4.dp),
                         colors = ButtonDefaults.buttonColors(
                             colors.primary,
                             contentColor = Color.White
                         )
                     ) {
-                        Text(text = "Remove")
+                        Icon(Icons.Default.Delete, contentDescription = "remove item")
+                    }
+                    Button(
+                        onClick = {
+                            homeViewModel.removeProduct(product)
+                            homeViewModel.fetchProducts()
+                        },
+                        modifier = Modifier
+                            .height(36.dp)
+                            .padding(start = 4.dp),
+                        colors = ButtonDefaults.buttonColors(
+                            colors.primary,
+                            contentColor = Color.White
+                        )
+                    ) {
+                        Icon(Icons.Default.Delete, contentDescription = "remove item")
                     }
                 }
             }
@@ -275,6 +288,7 @@ fun ItemCard(
 
 @Composable
 fun ExpiringItemCard(itemName: String, itemQuantity: Double, expiryDate: Date) {
+    val dateFormatter = SimpleDateFormat("MMM dd", Locale.getDefault())
     ElevatedCard(
         colors = CardDefaults.cardColors(
             containerColor = Color(0xFFFF4444),
@@ -291,7 +305,7 @@ fun ExpiringItemCard(itemName: String, itemQuantity: Double, expiryDate: Date) {
                 Text(text = itemName, fontWeight = FontWeight.Bold)
                 Spacer(modifier = Modifier.height(4.dp))
                 Text(text = itemQuantity.toString(), fontSize = 12.sp)
-                Text(text = expiryDate.toString())
+                Text(text = dateFormatter.format(expiryDate))
             }
             Spacer(modifier = Modifier.height(8.dp))
         }

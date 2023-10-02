@@ -7,6 +7,7 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
+import androidx.room.ColumnInfo
 import androidx.room.Dao
 import androidx.room.Database
 import androidx.room.Entity
@@ -20,7 +21,6 @@ import androidx.room.TypeConverters
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.util.Date
-import androidx.room.ColumnInfo
 
 @Database(entities = [Product::class, Recipe::class], version = 1, exportSchema = false)
 @TypeConverters(DateConverter::class, ListStringConverter::class)
@@ -78,6 +78,9 @@ interface ProductRecipeDao {
     @Query("SELECT * FROM Product WHERE barcode = :barcode")
     suspend fun GetProductInfo(barcode: String): Product
 
+    @Query("DELETE FROM Product WHERE barcode = :barcode")
+    suspend fun deleteProductById(barcode: String)
+
     @Query("SELECT * FROM Recipe WHERE name = :name")
     suspend fun GetRecipeInfo(name: String): Recipe
 
@@ -134,6 +137,13 @@ class RecipeappViewModel(application: Application) : AndroidViewModel(applicatio
                     image: Int) {
         val p = Product(barcode, name, bestbefore, description, amount, tags, image)
         viewModelScope.launch { db.RecipeappDao().InsertProduct(p) }
+    }
+
+    fun removeProduct(barcode: String) {
+        viewModelScope.launch(Dispatchers.IO) {
+            db.RecipeappDao().deleteProductById(barcode)
+            fetchProducts()
+        }
     }
 
     fun addRecipe(ingridients: List<String>,

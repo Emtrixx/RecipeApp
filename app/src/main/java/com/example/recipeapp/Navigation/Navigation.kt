@@ -27,8 +27,8 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.navArgument
+import com.example.recipeapp.AllItems.AllItems
 import com.example.recipeapp.HomeView.HomeListView
-import com.example.recipeapp.HomeView.HomeView
 import com.example.recipeapp.ItemView.ItemDetailView
 import com.example.recipeapp.product.AddProductForm
 import com.example.recipeapp.product.AddProductViewModel
@@ -46,7 +46,7 @@ sealed class BottomNavItem(var title:String, var icon: ImageVector, var screen:S
 }
 
 @Composable
-fun BottomNavGraph(navController: NavHostController, productList : List<Product>?) {
+fun NavGraph(navController: NavHostController, productList : List<Product>?) {
     NavHost(navController = navController, startDestination = BottomNavItem.Home.screen)
     {
         composable(route = BottomNavItem.Home.screen) {
@@ -63,6 +63,25 @@ fun BottomNavGraph(navController: NavHostController, productList : List<Product>
             val barcode = it.arguments?.getString("barcode")
             val productViewModel = AddProductViewModel(barcode)
             AddProductForm(productViewModel)
+        }
+        composable(
+            route = "itemDetail/{itemId}",
+            arguments = listOf(navArgument("itemId") { type = NavType.StringType })
+        ) { backStackEntry ->
+            // Extract the itemId from the route and find the corresponding item
+            val itemId = backStackEntry.arguments?.getString("itemId")
+            val selectedItem = productList?.find { it.barcode == itemId }
+
+            if (selectedItem != null) {
+                ItemDetailView(item = selectedItem)
+            } else {
+                Text("Item not found")
+            }
+        }
+        composable(
+            route = "allItems",
+        ) {
+            AllItems()
         }
     }
 }
