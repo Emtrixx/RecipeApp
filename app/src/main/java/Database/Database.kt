@@ -54,7 +54,8 @@ data class Product(
     val description: String,
     @NonNull val amount: Double,
     @TypeConverters(ListStringConverter::class) val tags: List<String>,
-    @ColumnInfo(typeAffinity = ColumnInfo.BLOB) val image: ByteArray
+    //@ColumnInfo(typeAffinity = ColumnInfo.BLOB) val image: ByteArray,
+    @ColumnInfo() val image: Int
 )
 
 @Entity
@@ -129,7 +130,8 @@ class RecipeappViewModel(application: Application) : AndroidViewModel(applicatio
                     description: String,
                     amount: Double,
                     tags: List<String>,
-                    image: ByteArray) {
+                    //image: ByteArray
+                    image: Int) {
         val p = Product(barcode, name, bestbefore, description, amount, tags, image)
         viewModelScope.launch { db.RecipeappDao().InsertProduct(p) }
     }
