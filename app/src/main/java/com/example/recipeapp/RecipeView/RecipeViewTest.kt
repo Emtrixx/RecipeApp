@@ -24,9 +24,11 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.unit.dp
 import com.example.recipeapp.ChatGPT.Message
+import com.example.recipeapp.R
 import kotlinx.coroutines.launch
 
-val apiKey = "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"
+// Replace with your api key
+val apiKey = ""
 
 @Composable
 fun RecipeViewTest(viewModel: TestRecipeViewModel) {
@@ -35,6 +37,8 @@ fun RecipeViewTest(viewModel: TestRecipeViewModel) {
     val coroutineScope = rememberCoroutineScope()
 
     var response by remember { mutableStateOf("") }
+
+    val apiKey = R.string.CHATGPT_APIKEY
 
     Column(
         modifier = Modifier
