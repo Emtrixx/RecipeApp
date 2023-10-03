@@ -13,11 +13,13 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.core.content.ContentProviderCompat.requireContext
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.example.recipeapp.R
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.io.ByteArrayOutputStream
+import java.io.Console
 import java.time.LocalDate
 import java.util.Date
 import kotlin.random.Random
@@ -25,16 +27,13 @@ import kotlin.random.Random
 class HomeViewModel(application: Application) : AndroidViewModel(application) {
     private val recipeappViewModel = RecipeappViewModel(application)
 
-    // LiveData to hold the list of products
-    private var productsLiveData: LiveData<List<Product>> = recipeappViewModel.getProductsAsLiveData()
-
     fun getProductsLiveData(): LiveData<List<Product>> {
-        return productsLiveData
+        return recipeappViewModel.getProductsAsLiveData()
     }
 
     fun addProduct() {
         recipeappViewModel.addProduct(
-            name = "egg ${Random.Default.nextInt(1, 100)}",
+            name = "egg ${Random.Default.nextInt(1, 100000)}",
             bestbefore = Date(),
             amount = 2.0,
             barcode = Random.Default.nextInt(1, 1000000).toString(),
@@ -53,7 +52,8 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
     fun removeProduct(product: Product) {
         viewModelScope.launch(Dispatchers.IO) {
             recipeappViewModel.removeProduct(product.barcode)
-            productsLiveData = recipeappViewModel.getProductsAsLiveData()
+            fetchProducts()
+            Log.d("VievModelDelete", "deleting ${product.barcode}")
         }
     }
 }

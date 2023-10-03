@@ -79,12 +79,14 @@ import java.util.Date
 fun AllItems() {
     val navController = rememberNavController()
 
-    val homeViewModel: HomeViewModel = viewModel()
+    val allItemsViewModel: AllItemsViewModel = viewModel()
 
-    val productList: List<Product>? by homeViewModel.getProductsLiveData().observeAsState()
+    val productList: List<Product>? by allItemsViewModel.getProductsAsLiveData().observeAsState()
+
+
 
     LaunchedEffect(Unit) {
-        homeViewModel.fetchProducts()
+        allItemsViewModel.fetchProducts()
     }
 
     // Set up the navigation route
@@ -135,24 +137,35 @@ fun AllItemsListView(productList: List<Product>?, navController: NavController) 
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(bottom = 8.dp),
-                leadingIcon = { Icon(Icons.Filled.Search, contentDescription = null, tint = Color.White) },
+                leadingIcon = {
+                    Icon(
+                        Icons.Filled.Search,
+                        contentDescription = null,
+                        tint = Color.White
+                    )
+                },
                 shape = RoundedCornerShape(24.dp),
                 colors = TextFieldDefaults.outlinedTextFieldColors(
                     unfocusedBorderColor = Color.White,
-                    textColor = Color.White),
+                    textColor = Color.White
+                ),
             )
             LazyColumn(
                 modifier = Modifier
                     .weight(1f)
                     .fillMaxHeight()
             ) {
-                items(productList.filter{ it.name.contains(searchText, ignoreCase = true) }) { item ->
+                items(productList.filter {
+                    it.name.contains(
+                        searchText,
+                        ignoreCase = true
+                    )
+                }) { item ->
                     ItemCard(
                         product = item,
                         navController = navController
                     )
                 }
-
             }
         }
     }

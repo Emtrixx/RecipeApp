@@ -2,6 +2,7 @@ package Database
 
 import android.app.Application
 import android.content.Context
+import android.util.Log
 import androidx.annotation.NonNull
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
@@ -143,8 +144,8 @@ class RecipeappViewModel(application: Application) : AndroidViewModel(applicatio
     fun removeProduct(barcode: String) {
         viewModelScope.launch(Dispatchers.IO) {
             db.RecipeappDao().deleteProductById(barcode)
-            val products = db.RecipeappDao().GetProducts()
-            productsLiveData.postValue(products)
+            fetchRecipes()
+            Log.d("DataBaseDelete", "deleting $barcode from database")
         }
     }
 

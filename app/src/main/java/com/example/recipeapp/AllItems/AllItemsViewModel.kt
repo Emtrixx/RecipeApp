@@ -20,13 +20,7 @@ class AllItemsViewModel(application: Application) : AndroidViewModel(application
     // LiveData to hold the list of products
     private val productsLiveData: LiveData<List<Product>> = recipeappViewModel.getProductsAsLiveData()
 
-    private val filteredProductsLiveData: MutableLiveData<List<Product>> = MutableLiveData()
-
-    fun getFilteredProductsLiveData(): LiveData<List<Product>> {
-        return filteredProductsLiveData
-    }
-
-    fun getProductsLiveData(): LiveData<List<Product>> {
+    fun getProductsAsLiveData(): LiveData<List<Product>> {
         return productsLiveData
     }
 

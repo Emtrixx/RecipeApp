@@ -2,6 +2,7 @@ package com.example.recipeapp.HomeView
 
 import Database.Product
 import android.annotation.SuppressLint
+import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -92,14 +93,14 @@ fun HomeView() {
 
     val homeViewModel: HomeViewModel = viewModel()
 
-    val productList: List<Product>? by homeViewModel.getProductsLiveData().observeAsState()
-    val homePageProductList = productList?.take(3)
+    val productList by homeViewModel.getProductsLiveData().observeAsState(emptyList())
+
+    var filteredProducts = productList.take(3)
 
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
 
     LaunchedEffect(Unit) {
         homeViewModel.fetchProducts()
-        homeViewModel.addProduct()
     }
 
     val topAppBarTitle = when (navController.currentBackStackEntryAsState().value?.destination?.route) {
@@ -108,6 +109,7 @@ fun HomeView() {
         "add?barcode={barcode}" -> "Scan item"
         "recipe" -> "Recipes"
         "settings" -> "Settings"
+        "allItems" -> "Your Items"
         else -> "RecipeApp"
     }
 
@@ -124,7 +126,7 @@ fun HomeView() {
         bottomBar = { BottomNavigationBar(navController = navController) },
     ) { innerPadding ->
         Column (modifier = Modifier.padding(innerPadding)){
-            NavGraph(navController = navController, homePageProductList)
+            NavGraph(navController = navController, filteredProducts)
         }
     }
 }
@@ -196,7 +198,7 @@ fun ItemCard(
     navController: NavController
 ) {
     val homeViewModel: HomeViewModel = viewModel()
-    val dateFormatter = SimpleDateFormat("MM.dd", Locale.getDefault())
+    val dateFormatter = SimpleDateFormat("dd.MM", Locale.getDefault())
     val context = LocalContext.current
     val openDialog = remember { mutableStateOf(false) }
 
@@ -285,9 +287,6 @@ fun ItemCard(
                 if (openDialog.value) {
                     AlertDialog(
                         onDismissRequest = {
-                            // Dismiss the dialog when the user clicks outside the dialog or on the back
-                            // button. If you want to disable that functionality, simply use an empty
-                            // onCloseRequest.
                             openDialog.value = false
                         },
                         title = {
@@ -300,6 +299,7 @@ fun ItemCard(
                             Button(
                                 onClick = {
                                     openDialog.value = false
+                                    homeViewModel.removeProduct(product)
                                 }) {
                                 Text("Confirm")
                             }
@@ -308,8 +308,6 @@ fun ItemCard(
                             Button(
                                 onClick = {
                                     openDialog.value = false
-                                    homeViewModel.removeProduct(product)
-                                    homeViewModel.fetchProducts()
                                 }) {
                                 Text("Cancel")
                             }
@@ -329,6 +327,7 @@ fun ItemCard(
                         ) {
                             DropdownMenuItem(
                                 onClick = {
+                                    expanded = false
                                     Toast.makeText(context, "", Toast.LENGTH_SHORT).show()
                                 },
                                 content = {
@@ -340,6 +339,7 @@ fun ItemCard(
                             )
                             DropdownMenuItem(
                                 onClick = {
+                                    expanded = false
                                     Toast.makeText(
                                         context,
                                         "${product.name} added to shopping list",
@@ -370,7 +370,6 @@ fun ItemCard(
                 }
 
             }
-            // Background Image
             Image(
                 painter = painterResource(id = R.drawable.egg),
                 contentDescription = "Product image",

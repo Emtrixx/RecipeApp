@@ -1,7 +1,6 @@
 package com.example.recipeapp.Navigation
 
 import Database.Product
-import Database.Recipe
 import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.RowScope
@@ -33,8 +32,8 @@ import androidx.navigation.navArgument
 import com.example.recipeapp.AllItems.AllItems
 import com.example.recipeapp.HomeView.HomeListView
 import com.example.recipeapp.ItemView.ItemDetailView
-import com.example.recipeapp.RecipeView.RecipeView
-import com.example.recipeapp.RecipeView.RecipeViewModel
+import com.example.recipeapp.RecipeView.RecipeViewTest
+import com.example.recipeapp.RecipeView.TestRecipeViewModel
 import com.example.recipeapp.product.AddProductForm
 import com.example.recipeapp.product.AddProductViewModel
 import com.example.recipeapp.product.BarcodeScannerView
@@ -62,7 +61,7 @@ fun NavGraph(navController: NavHostController, productList : List<Product>?) {
             BarcodeScannerView(barcodeViewModel, navController)
         }
         composable(route = BottomNavItem.Recipes.screen) {
-            RecipeView()
+            RecipeViewTest(viewModel = TestRecipeViewModel())
         }
         composable(
             "add?barcode={barcode}",
