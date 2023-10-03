@@ -21,7 +21,13 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
+import androidx.compose.material.OutlinedTextField
+import androidx.compose.material.TextFieldColors
+import androidx.compose.material.TextFieldDefaults
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -85,9 +91,6 @@ fun AllItems() {
     NavHost(navController, startDestination = "allItemsList") {
         composable("allItemsList") {
             Scaffold(
-                bottomBar = {
-                    BottomNavigationBar(navController = navController)
-                },
                 content = {
                     AllItemsListView(productList = productList, navController = navController)
                 },
@@ -123,21 +126,26 @@ fun AllItemsListView(productList: List<Product>?, navController: NavController) 
                 .fillMaxSize()
                 .padding(4.dp)
         ) {
+            OutlinedTextField(
+                value = searchText,
+                onValueChange = { newQuery ->
+                    searchText = newQuery
+                },
+                label = { Text("Search Products") },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = 8.dp),
+                leadingIcon = { Icon(Icons.Filled.Search, contentDescription = null, tint = Color.White) },
+                shape = RoundedCornerShape(24.dp),
+                colors = TextFieldDefaults.outlinedTextFieldColors(
+                    unfocusedBorderColor = Color.White,
+                    textColor = Color.White),
+            )
             LazyColumn(
                 modifier = Modifier
                     .weight(1f)
                     .fillMaxHeight()
             ) {
-                item {
-                    TextField(
-                        value = searchText,
-                        onValueChange = { newQuery ->
-                            searchText = newQuery
-                        },
-                        label = { Text("Search Products") },
-                        modifier = Modifier.fillMaxWidth()
-                    )
-                }
                 items(productList.filter{ it.name.contains(searchText, ignoreCase = true) }) { item ->
                     ItemCard(
                         product = item,
