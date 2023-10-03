@@ -129,9 +129,6 @@ fun AllItemsListView(productList: List<Product>?, navController: NavController) 
                     .fillMaxHeight()
             ) {
                 item {
-                    Spacer(modifier = Modifier.height(64.dp))
-                }
-                item {
                     TextField(
                         value = searchText,
                         onValueChange = { newQuery ->
@@ -147,9 +144,7 @@ fun AllItemsListView(productList: List<Product>?, navController: NavController) 
                         navController = navController
                     )
                 }
-                item {
-                    Spacer(modifier = Modifier.height(48.dp))
-                }
+
             }
         }
     }

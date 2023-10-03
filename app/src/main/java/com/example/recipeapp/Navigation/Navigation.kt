@@ -9,6 +9,7 @@ import androidx.compose.material.BottomNavigation
 import androidx.compose.material.BottomNavigationItem
 import androidx.compose.material.Icon
 import androidx.compose.material.Text
+import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Home
@@ -20,6 +21,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.navigation.NavController
 import androidx.navigation.NavDestination
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavHostController
@@ -135,5 +137,20 @@ fun RowScope.AddItem(
         },
         modifier = Modifier.background(Color(0xFF3C3C3C)),
         selectedContentColor = Color(0xFF3CC1FF)
+    )
+}
+
+@Composable
+fun RecipeAppTopAppBar(navController: NavController) {
+
+    val title = when (navController.currentBackStackEntryAsState().value?.destination?.route) {
+        "home" -> "Home"
+        "itemDetail/{itemId}" -> "Product"
+        // Add more cases for different views
+        else -> "RecipeApp"
+    }
+
+    TopAppBar(
+        title = { Text(text = title) },
     )
 }

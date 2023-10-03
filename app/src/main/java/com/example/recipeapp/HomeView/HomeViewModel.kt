@@ -9,6 +9,7 @@ import android.content.res.Resources
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.util.Log
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.core.content.ContentProviderCompat.requireContext
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
@@ -25,7 +26,7 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
     private val recipeappViewModel = RecipeappViewModel(application)
 
     // LiveData to hold the list of products
-    private val productsLiveData: LiveData<List<Product>> = recipeappViewModel.getProductsAsLiveData()
+    private var productsLiveData: LiveData<List<Product>> = recipeappViewModel.getProductsAsLiveData()
 
     fun getProductsLiveData(): LiveData<List<Product>> {
         return productsLiveData
@@ -52,8 +53,7 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
     fun removeProduct(product: Product) {
         viewModelScope.launch(Dispatchers.IO) {
             recipeappViewModel.removeProduct(product.barcode)
-            Log.d("REMOVE", "removed product ${product.barcode}")
-            getProductsLiveData()
+            productsLiveData = recipeappViewModel.getProductsAsLiveData()
         }
     }
 }

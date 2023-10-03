@@ -143,7 +143,8 @@ class RecipeappViewModel(application: Application) : AndroidViewModel(applicatio
     fun removeProduct(barcode: String) {
         viewModelScope.launch(Dispatchers.IO) {
             db.RecipeappDao().deleteProductById(barcode)
-            fetchProducts()
+            val products = db.RecipeappDao().GetProducts()
+            productsLiveData.postValue(products)
         }
     }
 
