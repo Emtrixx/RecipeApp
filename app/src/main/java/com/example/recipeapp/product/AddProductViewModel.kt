@@ -37,7 +37,7 @@ class AddProductViewModel(barcodeArg: String?, context: Context) : ViewModel() {
         private set
     var description by mutableStateOf("")
         private set
-    var amount by mutableStateOf("1")
+    var amount by mutableStateOf(1)
         private set
 
     init {
@@ -59,7 +59,7 @@ class AddProductViewModel(barcodeArg: String?, context: Context) : ViewModel() {
                 name = product.name
                 bestBefore = product.bestbefore.format(DateTimeFormatter.ofPattern("dd/MM/yyyy"))
                 description = product.description
-                amount = product.amount.toString()
+                amount = product.amount
             }
         }
     }
@@ -70,7 +70,7 @@ class AddProductViewModel(barcodeArg: String?, context: Context) : ViewModel() {
             name = name,
             bestbefore = LocalDate.parse(bestBefore, DateTimeFormatter.ofPattern("dd/MM/yyyy")),
             description = description,
-            amount = amount.toInt(),
+            amount = amount,
             tags = listOf(),
             image = savedImagePath
         )
@@ -86,10 +86,11 @@ class AddProductViewModel(barcodeArg: String?, context: Context) : ViewModel() {
         this.description = description
     }
 
-    fun updateAmount(amount: String) {
-        if (amount.length <= 2) {
-            this.amount = amount.filter { it.isDigit() }
-        }
+    fun updateAmount(amount: Int) {
+//        if (amount.length <= 2) {
+//            this.amount = amount.filter { it.isDigit() }
+//        }
+        this.amount = amount
     }
 
     fun updateBestBefore(bestBefore: String) {

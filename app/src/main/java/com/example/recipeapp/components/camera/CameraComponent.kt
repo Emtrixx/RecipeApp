@@ -12,6 +12,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.core.content.ContextCompat
@@ -22,7 +23,7 @@ import com.google.android.datatransport.BuildConfig
 import java.util.Objects
 
 @Composable
-fun CameraComponent(photoCallback: (boolean: Boolean, uri: Uri) -> Unit) {
+fun CameraComponent(modifier: Modifier = Modifier ,photoCallback: (boolean: Boolean, uri: Uri) -> Unit) {
     val context = LocalContext.current
     val file = context.createImageFile()
     val uri = FileProvider.getUriForFile(
@@ -47,7 +48,7 @@ fun CameraComponent(photoCallback: (boolean: Boolean, uri: Uri) -> Unit) {
         }
     }
 
-    Button(onClick = {
+    Button(modifier = modifier, onClick = {
         val permissionCheckResult =
             ContextCompat.checkSelfPermission(context, Manifest.permission.CAMERA)
         if (permissionCheckResult == PackageManager.PERMISSION_GRANTED) {

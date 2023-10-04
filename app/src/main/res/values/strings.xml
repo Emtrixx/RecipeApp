@@ -4,4 +4,5 @@
     <string name="addProductDescriptionLabel">Description</string>
     <string name="addProductAmountLabel">Amount</string>
     <string name="camera_button_label">Take Photo</string>
+    <string name="product_image_desc">Product Image</string>
 </resources>
