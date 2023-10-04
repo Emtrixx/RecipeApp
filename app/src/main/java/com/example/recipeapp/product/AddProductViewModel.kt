@@ -6,6 +6,7 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.net.Uri
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
@@ -33,11 +34,11 @@ class AddProductViewModel(barcodeArg: String?, context: Context) : ViewModel() {
         private set
     var barcode by mutableStateOf("")
         private set
-    var bestBefore by mutableStateOf("")
+    var bestBeforeList: List<String?> by mutableStateOf(listOf(null))
         private set
     var description by mutableStateOf("")
         private set
-    var amount by mutableStateOf(1)
+    var amount by mutableIntStateOf(1)
         private set
 
     init {
@@ -54,10 +55,15 @@ class AddProductViewModel(barcodeArg: String?, context: Context) : ViewModel() {
             if (product != null) {
                 if (product.image != null) {
                     savedImagePath = product.image
-                    storedImage = getImageFromInternalStorage( context ,savedImagePath)
+                    storedImage = getImageFromInternalStorage(context, savedImagePath)
                 }
                 name = product.name
-                bestBefore = product.bestbefore.format(DateTimeFormatter.ofPattern("dd/MM/yyyy"))
+                bestBeforeList = product.bestbefore.map {
+                    if (it == null) {
+                        return@map null
+                    }
+                    it.format(DateTimeFormatter.ofPattern("dd/MM/yyyy"))
+                }
                 description = product.description
                 amount = product.amount
             }
@@ -65,10 +71,15 @@ class AddProductViewModel(barcodeArg: String?, context: Context) : ViewModel() {
     }
 
     fun upsertProduct() {
-        var product = Product(
+        val product = Product(
             barcode = barcode,
             name = name,
-            bestbefore = LocalDate.parse(bestBefore, DateTimeFormatter.ofPattern("dd/MM/yyyy")),
+            bestbefore = bestBeforeList.map {
+                if (it == null) {
+                    return@map null
+                }
+                LocalDate.parse(it, DateTimeFormatter.ofPattern("dd/MM/yyyy"))
+            },
             description = description,
             amount = amount,
             tags = listOf(),
@@ -91,10 +102,21 @@ class AddProductViewModel(barcodeArg: String?, context: Context) : ViewModel() {
 //            this.amount = amount.filter { it.isDigit() }
 //        }
         this.amount = amount
+
+        if (amount > bestBeforeList.size) {
+            bestBeforeList = bestBeforeList + List<String?>(amount - bestBeforeList.size) { null }
+        } else {
+            bestBeforeList = bestBeforeList.take(amount)
+        }
     }
 
-    fun updateBestBefore(bestBefore: String) {
-        this.bestBefore = bestBefore
+    fun updateBestBefore(bestBefore: String, index: Int) {
+        this.bestBeforeList = bestBeforeList.mapIndexed { i, s ->
+            if (i == index) {
+                return@mapIndexed bestBefore
+            }
+            return@mapIndexed s
+        }
     }
 
     fun updatePicture(uri: Uri) {

@@ -2,7 +2,6 @@ package Database
 
 import android.content.Context
 import androidx.annotation.NonNull
-import androidx.room.ColumnInfo
 import androidx.room.Dao
 import androidx.room.Database
 import androidx.room.Entity
@@ -17,7 +16,7 @@ import androidx.room.Upsert
 import java.time.LocalDate
 
 @Database(entities = [Product::class, Recipe::class], version = 1, exportSchema = false)
-@TypeConverters(DateConverter::class, ListStringConverter::class)
+@TypeConverters(ListDateConverter::class, ListStringConverter::class)
 abstract class Recipeapp : RoomDatabase() {
     abstract fun RecipeappDao(): ProductRecipeDao
     companion object {
@@ -44,7 +43,7 @@ abstract class Recipeapp : RoomDatabase() {
 data class Product(
     @PrimaryKey val barcode: String,
     val name: String,
-    @TypeConverters(DateConverter::class) val bestbefore: LocalDate,
+    @TypeConverters(ListDateConverter::class) val bestbefore: List<LocalDate?>,
     val description: String,
     val amount: Int,
     @TypeConverters(ListStringConverter::class) val tags: List<String>,
@@ -109,6 +108,23 @@ class ListStringConverter {
     @TypeConverter
     fun toListString(value: String): List<String> {
         return value.split(",")
+    }
+}
+
+class ListDateConverter {
+    @TypeConverter
+    fun fromListDate(list: List<LocalDate?>): String {
+        return list.joinToString(",")
+    }
+
+    @TypeConverter
+    fun toListDate(value: String): List<LocalDate?> {
+        return value.split(",").map {
+            if (it == "null") {
+                return@map null
+            }
+            LocalDate.parse(it)
+        }
     }
 }
 

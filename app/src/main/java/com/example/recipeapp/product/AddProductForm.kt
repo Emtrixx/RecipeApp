@@ -3,7 +3,6 @@ package com.example.recipeapp.product
 import android.net.Uri
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -45,7 +44,6 @@ import com.example.recipeapp.components.IntegerInputStepper
 import com.example.recipeapp.components.MyDatePickerDialog
 import com.example.recipeapp.components.camera.CameraComponent
 import com.example.recipeapp.components.camera.saveImageToInternalStorage
-import com.example.recipeapp.components.convertDateToMillis
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -55,7 +53,7 @@ fun AddProductForm(viewModel: AddProductViewModel, navController: NavController)
 
     val name = viewModel.name
     val description = viewModel.description
-    val bestBefore: String = viewModel.bestBefore
+    val bestBeforeList: List<String?> = viewModel.bestBeforeList
     val amount = viewModel.amount
     val capturedImageUri = viewModel.capturedImageUri
     val storedImage = viewModel.storedImage
@@ -124,9 +122,21 @@ fun AddProductForm(viewModel: AddProductViewModel, navController: NavController)
                 maxValue = 100
             )
 
-
-            ProductFormDatePicker(bestBefore) {
-                viewModel.updateBestBefore(it)
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(8.dp)
+            ) {
+                Text(text = "Best Before Dates")
+                bestBeforeList.forEachIndexed { index, date ->
+                    // Assuming there's a DatePicker or similar component to pick dates
+                    ProductFormDatePicker(
+                        date = date,
+                        onDateSelected = {
+                            viewModel.updateBestBefore(it, index)
+                        }
+                    )
+                }
             }
 
             Box(
@@ -174,17 +184,17 @@ fun AddProductForm(viewModel: AddProductViewModel, navController: NavController)
 }
 
 @Composable
-fun ProductFormDatePicker(date: String, onDateSelected: (String) -> Unit) {
+fun ProductFormDatePicker(date: String?, onDateSelected: (String) -> Unit) {
 
     var showDatePicker by remember {
         mutableStateOf(false)
     }
 
-    val dateText = date.ifEmpty {
+    val dateText = date ?: run {
         "Open date picker dialog"
     }
 
-    val initialSelectedDateMillis = convertDateToMillis(date)
+//    val initialSelectedDateMillis = convertDateToMillis(date)
 
     Box(contentAlignment = Alignment.Center) {
         Button(modifier = Modifier.padding(8.dp), onClick = { showDatePicker = true }) {
@@ -196,7 +206,7 @@ fun ProductFormDatePicker(date: String, onDateSelected: (String) -> Unit) {
         MyDatePickerDialog(
             onDateSelected = onDateSelected,
             onDismiss = { showDatePicker = false },
-            initialSelectedDateMillis = initialSelectedDateMillis
+//            initialSelectedDateMillis = initialSelectedDateMillis
         )
     }
 }
