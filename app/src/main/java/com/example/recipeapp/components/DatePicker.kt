@@ -22,7 +22,8 @@ fun MyDatePickerDialog(
         override fun isSelectableDate(utcTimeMillis: Long): Boolean {
             return utcTimeMillis >= System.currentTimeMillis()
         }
-    }, initialSelectedDateMillis = initialSelectedDateMillis)
+    })
+//    }, initialSelectedDateMillis = initialSelectedDateMillis)
 
     val selectedDate = datePickerState.selectedDateMillis?.let {
         convertMillisToDate(it)
@@ -62,6 +63,8 @@ private fun convertMillisToDate(millis: Long): String {
 
 fun convertDateToMillis(date: String): Long? {
     if (date.isEmpty()) return null
+//    LocalDate.parse(date, DateTimeFormatter.ofPattern("dd/MM/yyyy"))
+
     val formatter = SimpleDateFormat("dd/MM/yyyy")
     return formatter.parse(date).time
 }
