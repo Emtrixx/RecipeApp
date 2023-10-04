@@ -1,4 +1,4 @@
-package Database
+package com.example.recipeapp.Database
 
 import android.app.Application
 import android.content.Context
