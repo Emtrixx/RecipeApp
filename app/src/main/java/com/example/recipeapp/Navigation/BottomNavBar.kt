@@ -31,12 +31,13 @@ import com.example.recipeapp.product.AddProductForm
 import com.example.recipeapp.product.AddProductViewModel
 import com.example.recipeapp.product.BarcodeScannerView
 import com.example.recipeapp.product.BarcodeViewModel
+import com.example.recipeapp.shopping.ShoppingList
 
 sealed class BottomNavItem(var title:String, var icon: ImageVector, var screen:String){
 
     object Home : BottomNavItem("Home",Icons.Default.Home,"home")
 
-    object ShoppingList: BottomNavItem("Shopping List", Icons.Default.List,"home")
+    object ShoppingList: BottomNavItem("Shopping List", Icons.Default.List,"shoppingList")
     object AddItem: BottomNavItem("Add Item",Icons.Default.Add,"scanner")
     object Recipes: BottomNavItem("Empty",Icons.Default.Info,"home")
     object Settings: BottomNavItem("Empty",Icons.Default.Settings,"home")
@@ -49,6 +50,9 @@ fun BottomNavGraph(navController: NavHostController) {
     {
         composable(route = BottomNavItem.Home.screen) {
             HomeListView()
+        }
+        composable(route = BottomNavItem.ShoppingList.screen) {
+            ShoppingList()
         }
         composable(route = BottomNavItem.AddItem.screen) {
             val barcodeViewModel = BarcodeViewModel()

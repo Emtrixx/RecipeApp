@@ -1,0 +1,60 @@
+package com.example.recipeapp.shopping
+
+import Database.Recipeapp
+import Database.RecipeappViewModel
+import Database.ShoppingItem
+import android.app.Application
+import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+
+/**
+class ShoppingViewModel(application: Application) : AndroidViewModel(application) {
+    private val recipeappViewModel = RecipeappViewModel(application)
+
+    fun getShoppingItemsLiveData(): LiveData<List<ShoppingItem>> {
+        return recipeappViewModel.getShoppingAsLiveData()
+    }
+
+    fun addShoppingItem(name: String, amount: Int) {
+        val shoppingItem = ShoppingItem(name = name, amount = amount)
+        viewModelScope.launch(Dispatchers.IO) {
+            recipeappViewModel.addShoppingItem(shoppingItem)
+        }
+    }
+}**/
+
+class ShoppingViewModel(application: Application) : AndroidViewModel(application) {
+    private val db: Recipeapp by lazy {
+        Recipeapp.getInstance(application)
+    }
+
+    private val shoppingLiveData: MutableLiveData<List<ShoppingItem>> = MutableLiveData()
+
+    // Expose the shopping list data as LiveData
+    fun getShoppingListLiveData(): LiveData<List<ShoppingItem>> {
+        return shoppingLiveData
+    }
+
+    // Function to fetch the shopping list data
+    fun fetchShoppingList() {
+        viewModelScope.launch(Dispatchers.IO) {
+            val shoppingItems = db.RecipeappDao().getAllShoppingItems()
+            shoppingLiveData.postValue(shoppingItems)
+        }
+    }
+
+    // Function to add a shopping item
+    fun addShoppingItem(name: String, amount: Int) {
+        val shoppingItem = ShoppingItem(name = name, amount = amount)
+        viewModelScope.launch(Dispatchers.IO) {
+            db.RecipeappDao().insertShoppingItem(shoppingItem)
+            // After adding, fetch the updated shopping list
+            fetchShoppingList()
+        }
+    }
+}

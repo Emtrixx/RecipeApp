@@ -1,5 +1,6 @@
 package com.example.recipeapp.shopping
 
+import Database.ShoppingItem
 import android.annotation.SuppressLint
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
@@ -22,12 +23,16 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledTonalIconButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButtonDefaults
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -38,9 +43,11 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -52,8 +59,17 @@ import com.example.recipeapp.ui.theme.RecipeAppTheme
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun ShoppingList() {
-    val items = remember { mutableStateListOf<ShoppingItem>() }
+    val viewModel: ShoppingViewModel = viewModel()
+
+    // Fetch the shopping list data when the composable is first displayed
+    LaunchedEffect(Unit) {
+        viewModel.fetchShoppingList()
+    }
+
+    //val items = remember { mutableStateListOf<ShoppingItem>() }
     val navController = rememberNavController()
+
+    val shoppingList by viewModel.getShoppingListLiveData().observeAsState(emptyList())
 
     Scaffold(
         topBar = {
@@ -116,20 +132,51 @@ fun ShoppingList() {
                                 .padding(top = 65.dp),
                             contentPadding = PaddingValues(16.dp)
                         ) {
-                            items(items) { shoppingItem ->
+                            items(shoppingList) { shoppingItem ->
                                 ShoppingCard(
                                     item = shoppingItem
                                 )
                                 Spacer(modifier = Modifier.height(16.dp))
                             }
                         }
+                        //val isEmptyList = items.isEmpty()
+
+                        /**
+                        if (isEmptyList) {
+                            Text(
+                                text = "The shopping list is empty. Add something from top right corner",
+                                style = MaterialTheme.typography.bodyMedium,
+                                modifier = Modifier
+                                    .fillMaxSize()
+                                    .padding(top = 300.dp),
+                                textAlign = TextAlign.Center
+                            )
+                        } else {
+                            LazyColumn(
+                                modifier = Modifier
+                                    .weight(1f)
+                                    .fillMaxWidth()
+                                    .padding(top = 65.dp),
+                                contentPadding = PaddingValues(16.dp)
+                            ) {
+                                items(shoppingList) { shoppingItem ->
+                                    ShoppingCard(
+                                        item = shoppingItem
+                                    )
+                                    Spacer(modifier = Modifier.height(16.dp))
+                                }
+                            }
+                        }
+                        **/
                     }
                 }
                 composable("shoppingForm") {
-                    ShoppingForm(onItemAdded = { itemName, itemAmount ->
-                        items.add(ShoppingItem(itemName, itemAmount))
+                    ShoppingForm { newItemName, newItemAmount ->
+
+                        viewModel.addShoppingItem(newItemName, newItemAmount)
+
                         navController.popBackStack()
-                    })
+                    }
                 }
             }
         }
@@ -174,10 +221,10 @@ fun ShoppingCard(item: ShoppingItem) {
     }
 }
 
-data class ShoppingItem(
+/**data class ShoppingItem(
     val name: String,
     val amount: Int,
-)
+)**/
 
 @Preview
 @Composable

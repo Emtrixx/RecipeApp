@@ -22,7 +22,7 @@ import kotlinx.coroutines.launch
 import java.util.Date
 import androidx.room.ColumnInfo
 
-@Database(entities = [Product::class, Recipe::class], version = 1, exportSchema = false)
+@Database(entities = [Product::class, Recipe::class, ShoppingItem::class], version = 1, exportSchema = false)
 @TypeConverters(DateConverter::class, ListStringConverter::class)
 abstract class Recipeapp : RoomDatabase() {
     abstract fun RecipeappDao(): ProductRecipeDao
@@ -43,9 +43,6 @@ abstract class Recipeapp : RoomDatabase() {
         }
     }
 }
-
-
-
 @Entity
 data class Product(
     @PrimaryKey val barcode: String,
@@ -56,7 +53,6 @@ data class Product(
     @TypeConverters(ListStringConverter::class) val tags: List<String>,
     @ColumnInfo(typeAffinity = ColumnInfo.BLOB) val image: ByteArray
 )
-
 @Entity
 data class Recipe(
     @TypeConverters(ListStringConverter::class) @NonNull val ingredients: List<String>,
@@ -64,8 +60,13 @@ data class Recipe(
     val description: String,
     @TypeConverters(ListStringConverter::class) val tags: List<String>
 )
-
-
+@Entity
+data class ShoppingItem(
+    @PrimaryKey(autoGenerate = true)
+    val id: Long = 0,
+    val name: String,
+    val amount: Int,
+)
 @Dao
 interface ProductRecipeDao {
     @Query("SELECT * FROM Product")
@@ -73,6 +74,9 @@ interface ProductRecipeDao {
 
     @Query("SELECT * FROM Recipe")
     suspend  fun GetRecipes(): List<Recipe>
+
+    @Query("SELECT * FROM ShoppingItem")
+    suspend fun getAllShoppingItems(): List<ShoppingItem>
 
     @Query("SELECT * FROM Product WHERE barcode = :barcode")
     suspend fun GetProductInfo(barcode: String): Product
@@ -86,8 +90,10 @@ interface ProductRecipeDao {
     @Insert
     suspend  fun InsertProduct(vararg product: Product)
 
-}
+    @Insert
+    suspend fun insertShoppingItem(shoppingItem: ShoppingItem)
 
+}
 class RecipeappViewModel(application: Application) : AndroidViewModel(application) {
     private val db: Recipeapp by lazy {
         Room.databaseBuilder(
@@ -100,6 +106,7 @@ class RecipeappViewModel(application: Application) : AndroidViewModel(applicatio
 
     private val productsLiveData: MutableLiveData<List<Product>> = MutableLiveData()
     private val recipesLiveData: MutableLiveData<List<Recipe>> = MutableLiveData()
+    private val shoppingLiveData: MutableLiveData<List<ShoppingItem>> = MutableLiveData()
 
     fun getProductsAsLiveData(): LiveData<List<Product>> {
         return productsLiveData
@@ -107,6 +114,10 @@ class RecipeappViewModel(application: Application) : AndroidViewModel(applicatio
 
     fun getRecipesAsLiveData(): LiveData<List<Recipe>> {
         return recipesLiveData
+    }
+
+    fun getShoppingAsLiveData(): LiveData<List<ShoppingItem>> {
+        return shoppingLiveData
     }
 
     fun fetchProducts() {
@@ -142,6 +153,10 @@ class RecipeappViewModel(application: Application) : AndroidViewModel(applicatio
         viewModelScope.launch { db.RecipeappDao().InsertRecipe(r) }
     }
 
+    fun addShoppingItem(name: String, amount: Int) {
+        val shoppingItem = ShoppingItem(name = name, amount = amount)
+        viewModelScope.launch { db.RecipeappDao().insertShoppingItem(shoppingItem)}
+    }
 }
 
 class DateConverter {

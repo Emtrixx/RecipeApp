@@ -27,12 +27,15 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ShoppingForm(
+    //viewModel: ShoppingViewModel,
     onItemAdded: (String, Int) -> Unit
 ) {
+    //val viewModel: ShoppingViewModel = viewModel()
+
     var newItem by remember { mutableStateOf("") }
     var newAmount by remember { mutableStateOf("") }
 
@@ -115,7 +118,10 @@ fun ShoppingForm(
 
                     //Checks that the user puts required values
                     if (newItem.isNotBlank() && hasNonNumeric && amountValue != null) {
+
                         onItemAdded(newItem, amountValue)
+
+                        //onItemAdded(newItem, amountValue)
                         newItem = ""
                         newAmount = ""
                         isItemInvalid = false // Reset item name error flag
