@@ -61,7 +61,7 @@ fun BottomNavGraph(navController: NavHostController) {
             arguments = listOf(navArgument("barcode") { nullable = true })
         ) {
             val barcode = it.arguments?.getString("barcode")
-            val productViewModel = AddProductViewModel(barcode, LocalContext.current.applicationContext as Application)
+            val productViewModel = AddProductViewModel(barcode, LocalContext.current)
             AddProductForm(productViewModel, navController)
         }
     }

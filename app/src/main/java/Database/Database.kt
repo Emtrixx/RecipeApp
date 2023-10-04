@@ -48,7 +48,7 @@ data class Product(
     val description: String,
     val amount: Int,
     @TypeConverters(ListStringConverter::class) val tags: List<String>,
-    @ColumnInfo(typeAffinity = ColumnInfo.BLOB) val image: ByteArray
+    val image: String?
 )
 
 @Entity

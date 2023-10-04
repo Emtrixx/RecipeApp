@@ -29,6 +29,7 @@ import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import androidx.navigation.NavController
+import coil.compose.rememberAsyncImagePainter
 import coil.compose.rememberImagePainter
 import com.google.android.datatransport.BuildConfig
 import java.io.File
@@ -102,7 +103,7 @@ fun BarcodeScannerView(viewModel: BarcodeViewModel, navController: NavController
             Image(
                 modifier = Modifier
                     .padding(16.dp, 8.dp),
-                painter = rememberImagePainter(capturedImageUri),
+                painter = rememberAsyncImagePainter(capturedImageUri),
                 contentDescription = null
             )
         }
