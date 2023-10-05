@@ -12,6 +12,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
@@ -23,19 +24,26 @@ import com.google.android.datatransport.BuildConfig
 import java.util.Objects
 
 @Composable
-fun CameraComponent(modifier: Modifier = Modifier ,photoCallback: (boolean: Boolean, uri: Uri) -> Unit) {
+fun CameraComponent(
+    modifier: Modifier = Modifier,
+    photoCallback: (boolean: Boolean, uri: Uri) -> Unit
+) {
     val context = LocalContext.current
-    val file = context.createImageFile()
-    val uri = FileProvider.getUriForFile(
-        Objects.requireNonNull(context),
+    val file = rememberSaveable {
+        context.createImageFile()
+    }
+    val uri = rememberSaveable {
+        FileProvider.getUriForFile(
+            Objects.requireNonNull(context),
 //        TODO: Potential Bug - on other devices Manifest provider needs to match this one
-        BuildConfig.APPLICATION_ID + ".provider", file
-    )
+            BuildConfig.APPLICATION_ID + ".provider", file
+        )
+    }
 
     val cameraLauncher =
-        rememberLauncherForActivityResult(ActivityResultContracts.TakePicture(), {
+        rememberLauncherForActivityResult(ActivityResultContracts.TakePicture()) {
             photoCallback(it, uri)
-        })
+        }
 
     val permissionLauncher = rememberLauncherForActivityResult(
         ActivityResultContracts.RequestPermission()
