@@ -28,7 +28,7 @@ import com.example.recipeapp.R
 import kotlinx.coroutines.launch
 
 // Replace with your api key
-val apiKey = ""
+val apiKey = "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"
 
 @Composable
 fun RecipeViewTest(viewModel: TestRecipeViewModel) {
@@ -37,9 +37,7 @@ fun RecipeViewTest(viewModel: TestRecipeViewModel) {
     val coroutineScope = rememberCoroutineScope()
 
     var response by remember { mutableStateOf("") }
-
-    val apiKey = R.string.CHATGPT_APIKEY
-
+    
     Column(
         modifier = Modifier
             .fillMaxSize()
