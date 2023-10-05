@@ -3,6 +3,7 @@ package com.example.recipeapp.AllItems
 import Database.Product
 import android.annotation.SuppressLint
 import android.app.Application
+import android.content.Context
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -68,6 +69,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import coil.compose.rememberAsyncImagePainter
 import com.example.recipeapp.HomeView.HomeViewModel
 import com.example.recipeapp.ItemView.ItemDetailView
 import com.example.recipeapp.Navigation.BottomNavigationBar
@@ -108,7 +110,7 @@ fun AllItems() {
             val selectedItem = productList?.find { it.barcode == itemId }
 
             if (selectedItem != null) {
-                ItemDetailView(item = selectedItem)
+                ItemDetailView(product = selectedItem)
             } else {
                 Text("Item not found")
             }
@@ -178,6 +180,20 @@ fun ItemCard(
     navController: NavController
 ) {
 
+    val context = LocalContext.current
+
+    val allItemsViewModel = AllItemsViewModel(context)
+
+    allItemsViewModel.getProductImage(product, context)
+
+    val storedImage = allItemsViewModel.storedImage
+
+    val painter = if (storedImage != null) {
+        rememberAsyncImagePainter(storedImage)
+    } else {
+        rememberAsyncImagePainter(R.drawable.egg)
+    }
+
     Card(
         modifier = Modifier
             .padding(4.dp)
@@ -198,7 +214,7 @@ fun ItemCard(
                     .padding(8.dp)
             )
             Image(
-                painter = painterResource(id = R.drawable.egg),
+                painter = painter,
                 contentDescription = "Product image",
                 contentScale = ContentScale.Crop,
                 modifier = Modifier

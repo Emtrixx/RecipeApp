@@ -2,6 +2,8 @@ package com.example.recipeapp.HomeView
 
 import Database.Product
 import android.annotation.SuppressLint
+import android.graphics.Bitmap
+import android.net.Uri
 import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -59,9 +61,13 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import coil.compose.AsyncImage
+import coil.compose.AsyncImagePainter
+import coil.compose.rememberAsyncImagePainter
 import com.example.recipeapp.Navigation.NavGraph
 import com.example.recipeapp.Navigation.BottomNavigationBar
 import com.example.recipeapp.R
+import com.example.recipeapp.components.camera.getImageFromInternalStorage
 import java.text.SimpleDateFormat
 import java.time.LocalDate
 import java.util.Locale
@@ -85,7 +91,6 @@ fun HomeView() {
 
     LaunchedEffect(Unit) {
         homeViewModel.getProductsLiveData()
-        homeViewModel.addProduct()
     }
 
     val topAppBarTitle = when (navController.currentBackStackEntryAsState().value?.destination?.route) {
@@ -101,13 +106,13 @@ fun HomeView() {
 
     Scaffold(
         modifier = Modifier
-            .nestedScroll(scrollBehavior.nestedScrollConnection)
+            //.nestedScroll(scrollBehavior.nestedScrollConnection)
             .fillMaxSize(),
         topBar = {
             if (topAppBarTitle != "hide"){
                 TopAppBar(
                     title = { Text(text = topAppBarTitle) },
-                    scrollBehavior = scrollBehavior,
+                    //scrollBehavior = scrollBehavior,
                 )
             }
         },
@@ -192,6 +197,15 @@ fun ItemCard(
 
     var expanded by remember { mutableStateOf(false) }
 
+    homeViewModel.getProductImage(product, context)
+
+    val storedImage = homeViewModel.storedImage
+
+    val painter = if (storedImage != null) {
+        rememberAsyncImagePainter(storedImage)
+    } else {
+        rememberAsyncImagePainter(R.drawable.egg)
+    }
 
     Card(
         modifier = Modifier
@@ -360,7 +374,7 @@ fun ItemCard(
 
             }
             Image(
-                painter = painterResource(id = R.drawable.egg),
+                painter = painter,
                 contentDescription = "Product image",
                 contentScale = ContentScale.Crop,
                 modifier = Modifier

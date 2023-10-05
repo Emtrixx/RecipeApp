@@ -43,22 +43,38 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter.Companion.tint
 import androidx.compose.ui.input.nestedscroll.nestedScrollModifierNode
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import coil.compose.rememberAsyncImagePainter
+import com.example.recipeapp.HomeView.HomeView
+import com.example.recipeapp.HomeView.HomeViewModel
 import com.example.recipeapp.R
 import org.intellij.lang.annotations.JdkConstants.HorizontalAlignment
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun ItemDetailView(item: Product) {
+fun ItemDetailView(product: Product) {
+
+    val context = LocalContext.current
+    val viewModel = HomeViewModel(context)
+    viewModel.getProductImage(product, context)
+
+    val storedImage = viewModel.storedImage
+
+    val painter = if (storedImage != null) {
+        rememberAsyncImagePainter(storedImage)
+    } else {
+        rememberAsyncImagePainter(R.drawable.egg)
+    }
     LazyColumn(modifier = Modifier.fillMaxWidth()) {
         // Item Image
         item {
             Box() {
                 Image(
-                    painter = painterResource(id = R.drawable.egg),
+                    painter = painter,
                     contentDescription = "Product image",
                     contentScale = ContentScale.Crop,
                     modifier = Modifier
@@ -76,7 +92,7 @@ fun ItemDetailView(item: Product) {
                 ) {
                     Text(
                         text = "Best Before: ${
-                            item.bestbefore.toString()
+                            product.bestbefore.toString()
                         }",
                         fontSize = 14.sp,
                         color = Color.White,
@@ -103,7 +119,7 @@ fun ItemDetailView(item: Product) {
                 ) {
                     // Item Name
                     Text(
-                        text = item.name,
+                        text = product.name,
                         fontSize = 24.sp,
                         fontWeight = FontWeight.Bold,
                         color = Color.White,
@@ -191,7 +207,7 @@ fun ItemDetailView(item: Product) {
                 }
                 // Item Description
                 Text(
-                    text = item.description,
+                    text = product.description,
                     fontSize = 18.sp,
                     color = Color.White,
                     modifier = Modifier
@@ -205,7 +221,7 @@ fun ItemDetailView(item: Product) {
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
                     Text(
-                        text = "Amount: ${item.amount.toInt()}",
+                        text = "Amount: ${product.amount.toInt()}",
                         fontSize = 14.sp,
                         color = Color.White,
                         modifier = Modifier
@@ -214,9 +230,9 @@ fun ItemDetailView(item: Product) {
                 }
                 Divider(thickness = 1.dp, color = Color.White)
                 // Tags
-                if (item.tags.isNotEmpty()) {
+                if (product.tags.isNotEmpty()) {
                     Text(
-                        text = "Tags: ${item.tags.joinToString(", ")}",
+                        text = "Tags: ${product.tags.joinToString(", ")}",
                         fontSize = 14.sp,
                         color = Color.White,
                         modifier = Modifier

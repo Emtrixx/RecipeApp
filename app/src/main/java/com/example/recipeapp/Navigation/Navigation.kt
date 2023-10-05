@@ -86,7 +86,7 @@ fun NavGraph(navController: NavHostController, productList : List<Product>?) {
             val selectedItem = productList?.find { it.barcode == itemId }
 
             if (selectedItem != null) {
-                ItemDetailView(item = selectedItem)
+                ItemDetailView(product = selectedItem)
             } else {
                 Text("Item not found")
             }
