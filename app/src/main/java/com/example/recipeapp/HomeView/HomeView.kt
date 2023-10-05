@@ -75,7 +75,7 @@ fun HomeView() {
 
     val context = LocalContext.current
 
-    val git = HomeViewModel(context)
+    val homeViewModel = HomeViewModel(context)
 
     val productList by homeViewModel.getProductsLiveData().observeAsState(emptyList())
 
