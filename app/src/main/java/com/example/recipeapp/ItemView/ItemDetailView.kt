@@ -35,8 +35,11 @@ import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -49,13 +52,22 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
+import androidx.navigation.NavType
 import androidx.navigation.Navigation.findNavController
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import coil.compose.rememberAsyncImagePainter
+import com.example.recipeapp.AllItems.AllItemsListView
+import com.example.recipeapp.HomeView.HomeListView
 import com.example.recipeapp.HomeView.HomeView
 import com.example.recipeapp.HomeView.HomeViewModel
+import com.example.recipeapp.Navigation.BottomNavItem
 import com.example.recipeapp.Navigation.NavGraph
 import com.example.recipeapp.R
+import com.example.recipeapp.shopping.ShoppingList
 import org.intellij.lang.annotations.JdkConstants.HorizontalAlignment
 
 @OptIn(ExperimentalFoundationApi::class)
@@ -63,7 +75,30 @@ import org.intellij.lang.annotations.JdkConstants.HorizontalAlignment
 fun ItemDetailView(product: Product) {
 
     val context = LocalContext.current
+    val navController = rememberNavController()
     val viewModel = HomeViewModel(context)
+    val productList by viewModel.getProductsLiveData().observeAsState(emptyList())
+
+    NavHost(navController, startDestination = "itemDetail") {
+        composable("itemDetail") {
+            ItemView(product = product, navController)
+        }
+        composable(route = BottomNavItem.ShoppingList.screen) {
+            ShoppingList()
+        }
+        composable(route = BottomNavItem.Home.screen) {
+            HomeListView(productList, navController = navController)
+        }
+    }
+}
+
+@OptIn(ExperimentalFoundationApi::class)
+@Composable
+fun ItemView(product: Product, navController: NavController) {
+
+    val context = LocalContext.current
+    val viewModel = HomeViewModel(context)
+
     viewModel.getProductImage(product, context)
     val storedImage = viewModel.storedImage
 
@@ -72,6 +107,7 @@ fun ItemDetailView(product: Product) {
     } else {
         rememberAsyncImagePainter(R.drawable.egg)
     }
+
     LazyColumn(modifier = Modifier.fillMaxWidth()) {
         // Item Image
         item {
@@ -167,6 +203,7 @@ fun ItemDetailView(product: Product) {
                                 Toast.LENGTH_SHORT
                             ).show()
                             viewModel.addToShoppingList(product)
+                            navController.navigate("shoppingList")
                         },
                         Modifier
                             .background(Color.Black, shape = RoundedCornerShape(16.dp))
@@ -203,7 +240,10 @@ fun ItemDetailView(product: Product) {
                         )
                     }
                     IconButton(
-                        onClick = {viewModel.removeProduct(product.barcode)},
+                        onClick = {
+                            viewModel.removeProduct(product.barcode)
+                            navController.navigate("home")
+                        },
                         Modifier
                             .background(Color.Black, shape = RoundedCornerShape(16.dp))
                             .size(75.dp),

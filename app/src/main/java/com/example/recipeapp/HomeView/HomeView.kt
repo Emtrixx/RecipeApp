@@ -6,6 +6,7 @@ import android.annotation.SuppressLint
 import android.graphics.Bitmap
 import android.net.Uri
 import android.widget.Toast
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -32,6 +33,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
@@ -53,6 +55,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.graphics.painter.BitmapPainter
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
@@ -133,6 +137,7 @@ fun HomeView() {
     }
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun HomeListView(productList: List<Product>?, navController: NavController) {
 
@@ -170,7 +175,7 @@ fun HomeListView(productList: List<Product>?, navController: NavController) {
                         }
                     },
                     style = TextStyle(
-                        color = Color.Blue, // Set the text color to blue
+                        color = Color.Blue,
                     )
                 )
             }
@@ -186,20 +191,31 @@ fun HomeListView(productList: List<Product>?, navController: NavController) {
                     .weight(1f)
                     .fillMaxHeight()
             ) {
-                item {
+                stickyHeader {
                     Row(
-                        modifier = Modifier.fillMaxWidth(),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .background(MaterialTheme.colorScheme.background),
                         verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.SpaceBetween
+                        horizontalArrangement = Arrangement.SpaceBetween,
                     ) {
                         Text(
                             text = "Time to get more",
-                            fontSize = 20.sp,
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 24.sp,
+                            modifier = Modifier
+                                .padding(4.dp)
                         )
                         Button(
                             onClick = { navController.navigate("allItems") },
                             modifier = Modifier
-                                .padding(4.dp)
+                                .padding(4.dp),
+                            colors = ButtonColors(
+                                containerColor = MaterialTheme.colorScheme.tertiaryContainer,
+                                contentColor = MaterialTheme.colorScheme.onTertiaryContainer,
+                                disabledContainerColor = MaterialTheme.colorScheme.errorContainer,
+                                disabledContentColor = MaterialTheme.colorScheme.onErrorContainer
+                                )
                         ) {
                             Text("See all (21)")
                         }
@@ -250,18 +266,21 @@ fun ItemCard(
     val storedImage = homeViewModel.storedImage
 
     val painter = if (storedImage != null) {
-        rememberAsyncImagePainter(storedImage)
+        BitmapPainter(storedImage.asImageBitmap())
     } else {
         painterResource(id = R.drawable.egg)
     }
 
     Card(
         modifier = Modifier
-            .padding(12.dp)
+            .padding(8.dp)
             .fillMaxWidth()
             .clickable {
                 navController.navigate("itemDetail/${product.barcode}")
-            }
+            },
+        elevation = CardDefaults.cardElevation(
+            defaultElevation = 12.dp
+        ),
     ) {
         Column(
             modifier = Modifier
@@ -281,9 +300,8 @@ fun ItemCard(
                 ) {
                     Text(
                         text = product.name,
-                        fontWeight = FontWeight.Bold,
                         fontSize = 20.sp,
-                        color = Color.White,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
                         modifier = Modifier
                             .weight(1f)
                             .padding(end = 8.dp)
@@ -292,7 +310,7 @@ fun ItemCard(
                     Box(
                         modifier = Modifier
                             .background(
-                                color = Color.Gray,
+                                color = MaterialTheme.colorScheme.tertiaryContainer,
                                 shape = RoundedCornerShape(16.dp)
                             )
                             .padding(4.dp)
@@ -313,7 +331,7 @@ fun ItemCard(
                                 fontSize = 10.sp,
                                 modifier = Modifier
                                     .padding(start = 4.dp),
-                                color = Color.White
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
                         }
                     }
@@ -380,11 +398,12 @@ fun ItemCard(
                                 onClick = {
                                     expanded = false
                                     Toast.makeText(context, "", Toast.LENGTH_SHORT).show()
+                                    navController.navigate("recipe")
                                 },
                                 content = {
                                     Text(
                                         text = "Create a recipe",
-                                        color = Color.Black,
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant,
                                     )
                                 }
                             )
@@ -403,7 +422,7 @@ fun ItemCard(
                                 content = {
                                     Text(
                                         text = "Add to shopping list",
-                                        color = Color.Black,
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant,
                                     )
                                 }
                             )

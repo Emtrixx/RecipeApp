@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.RowScope
 import androidx.compose.material.BottomNavigation
 import androidx.compose.material.BottomNavigationItem
 import androidx.compose.material.Icon
+import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
@@ -131,7 +132,9 @@ fun RowScope.AddItem(
     BottomNavigationItem(
         icon = {
             Icon(imageVector = screen.icon,
-                contentDescription = "Navigation icon")
+                contentDescription = "Navigation icon",
+                tint = androidx.compose.material3.MaterialTheme.colorScheme.onSurfaceVariant
+                )
         },
         selected = currentDestination?.hierarchy?.any {
             Log.d("DBG", screen.screen ?: "empty")
@@ -140,7 +143,7 @@ fun RowScope.AddItem(
         onClick = {
             navController.navigate(screen.screen)
         },
-        modifier = Modifier.background(Color(0xFF3C3C3C)),
+        modifier = Modifier.background(androidx.compose.material3.MaterialTheme.colorScheme.surfaceVariant),
     )
 }
 

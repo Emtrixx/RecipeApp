@@ -4,6 +4,7 @@ import Database.Product
 import android.annotation.SuppressLint
 import android.app.Application
 import android.content.Context
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -122,6 +123,7 @@ fun AllItems() {
     }
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun AllItemsListView(productList: List<Product>?, navController: NavController) {
 
@@ -159,33 +161,41 @@ fun AllItemsListView(productList: List<Product>?, navController: NavController) 
                 .fillMaxSize()
                 .padding(4.dp)
         ) {
-            OutlinedTextField(
-                value = searchText,
-                onValueChange = { newQuery ->
-                    searchText = newQuery
-                },
-                label = { Text("Search Products") },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(bottom = 8.dp),
-                leadingIcon = {
-                    Icon(
-                        Icons.Filled.Search,
-                        contentDescription = null,
-                        tint = Color.White
-                    )
-                },
-                shape = RoundedCornerShape(24.dp),
-                colors = TextFieldDefaults.outlinedTextFieldColors(
-                    unfocusedBorderColor = Color.White,
-                    textColor = Color.White
-                ),
-            )
             LazyColumn(
                 modifier = Modifier
                     .weight(1f)
                     .fillMaxHeight()
             ) {
+                stickyHeader {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .background(androidx.compose.material3.MaterialTheme.colorScheme.background),
+                    ) {
+                        OutlinedTextField(
+                            value = searchText,
+                            onValueChange = { newQuery ->
+                                searchText = newQuery
+                            },
+                            label = { Text("Search Products") },
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(bottom = 8.dp),
+                            leadingIcon = {
+                                Icon(
+                                    Icons.Filled.Search,
+                                    contentDescription = null,
+                                    tint = Color.White
+                                )
+                            },
+                            shape = RoundedCornerShape(12.dp),
+                            colors = TextFieldDefaults.outlinedTextFieldColors(
+                                unfocusedBorderColor = Color.White,
+                                textColor = Color.White
+                            ),
+                        )
+                    }
+                }
                 items(productList.filter {
                     it.name.contains(
                         searchText,
@@ -237,7 +247,7 @@ fun ItemCard(
         ) {
             Text(
                 text = product.name,
-                fontSize = 24.sp,
+                fontSize = 20.sp,
                 modifier = Modifier
                     .padding(8.dp)
             )
@@ -248,7 +258,7 @@ fun ItemCard(
                 modifier = Modifier
                     .size(75.dp)
                     .padding(4.dp)
-                    .clip(RoundedCornerShape(16.dp))
+                    .clip(RoundedCornerShape(8.dp))
             )
         }
     }
