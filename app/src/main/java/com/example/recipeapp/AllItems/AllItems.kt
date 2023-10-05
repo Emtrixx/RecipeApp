@@ -22,6 +22,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.ClickableText
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.OutlinedTextField
@@ -58,6 +59,9 @@ import androidx.compose.ui.graphics.ColorMatrix
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -124,7 +128,31 @@ fun AllItemsListView(productList: List<Product>?, navController: NavController) 
     var searchText by remember { mutableStateOf("") }
 
     if (productList.isNullOrEmpty()) {
-        Text(text = "No products in your fridge yet")
+        Column(
+            modifier = Modifier.fillMaxWidth(),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Text(
+                text = "You don't have any products saved yet.",
+                style = androidx.compose.material3.MaterialTheme.typography.bodyMedium,
+                modifier = Modifier,
+                fontStyle = FontStyle.Italic
+
+            )
+            ClickableText(
+                text = AnnotatedString("Click here to add your first one"),
+                modifier = Modifier.padding(8.dp),
+                onClick = { offset ->
+                    if (offset in 0..21) {
+                        navController.navigate("scanner")
+                    }
+                },
+                style = TextStyle(
+                    color = Color.Blue, // Set the text color to blue
+                )
+            )
+        }
     } else {
         Column(
             modifier = Modifier

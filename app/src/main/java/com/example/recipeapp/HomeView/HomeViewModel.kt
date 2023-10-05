@@ -2,6 +2,7 @@ package com.example.recipeapp.HomeView
 
 import Database.Product
 import Database.Recipeapp
+import Database.ShoppingItem
 import android.content.Context
 import android.graphics.Bitmap
 import androidx.compose.runtime.getValue
@@ -50,7 +51,7 @@ class HomeViewModel(context: Context) : ViewModel() {
                     description = "pirkka eggs, the best ones",
                     amount = 2,
                     tags = listOf("egg"),
-                    image = "R.drawable.egg",
+                    image = null,
                     bestbefore = listOf(date),
                 )
             )
@@ -62,6 +63,13 @@ class HomeViewModel(context: Context) : ViewModel() {
             db.RecipeappDao().deleteProductById(barcode)
             val products = db.RecipeappDao().GetProducts()
             productsLiveData.postValue(products)
+        }
+    }
+
+    fun addToShoppingList(product: Product) {
+        viewModelScope.launch {
+            val shoppingItem = ShoppingItem(name = product.name, amount = 1,)
+            db.shoppingItemDao().insertShoppingItem(shoppingItem)
         }
     }
 

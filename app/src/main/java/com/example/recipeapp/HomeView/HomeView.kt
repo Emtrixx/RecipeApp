@@ -1,6 +1,7 @@
 package com.example.recipeapp.HomeView
 
 import Database.Product
+import Database.ShoppingItem
 import android.annotation.SuppressLint
 import android.graphics.Bitmap
 import android.net.Uri
@@ -23,6 +24,7 @@ import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.ClickableText
 import androidx.compose.material.AlertDialog
 import androidx.compose.material.DropdownMenu
 import androidx.compose.material.DropdownMenuItem
@@ -36,6 +38,7 @@ import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
@@ -54,7 +57,11 @@ import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -91,25 +98,27 @@ fun HomeView() {
 
     LaunchedEffect(Unit) {
         homeViewModel.getProductsLiveData()
+        //homeViewModel.addProduct()
     }
 
-    val topAppBarTitle = when (navController.currentBackStackEntryAsState().value?.destination?.route) {
-        "home" -> "Home"
-        "itemDetail/{itemId}" -> "Product"
-        "recipe" -> "Recipes"
-        "settings" -> "Settings"
-        "allItems" -> "Your Items"
-        "shoppingList" -> "hide"
-        "add?barcode={barcode}" -> "hide"
-        else -> "hide"
-    }
+    val topAppBarTitle =
+        when (navController.currentBackStackEntryAsState().value?.destination?.route) {
+            "home" -> "Home"
+            "itemDetail/{itemId}" -> "Product"
+            "recipe" -> "Recipes"
+            "settings" -> "Settings"
+            "allItems" -> "Your Items"
+            "shoppingList" -> "hide"
+            "add?barcode={barcode}" -> "hide"
+            else -> "hide"
+        }
 
     Scaffold(
         modifier = Modifier
             //.nestedScroll(scrollBehavior.nestedScrollConnection)
             .fillMaxSize(),
         topBar = {
-            if (topAppBarTitle != "hide"){
+            if (topAppBarTitle != "hide") {
                 TopAppBar(
                     title = { Text(text = topAppBarTitle) },
                     //scrollBehavior = scrollBehavior,
@@ -118,7 +127,7 @@ fun HomeView() {
         },
         bottomBar = { BottomNavigationBar(navController = navController) },
     ) { innerPadding ->
-        Column (modifier = Modifier.padding(innerPadding)){
+        Column(modifier = Modifier.padding(innerPadding)) {
             NavGraph(navController = navController, filteredProducts)
         }
     }
@@ -127,8 +136,45 @@ fun HomeView() {
 @Composable
 fun HomeListView(productList: List<Product>?, navController: NavController) {
 
+    val context = LocalContext.current
+    val homeViewModel = HomeViewModel(context)
+
+    val onDeleteItem: (Product) -> Unit = { item ->
+        homeViewModel.removeProduct(item.barcode)
+    }
+
     if (productList.isNullOrEmpty()) {
-        Text(text = "No products in your fridge yet")
+        Box(
+            Modifier
+                .fillMaxSize(),
+            contentAlignment = Alignment.Center,
+        ) {
+            Column(
+                modifier = Modifier.fillMaxWidth(),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Text(
+                    text = "You don't have any products saved yet.",
+                    style = MaterialTheme.typography.bodyMedium,
+                    modifier = Modifier,
+                    fontStyle = FontStyle.Italic
+
+                )
+                ClickableText(
+                    text = AnnotatedString("Click here to add your first one"),
+                    modifier = Modifier.padding(8.dp),
+                    onClick = { offset ->
+                        if (offset in 0..21) {
+                            navController.navigate("scanner")
+                        }
+                    },
+                    style = TextStyle(
+                        color = Color.Blue, // Set the text color to blue
+                    )
+                )
+            }
+        }
     } else {
         Column(
             modifier = Modifier
@@ -162,7 +208,8 @@ fun HomeListView(productList: List<Product>?, navController: NavController) {
                 items(productList) { item ->
                     ItemCard(
                         product = item,
-                        navController = navController
+                        navController = navController,
+                        onDeleteItem = onDeleteItem
                     )
                 }
                 item {
@@ -188,7 +235,8 @@ fun HomeListView(productList: List<Product>?, navController: NavController) {
 @Composable
 fun ItemCard(
     product: Product,
-    navController: NavController
+    navController: NavController,
+    onDeleteItem: (Product) -> Unit
 ) {
     val context = LocalContext.current
     val homeViewModel = HomeViewModel(context)
@@ -204,7 +252,7 @@ fun ItemCard(
     val painter = if (storedImage != null) {
         rememberAsyncImagePainter(storedImage)
     } else {
-        rememberAsyncImagePainter(R.drawable.egg)
+        painterResource(id = R.drawable.egg)
     }
 
     Card(
@@ -302,7 +350,7 @@ fun ItemCard(
                             Button(
                                 onClick = {
                                     openDialog.value = false
-                                    homeViewModel.removeProduct(product.barcode)
+                                    onDeleteItem(product)
                                 }) {
                                 Text("Confirm")
                             }
@@ -343,11 +391,14 @@ fun ItemCard(
                             DropdownMenuItem(
                                 onClick = {
                                     expanded = false
+
                                     Toast.makeText(
                                         context,
                                         "${product.name} added to shopping list",
                                         Toast.LENGTH_SHORT
                                     ).show()
+
+                                    homeViewModel.addToShoppingList(product)
                                 },
                                 content = {
                                     Text(

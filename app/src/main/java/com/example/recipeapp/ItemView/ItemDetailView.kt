@@ -1,6 +1,7 @@
 package com.example.recipeapp.ItemView
 
 import Database.Product
+import android.widget.Toast
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
@@ -48,9 +49,12 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.Navigation.findNavController
+import androidx.navigation.compose.rememberNavController
 import coil.compose.rememberAsyncImagePainter
 import com.example.recipeapp.HomeView.HomeView
 import com.example.recipeapp.HomeView.HomeViewModel
+import com.example.recipeapp.Navigation.NavGraph
 import com.example.recipeapp.R
 import org.intellij.lang.annotations.JdkConstants.HorizontalAlignment
 
@@ -61,7 +65,6 @@ fun ItemDetailView(product: Product) {
     val context = LocalContext.current
     val viewModel = HomeViewModel(context)
     viewModel.getProductImage(product, context)
-
     val storedImage = viewModel.storedImage
 
     val painter = if (storedImage != null) {
@@ -157,7 +160,14 @@ fun ItemDetailView(product: Product) {
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     IconButton(
-                        onClick = {},
+                        onClick = {
+                            Toast.makeText(
+                                context,
+                                "${product.name} added to shopping list",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                            viewModel.addToShoppingList(product)
+                        },
                         Modifier
                             .background(Color.Black, shape = RoundedCornerShape(16.dp))
                             .size(75.dp),
@@ -193,7 +203,7 @@ fun ItemDetailView(product: Product) {
                         )
                     }
                     IconButton(
-                        onClick = {},
+                        onClick = {viewModel.removeProduct(product.barcode)},
                         Modifier
                             .background(Color.Black, shape = RoundedCornerShape(16.dp))
                             .size(75.dp),
