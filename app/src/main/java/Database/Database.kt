@@ -15,11 +15,14 @@ import androidx.room.TypeConverters
 import java.util.Date
 import androidx.room.Upsert
 import java.time.LocalDate
+import androidx.room.ColumnInfo
+import androidx.room.Delete
 
-@Database(entities = [Product::class, Recipe::class], version = 1, exportSchema = false)
+@Database(entities = [Product::class, Recipe::class, ShoppingItem::class], version = 1, exportSchema = false)
 @TypeConverters(ListDateConverter::class, ListStringConverter::class)
 abstract class Recipeapp : RoomDatabase() {
     abstract fun RecipeappDao(): ProductRecipeDao
+    abstract fun shoppingItemDao(): ShoppingItemDao
     companion object {
         @Volatile
         private var INSTANCE: Recipeapp? = null
@@ -37,9 +40,6 @@ abstract class Recipeapp : RoomDatabase() {
         }
     }
 }
-
-
-
 @Entity
 data class Product(
     @PrimaryKey val barcode: String,
@@ -58,8 +58,13 @@ data class Recipe(
     val description: String,
     @TypeConverters(ListStringConverter::class) val tags: List<String>
 )
-
-
+@Entity
+data class ShoppingItem(
+    @PrimaryKey(autoGenerate = true)
+    val id: Long = 0,
+    val name: String,
+    val amount: Int,
+)
 @Dao
 interface ProductRecipeDao {
     @Query("SELECT * FROM Product")
@@ -89,6 +94,18 @@ interface ProductRecipeDao {
     @Upsert
     suspend  fun UpsertRecipe(vararg recipe: Recipe)
 
+}
+
+@Dao
+interface ShoppingItemDao {
+    @Query("SELECT * FROM ShoppingItem")
+    suspend fun getAllShoppingItems(): List<ShoppingItem>
+
+    @Insert
+    suspend fun insertShoppingItem(shoppingItem: ShoppingItem)
+
+    @Delete
+    suspend fun deleteShoppingItem(shoppingItem: ShoppingItem)
 }
 
 class DateConverter {
