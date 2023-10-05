@@ -49,7 +49,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.recipeapp.R
 import org.intellij.lang.annotations.JdkConstants.HorizontalAlignment
-import java.text.DateFormat
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -77,7 +76,7 @@ fun ItemDetailView(item: Product) {
                 ) {
                     Text(
                         text = "Best Before: ${
-                            DateFormat.getDateInstance().format(item.bestbefore)
+                            item.bestbefore.toString()
                         }",
                         fontSize = 14.sp,
                         color = Color.White,

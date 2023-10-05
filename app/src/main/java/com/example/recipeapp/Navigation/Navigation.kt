@@ -139,8 +139,7 @@ fun RowScope.AddItem(
             navController.navigate(screen.screen)
         },
         modifier = Modifier.background(Color(0xFF3C3C3C)),
-        selectedContentColor = Color(0xFF3CC1FF)
-    )
+git    )
 }
 
 @Composable

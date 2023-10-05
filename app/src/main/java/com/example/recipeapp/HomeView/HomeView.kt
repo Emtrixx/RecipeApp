@@ -85,6 +85,7 @@ fun HomeView() {
 
     LaunchedEffect(Unit) {
         homeViewModel.getProductsLiveData()
+        homeViewModel.addProduct()
     }
 
     val topAppBarTitle = when (navController.currentBackStackEntryAsState().value?.destination?.route) {
@@ -183,7 +184,7 @@ fun ItemCard(
 ) {
     val context = LocalContext.current
     val homeViewModel = HomeViewModel(context)
-    val dateFormatter = SimpleDateFormat("dd.MM", Locale.getDefault())
+    //val dateFormatter = SimpleDateFormat("dd.MM", Locale.getDefault())
     val openDialog = remember { mutableStateOf(false) }
 
     var expanded by remember { mutableStateOf(false) }
@@ -242,7 +243,8 @@ fun ItemCard(
                                 modifier = Modifier.size(14.dp)
                             )
                             Text(
-                                text = dateFormatter.format(product.bestbefore),
+                                //text = dateFormatter.format(product.bestbefore),
+                                text = product.bestbefore.toString(),
                                 fontSize = 10.sp,
                                 modifier = Modifier
                                     .padding(start = 4.dp),
@@ -384,7 +386,7 @@ fun ExpiringItemCard(itemName: String, itemQuantity: Int, expiryDate: List<Local
                 Text(text = itemName, fontWeight = FontWeight.Bold)
                 Spacer(modifier = Modifier.height(4.dp))
                 Text(text = itemQuantity.toString(), fontSize = 12.sp)
-                Text(text = dateFormatter.format(expiryDate))
+                //Text(text = dateFormatter.format(expiryDate))
             }
             Spacer(modifier = Modifier.height(8.dp))
         }

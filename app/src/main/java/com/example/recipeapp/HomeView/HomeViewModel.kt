@@ -2,27 +2,14 @@ package com.example.recipeapp.HomeView
 
 import Database.Product
 import Database.Recipeapp
-import android.app.Application
 import android.content.Context
-import android.content.res.Resources
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
-import android.util.Log
-import androidx.compose.runtime.livedata.observeAsState
-import androidx.core.content.ContentProviderCompat.requireContext
-import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.recipeapp.R
-import com.example.recipeapp.components.camera.getImageFromInternalStorage
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import java.io.ByteArrayOutputStream
-import java.io.Console
 import java.time.LocalDate
-import java.util.Date
+import java.util.*
 import kotlin.random.Random
 
 class HomeViewModel(context: Context) : ViewModel() {
@@ -39,6 +26,23 @@ class HomeViewModel(context: Context) : ViewModel() {
             productsLiveData.postValue(products)
         }
         return productsLiveData
+    }
+
+    var date: LocalDate = LocalDate.of(2000, 10, 3)
+    fun addProduct() {
+        viewModelScope.launch{
+            db.RecipeappDao().InsertProduct(
+                Product(
+                    barcode = Random.Default.nextInt(1, 1000000).toString(),
+                    name = "egg ${Random.Default.nextInt(1, 100000)}",
+                    description = "pirkka eggs, the best ones",
+                    amount = 2,
+                    tags = listOf("egg"),
+                    image = "R.drawable.egg",
+                    bestbefore = listOf(date),
+                )
+            )
+        }
     }
 
     fun removeProduct(barcode: String) {

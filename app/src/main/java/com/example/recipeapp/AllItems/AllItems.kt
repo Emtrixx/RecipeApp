@@ -55,6 +55,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.ColorMatrix
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -79,7 +80,9 @@ import java.util.Date
 fun AllItems() {
     val navController = rememberNavController()
 
-    val allItemsViewModel: AllItemsViewModel = viewModel()
+    val context = LocalContext.current
+
+    val allItemsViewModel = AllItemsViewModel(context)
 
     val productList by allItemsViewModel.getProductsLiveData().observeAsState(emptyList())
 
