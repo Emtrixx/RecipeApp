@@ -16,6 +16,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
@@ -30,8 +31,7 @@ fun IntegerInputStepper(
     maxValue: Int = Int.MAX_VALUE
 ) {
     Surface(
-//        modifier = modifier.clip(RoundedCornerShape(8.dp)),
-        modifier = modifier,
+        modifier = modifier.clip(RoundedCornerShape(8.dp)),
         color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.12f),
         contentColor = MaterialTheme.colorScheme.onSurface
     ) {

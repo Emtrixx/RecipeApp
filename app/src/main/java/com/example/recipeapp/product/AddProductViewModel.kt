@@ -15,6 +15,7 @@ import com.example.recipeapp.components.camera.getImageFromInternalStorage
 import kotlinx.coroutines.launch
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
+import java.time.format.DateTimeParseException
 
 
 class AddProductViewModel(barcodeArg: String?, context: Context) : ViewModel() {
@@ -24,9 +25,11 @@ class AddProductViewModel(barcodeArg: String?, context: Context) : ViewModel() {
     }
     private var savedImagePath = ""
 
+    var loading by mutableStateOf(true)
+        private set
     var name by mutableStateOf("")
         private set
-    var nameError by mutableStateOf<List<String>>(listOf())
+    var nameErrors by mutableStateOf<List<String>>(listOf())
         private set
     var capturedImageUri by mutableStateOf(Uri.EMPTY)
         private set
@@ -34,17 +37,31 @@ class AddProductViewModel(barcodeArg: String?, context: Context) : ViewModel() {
         private set
     var barcode by mutableStateOf("")
         private set
+
     var bestBeforeList: List<String?> by mutableStateOf(listOf(null))
         private set
+    var bestBeforeErrors by mutableStateOf<List<String>>(listOf())
+        private set
+    private var oldBestBeforeList: List<LocalDate?> = listOf()
+    private var bestBeforeSetOnce = false
+
     var description by mutableStateOf("")
         private set
+    var descriptionErrors by mutableStateOf<List<String>>(listOf())
+        private set
+
     var amount by mutableIntStateOf(1)
+        private set
+    private var oldAmount = 0
+    var amountErrors by mutableStateOf<List<String>>(listOf())
         private set
 
     init {
         if (barcodeArg != null) {
             barcode = barcodeArg
             getProduct(barcodeArg, context)
+        } else {
+            loading = false
         }
     }
 
@@ -58,15 +75,13 @@ class AddProductViewModel(barcodeArg: String?, context: Context) : ViewModel() {
                     storedImage = getImageFromInternalStorage(context, savedImagePath)
                 }
                 name = product.name
-                bestBeforeList = product.bestbefore.map {
-                    if (it == null) {
-                        return@map null
-                    }
-                    it.format(DateTimeFormatter.ofPattern("dd/MM/yyyy"))
-                }
                 description = product.description
-                amount = product.amount
+
+//              Save old values for updating (TODO: Should not change in DB while editing)
+                oldBestBeforeList = product.bestbefore
+                oldAmount = product.amount
             }
+            loading = false
         }
     }
 
@@ -74,16 +89,17 @@ class AddProductViewModel(barcodeArg: String?, context: Context) : ViewModel() {
         val product = Product(
             barcode = barcode,
             name = name,
-            bestbefore = bestBeforeList.map {
+            description = description,
+            tags = listOf(),
+            image = savedImagePath,
+//          Taking old values into consideration
+            bestbefore = oldBestBeforeList + bestBeforeList.map {
                 if (it == null) {
                     return@map null
                 }
                 LocalDate.parse(it, DateTimeFormatter.ofPattern("dd/MM/yyyy"))
             },
-            description = description,
-            amount = amount,
-            tags = listOf(),
-            image = savedImagePath
+            amount = oldAmount + amount,
         )
 
         viewModelScope.launch { db.RecipeappDao().UpsertProduct(product) }
@@ -91,16 +107,27 @@ class AddProductViewModel(barcodeArg: String?, context: Context) : ViewModel() {
 
     fun updateName(name: String) {
         this.name = name
+        nameErrors = listOf()
+        if (name.isBlank()) {
+            nameErrors = nameErrors + "Name cannot be empty."
+        } else if (!name.matches(Regex("^[a-zA-Z0-9 ]+$"))) {
+            nameErrors = nameErrors + "Name can only contain alphanumeric characters and spaces."
+        }
     }
 
     fun updateDescription(description: String) {
         this.description = description
+        descriptionErrors = listOf()
+        if (description.length > 500) {
+            descriptionErrors = descriptionErrors + "Description cannot exceed 500 characters."
+        }
     }
 
     fun updateAmount(amount: Int) {
-//        if (amount.length <= 2) {
-//            this.amount = amount.filter { it.isDigit() }
-//        }
+        amountErrors = listOf()
+        if (amount > 99) {
+            amountErrors = amountErrors + "Amount cannot exceed 99."
+        }
         this.amount = amount
 
         if (amount > bestBeforeList.size) {
@@ -111,11 +138,35 @@ class AddProductViewModel(barcodeArg: String?, context: Context) : ViewModel() {
     }
 
     fun updateBestBefore(bestBefore: String, index: Int) {
-        this.bestBeforeList = bestBeforeList.mapIndexed { i, s ->
-            if (i == index) {
-                return@mapIndexed bestBefore
+        bestBeforeErrors = listOf()
+        if (!isValidDate(bestBefore) && bestBefore.isNotBlank()) {
+            bestBeforeErrors = bestBeforeErrors + "Invalid date format. Use dd/MM/yyyy."
+        }
+
+        if (bestBeforeSetOnce || bestBefore.isBlank()) {
+            this.bestBeforeList = bestBeforeList.mapIndexed { i, s ->
+                if (i == index) {
+                    if (bestBefore.isBlank()) {
+                        return@mapIndexed null
+                    }
+                    return@mapIndexed bestBefore
+                }
+                return@mapIndexed s
             }
-            return@mapIndexed s
+        } else {
+            this.bestBeforeList = List(bestBeforeList.size) { i ->
+                return@List bestBefore
+            }
+            bestBeforeSetOnce = true
+        }
+    }
+
+    private fun isValidDate(date: String): Boolean {
+        return try {
+            LocalDate.parse(date, DateTimeFormatter.ofPattern("dd/MM/yyyy"))
+            true
+        } catch (e: DateTimeParseException) {
+            false
         }
     }
 
