@@ -25,6 +25,7 @@ import androidx.compose.material3.FilledTonalIconButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -43,6 +44,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -123,25 +125,7 @@ fun ShoppingList() {
                             .fillMaxSize()
                             .padding(16.dp)
                     ) {
-                        LazyColumn(
-                            modifier = Modifier
-                                .weight(1f)
-                                .fillMaxWidth()
-                                .padding(top = 65.dp),
-                            contentPadding = PaddingValues(16.dp)
-                        ) {
-                            items(shoppingList) { shoppingItem ->
-                                ShoppingCard(
-                                    item = shoppingItem,
-                                    onDeleteItem = onDeleteItem
-                                )
-                                Spacer(modifier = Modifier.height(16.dp))
-                            }
-                        }
-                        //val isEmptyList = items.isEmpty()
-
-                        /**
-                        if (isEmptyList) {
+                        if (shoppingList.isEmpty()) {
                             Text(
                                 text = "The shopping list is empty. Add something from top right corner",
                                 style = MaterialTheme.typography.bodyMedium,
@@ -160,13 +144,13 @@ fun ShoppingList() {
                             ) {
                                 items(shoppingList) { shoppingItem ->
                                     ShoppingCard(
-                                        item = shoppingItem
+                                        item = shoppingItem,
+                                        onDeleteItem = onDeleteItem
                                     )
                                     Spacer(modifier = Modifier.height(16.dp))
                                 }
                             }
                         }
-                        **/
                     }
                 }
                 composable("shoppingForm") {
