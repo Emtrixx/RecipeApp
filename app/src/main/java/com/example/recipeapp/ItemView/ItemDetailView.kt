@@ -47,6 +47,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.recipeapp.R
 import org.intellij.lang.annotations.JdkConstants.HorizontalAlignment
 import java.text.DateFormat
 
@@ -58,7 +59,7 @@ fun ItemDetailView(item: Product) {
         item {
             Box() {
                 Image(
-                    painter = painterResource(id = item.image),
+                    painter = painterResource(id = R.drawable.egg),
                     contentDescription = "Product image",
                     contentScale = ContentScale.Crop,
                     modifier = Modifier

@@ -2,7 +2,6 @@ package com.example.recipeapp.HomeView
 
 import Database.Product
 import android.annotation.SuppressLint
-import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -25,34 +24,22 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.AlertDialog
 import androidx.compose.material.DropdownMenu
 import androidx.compose.material.DropdownMenuItem
-import androidx.compose.material.FabPosition
-import androidx.compose.material.MaterialTheme.colors
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.DateRange
-import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.MoreVert
-import androidx.compose.material.icons.filled.ShoppingCart
-import androidx.compose.material.rememberScaffoldState
-import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.Divider
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
-import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
@@ -60,10 +47,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.blur
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.ColorFilter
-import androidx.compose.ui.graphics.ColorMatrix
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
@@ -71,7 +55,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.zIndex
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.currentBackStackEntryAsState
@@ -80,8 +63,7 @@ import com.example.recipeapp.Navigation.NavGraph
 import com.example.recipeapp.Navigation.BottomNavigationBar
 import com.example.recipeapp.R
 import java.text.SimpleDateFormat
-import java.time.format.DateTimeFormatter
-import java.util.Date
+import java.time.LocalDate
 import java.util.Locale
 
 
@@ -91,7 +73,9 @@ import java.util.Locale
 fun HomeView() {
     val navController = rememberNavController()
 
-    val homeViewModel: HomeViewModel = viewModel()
+    val context = LocalContext.current
+
+    val git = HomeViewModel(context)
 
     val productList by homeViewModel.getProductsLiveData().observeAsState(emptyList())
 
@@ -100,7 +84,7 @@ fun HomeView() {
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
 
     LaunchedEffect(Unit) {
-        homeViewModel.fetchProducts()
+        homeViewModel.getProductsLiveData()
     }
 
     val topAppBarTitle = when (navController.currentBackStackEntryAsState().value?.destination?.route) {
@@ -197,9 +181,9 @@ fun ItemCard(
     product: Product,
     navController: NavController
 ) {
-    val homeViewModel: HomeViewModel = viewModel()
-    val dateFormatter = SimpleDateFormat("dd.MM", Locale.getDefault())
     val context = LocalContext.current
+    val homeViewModel = HomeViewModel(context)
+    val dateFormatter = SimpleDateFormat("dd.MM", Locale.getDefault())
     val openDialog = remember { mutableStateOf(false) }
 
     var expanded by remember { mutableStateOf(false) }
@@ -299,7 +283,7 @@ fun ItemCard(
                             Button(
                                 onClick = {
                                     openDialog.value = false
-                                    homeViewModel.removeProduct(product)
+                                    homeViewModel.removeProduct(product.barcode)
                                 }) {
                                 Text("Confirm")
                             }
@@ -382,7 +366,7 @@ fun ItemCard(
 }
 
 @Composable
-fun ExpiringItemCard(itemName: String, itemQuantity: Double, expiryDate: Date) {
+fun ExpiringItemCard(itemName: String, itemQuantity: Int, expiryDate: List<LocalDate?>) {
     val dateFormatter = SimpleDateFormat("MMM dd", Locale.getDefault())
     ElevatedCard(
         colors = CardDefaults.cardColors(

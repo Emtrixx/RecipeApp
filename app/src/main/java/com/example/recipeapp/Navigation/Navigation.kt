@@ -1,6 +1,5 @@
 package com.example.recipeapp.Navigation
 
-import android.app.Application
 import Database.Product
 import android.util.Log
 import androidx.compose.foundation.background
@@ -38,8 +37,10 @@ import com.example.recipeapp.RecipeView.RecipeViewTest
 import com.example.recipeapp.RecipeView.TestRecipeViewModel
 import com.example.recipeapp.product.AddProductForm
 import com.example.recipeapp.product.AddProductViewModel
-import com.example.recipeapp.product.BarcodeScannerView
 import com.example.recipeapp.product.BarcodeViewModel
+import com.example.recipeapp.product.BarcodeScannerView
+
+
 
 sealed class BottomNavItem(var title:String, var icon: ImageVector, var screen:String){
 

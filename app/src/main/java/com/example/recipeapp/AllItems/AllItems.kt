@@ -81,12 +81,10 @@ fun AllItems() {
 
     val allItemsViewModel: AllItemsViewModel = viewModel()
 
-    val productList: List<Product>? by allItemsViewModel.getProductsAsLiveData().observeAsState()
-
-
+    val productList by allItemsViewModel.getProductsLiveData().observeAsState(emptyList())
 
     LaunchedEffect(Unit) {
-        allItemsViewModel.fetchProducts()
+        allItemsViewModel.getProductsLiveData()
     }
 
     // Set up the navigation route

@@ -2,7 +2,6 @@ package com.example.recipeapp.HomeView
 
 import Database.Product
 import Database.Recipeapp
-import Database.RecipeappViewModel
 import android.app.Application
 import android.content.Context
 import android.content.res.Resources
@@ -14,8 +13,10 @@ import androidx.core.content.ContentProviderCompat.requireContext
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.recipeapp.R
+import com.example.recipeapp.components.camera.getImageFromInternalStorage
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.io.ByteArrayOutputStream
@@ -24,36 +25,27 @@ import java.time.LocalDate
 import java.util.Date
 import kotlin.random.Random
 
-class HomeViewModel(application: Application) : AndroidViewModel(application) {
-    private val recipeappViewModel = RecipeappViewModel(application)
+class HomeViewModel(context: Context) : ViewModel() {
+
+    private val db: Recipeapp by lazy {
+        Recipeapp.getInstance(context)
+    }
+
+    private val productsLiveData: MutableLiveData<List<Product>> = MutableLiveData()
 
     fun getProductsLiveData(): LiveData<List<Product>> {
-        return recipeappViewModel.getProductsAsLiveData()
-    }
-
-    fun addProduct() {
-        recipeappViewModel.addProduct(
-            name = "egg ${Random.Default.nextInt(1, 100000)}",
-            bestbefore = Date(),
-            amount = 2.0,
-            barcode = Random.Default.nextInt(1, 1000000).toString(),
-            description = "pirkka eggs, the best ones",
-            image = R.drawable.egg,
-            tags =  listOf("egg")
-        )
-    }
-
-    fun fetchProducts() {
-        viewModelScope.launch(Dispatchers.IO) {
-            recipeappViewModel.fetchProducts()
+        viewModelScope.launch {
+            val products = db.RecipeappDao().GetProducts()
+            productsLiveData.postValue(products)
         }
+        return productsLiveData
     }
 
-    fun removeProduct(product: Product) {
-        viewModelScope.launch(Dispatchers.IO) {
-            recipeappViewModel.removeProduct(product.barcode)
-            fetchProducts()
-            Log.d("VievModelDelete", "deleting ${product.barcode}")
+    fun removeProduct(barcode: String) {
+        viewModelScope.launch {
+            db.RecipeappDao().deleteProductById(barcode)
+            val products = db.RecipeappDao().GetProducts()
+            productsLiveData.postValue(products)
         }
     }
 }
