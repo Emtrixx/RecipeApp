@@ -1,12 +1,7 @@
 package Database
 
-import android.app.Application
 import android.content.Context
 import androidx.annotation.NonNull
-import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.viewModelScope
 import androidx.room.Dao
 import androidx.room.Database
 import androidx.room.Entity
@@ -17,13 +12,11 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverter
 import androidx.room.TypeConverters
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import java.util.Date
-import androidx.room.ColumnInfo
+import androidx.room.Upsert
+import java.time.LocalDate
 
 @Database(entities = [Product::class, Recipe::class], version = 1, exportSchema = false)
-@TypeConverters(DateConverter::class, ListStringConverter::class)
+@TypeConverters(ListDateConverter::class, ListStringConverter::class)
 abstract class Recipeapp : RoomDatabase() {
     abstract fun RecipeappDao(): ProductRecipeDao
     companion object {
@@ -49,12 +42,12 @@ abstract class Recipeapp : RoomDatabase() {
 @Entity
 data class Product(
     @PrimaryKey val barcode: String,
-    @NonNull val name: String,
-    @TypeConverters(DateConverter::class) val bestbefore: Date,
+    val name: String,
+    @TypeConverters(ListDateConverter::class) val bestbefore: List<LocalDate?>,
     val description: String,
-    @NonNull val amount: Double,
+    val amount: Int,
     @TypeConverters(ListStringConverter::class) val tags: List<String>,
-    @ColumnInfo(typeAffinity = ColumnInfo.BLOB) val image: ByteArray
+    val image: String?
 )
 
 @Entity
@@ -75,7 +68,7 @@ interface ProductRecipeDao {
     suspend  fun GetRecipes(): List<Recipe>
 
     @Query("SELECT * FROM Product WHERE barcode = :barcode")
-    suspend fun GetProductInfo(barcode: String): Product
+    suspend fun GetProductInfo(barcode: String): Product?
 
     @Query("SELECT * FROM Recipe WHERE name = :name")
     suspend fun GetRecipeInfo(name: String): Recipe
@@ -86,73 +79,23 @@ interface ProductRecipeDao {
     @Insert
     suspend  fun InsertProduct(vararg product: Product)
 
-}
+    @Upsert
+    suspend  fun UpsertProduct(vararg product: Product)
 
-class RecipeappViewModel(application: Application) : AndroidViewModel(application) {
-    private val db: Recipeapp by lazy {
-        Room.databaseBuilder(
-            application.applicationContext,
-            Recipeapp::class.java, "Recipeapp"
-        )
-            .fallbackToDestructiveMigration()
-            .build()
-    }
-
-    private val productsLiveData: MutableLiveData<List<Product>> = MutableLiveData()
-    private val recipesLiveData: MutableLiveData<List<Recipe>> = MutableLiveData()
-
-    fun getProductsAsLiveData(): LiveData<List<Product>> {
-        return productsLiveData
-    }
-
-    fun getRecipesAsLiveData(): LiveData<List<Recipe>> {
-        return recipesLiveData
-    }
-
-    fun fetchProducts() {
-        viewModelScope.launch(Dispatchers.IO) {
-            val products = db.RecipeappDao().GetProducts()
-            productsLiveData.postValue(products)
-        }
-    }
-
-    fun fetchRecipes() {
-        viewModelScope.launch(Dispatchers.IO) {
-            val recipes = db.RecipeappDao().GetRecipes()
-            recipesLiveData.postValue(recipes)
-        }
-    }
-
-    fun addProduct( barcode: String,
-                    name: String,
-                    bestbefore: Date,
-                    description: String,
-                    amount: Double,
-                    tags: List<String>,
-                    image: ByteArray) {
-        val p = Product(barcode, name, bestbefore, description, amount, tags, image)
-        viewModelScope.launch { db.RecipeappDao().InsertProduct(p) }
-    }
-
-    fun addRecipe(ingridients: List<String>,
-                  name: String,
-                  description: String,
-                  tags: List<String>) {
-        val r = Recipe(ingridients, name, description, tags)
-        viewModelScope.launch { db.RecipeappDao().InsertRecipe(r) }
-    }
+    @Upsert
+    suspend  fun UpsertRecipe(vararg recipe: Recipe)
 
 }
 
 class DateConverter {
     @TypeConverter
-    fun fromTimestamp(value: Long?): Date? {
-        return value?.let { Date(it) }
+    fun fromDateString(value: String): LocalDate {
+        return LocalDate.parse(value)
     }
 
     @TypeConverter
-    fun dateToTimestamp(date: Date?): Long? {
-        return date?.time?.toLong()
+    fun toDateString(date: LocalDate): String {
+        return date.toString()
     }
 }
 
@@ -165,6 +108,23 @@ class ListStringConverter {
     @TypeConverter
     fun toListString(value: String): List<String> {
         return value.split(",")
+    }
+}
+
+class ListDateConverter {
+    @TypeConverter
+    fun fromListDate(list: List<LocalDate?>): String {
+        return list.joinToString(",")
+    }
+
+    @TypeConverter
+    fun toListDate(value: String): List<LocalDate?> {
+        return value.split(",").map {
+            if (it == "null") {
+                return@map null
+            }
+            LocalDate.parse(it)
+        }
     }
 }
 

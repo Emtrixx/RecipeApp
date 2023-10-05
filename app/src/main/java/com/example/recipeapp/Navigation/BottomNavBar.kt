@@ -1,5 +1,6 @@
 package com.example.recipeapp.Navigation
 
+import android.app.Application
 import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.RowScope
@@ -18,6 +19,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavDestination
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavHostController
@@ -59,8 +61,8 @@ fun BottomNavGraph(navController: NavHostController) {
             arguments = listOf(navArgument("barcode") { nullable = true })
         ) {
             val barcode = it.arguments?.getString("barcode")
-            val productViewModel = AddProductViewModel(barcode)
-            AddProductForm(productViewModel)
+            val productViewModel = AddProductViewModel(barcode, LocalContext.current)
+            AddProductForm(productViewModel, navController)
         }
     }
 }
