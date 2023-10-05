@@ -91,11 +91,12 @@ fun HomeView() {
     val topAppBarTitle = when (navController.currentBackStackEntryAsState().value?.destination?.route) {
         "home" -> "Home"
         "itemDetail/{itemId}" -> "Product"
-        "add?barcode={barcode}" -> "Scan item"
         "recipe" -> "Recipes"
         "settings" -> "Settings"
         "allItems" -> "Your Items"
-        else -> "RecipeApp"
+        "shoppingList" -> "hide"
+        "add?barcode={barcode}" -> "hide"
+        else -> "hide"
     }
 
     Scaffold(
@@ -103,10 +104,12 @@ fun HomeView() {
             .nestedScroll(scrollBehavior.nestedScrollConnection)
             .fillMaxSize(),
         topBar = {
-            TopAppBar(
-                title = { Text(text = topAppBarTitle) },
-                scrollBehavior = scrollBehavior,
-            )
+            if (topAppBarTitle != "hide"){
+                TopAppBar(
+                    title = { Text(text = topAppBarTitle) },
+                    scrollBehavior = scrollBehavior,
+                )
+            }
         },
         bottomBar = { BottomNavigationBar(navController = navController) },
     ) { innerPadding ->
