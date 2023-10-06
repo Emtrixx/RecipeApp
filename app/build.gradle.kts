@@ -59,6 +59,7 @@ dependencies {
     val compose_version = "1.5.1"
     implementation("androidx.lifecycle:lifecycle-runtime-compose:2.6.2")
     implementation ("androidx.compose.runtime:runtime-livedata:$compose_version")
+    implementation("androidx.compose.material3:material3-android:1.2.0-alpha08")
     // Navigation
     val nav_version = "2.5.3"
     implementation("androidx.navigation:navigation-compose:$nav_version")
@@ -71,7 +72,10 @@ dependencies {
     annotationProcessor("androidx.room:room-compiler:$room_version")
     implementation("androidx.room:room-ktx:$room_version")
     ksp("androidx.room:room-compiler:2.5.2")
-
+    // Retrofit and okHttp request
+    implementation ("com.squareup.retrofit2:retrofit:2.9.0")
+    implementation ("com.squareup.retrofit2:converter-gson:2.9.0")
+    implementation ("com.squareup.okhttp3:logging-interceptor:4.9.1")
 
     implementation("androidx.core:core-ktx:1.9.0")
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.6.2")

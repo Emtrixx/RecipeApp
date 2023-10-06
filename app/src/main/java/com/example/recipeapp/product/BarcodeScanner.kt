@@ -17,6 +17,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
@@ -29,7 +30,7 @@ import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import androidx.navigation.NavController
-import coil.compose.rememberImagePainter
+import coil.compose.rememberAsyncImagePainter
 import com.google.android.datatransport.BuildConfig
 import java.io.File
 import java.util.Date
@@ -73,6 +74,23 @@ fun BarcodeScannerView(viewModel: BarcodeViewModel, navController: NavController
         }
     }
 
+    val openCameraCallback = {
+        val permissionCheckResult =
+            ContextCompat.checkSelfPermission(context, android.Manifest.permission.CAMERA)
+        if (permissionCheckResult == PackageManager.PERMISSION_GRANTED) {
+            cameraLauncher.launch(uri)
+        } else {
+            // Request a permission
+            permissionLauncher.launch(android.Manifest.permission.CAMERA)
+        }
+    }
+
+    if (scanResult != "") {
+        LaunchedEffect(Unit) {
+            navController.navigate("add?barcode=${scanResult}")
+        }
+    }
+
     Column(
         Modifier
             .fillMaxSize()
@@ -81,16 +99,7 @@ fun BarcodeScannerView(viewModel: BarcodeViewModel, navController: NavController
     ) {
         Text("BarcodeScanner")
         Text(text = "Barcode result: ${scanResult}")
-        Button(onClick = {
-            val permissionCheckResult =
-                ContextCompat.checkSelfPermission(context, android.Manifest.permission.CAMERA)
-            if (permissionCheckResult == PackageManager.PERMISSION_GRANTED) {
-                cameraLauncher.launch(uri)
-            } else {
-                // Request a permission
-                permissionLauncher.launch(android.Manifest.permission.CAMERA)
-            }
-        }) {
+        Button(onClick = openCameraCallback ) {
             Text(text = "Capture Image From Camera")
         }
         if (scanResult != "") {
@@ -102,7 +111,7 @@ fun BarcodeScannerView(viewModel: BarcodeViewModel, navController: NavController
             Image(
                 modifier = Modifier
                     .padding(16.dp, 8.dp),
-                painter = rememberImagePainter(capturedImageUri),
+                painter = rememberAsyncImagePainter(capturedImageUri),
                 contentDescription = null
             )
         }

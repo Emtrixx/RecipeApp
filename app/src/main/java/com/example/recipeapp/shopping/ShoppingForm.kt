@@ -13,7 +13,6 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.Button
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -28,7 +27,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ShoppingForm(
     onItemAdded: (String, Int) -> Unit
@@ -115,7 +113,9 @@ fun ShoppingForm(
 
                     //Checks that the user puts required values
                     if (newItem.isNotBlank() && hasNonNumeric && amountValue != null) {
+
                         onItemAdded(newItem, amountValue)
+
                         newItem = ""
                         newAmount = ""
                         isItemInvalid = false // Reset item name error flag
