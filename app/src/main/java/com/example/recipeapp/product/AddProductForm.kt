@@ -1,6 +1,7 @@
 package com.example.recipeapp.product
 
 import android.net.Uri
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -15,13 +16,13 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.Button
-import androidx.compose.material.Icon
-import androidx.compose.material.IconButton
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AddCircle
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
@@ -106,7 +107,7 @@ fun AddProductForm(viewModel: AddProductViewModel, navController: NavController)
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(16.dp, bottom = 56.dp)
+                    .padding(16.dp, 0.dp)
                     .verticalScroll(rememberScrollState()),
                 verticalArrangement = Arrangement.spacedBy(10.dp)
             ) {
@@ -207,7 +208,12 @@ fun AddProductForm(viewModel: AddProductViewModel, navController: NavController)
                 Button(modifier = Modifier.padding(8.dp), onClick = {
                     if (capturedImageUri != Uri.EMPTY) {
                         val path = saveImageToInternalStorage(context, capturedImageUri, barcode)
-                        viewModel.updateSavedImagePath(path)
+                        if (path != null) {
+                            viewModel.updateSavedImagePath(path)
+                        } else {
+                            Toast.makeText(context, "Saving image failed", Toast.LENGTH_SHORT).show()
+                            return@Button
+                        }
                     }
                     viewModel.upsertProduct()
                     navController.navigate(BottomNavItem.Home.screen)
