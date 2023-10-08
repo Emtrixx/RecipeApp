@@ -7,22 +7,20 @@ import androidx.compose.foundation.layout.RowScope
 import androidx.compose.material.BottomNavigation
 import androidx.compose.material.BottomNavigationItem
 import androidx.compose.material.Icon
-import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Info
-import androidx.compose.material.icons.filled.List
 import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.navigation.NavController
 import androidx.compose.ui.platform.LocalContext
+import androidx.navigation.NavController
 import androidx.navigation.NavDestination
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavHostController
@@ -36,20 +34,21 @@ import com.example.recipeapp.HomeView.HomeListView
 import com.example.recipeapp.ItemView.ItemDetailView
 import com.example.recipeapp.RecipeView.RecipeViewTest
 import com.example.recipeapp.RecipeView.TestRecipeViewModel
+import com.example.recipeapp.settings.SettingsPage
 import com.example.recipeapp.product.AddProductForm
 import com.example.recipeapp.product.AddProductViewModel
-import com.example.recipeapp.product.BarcodeViewModel
 import com.example.recipeapp.product.BarcodeScannerView
+import com.example.recipeapp.product.BarcodeViewModel
 import com.example.recipeapp.shopping.ShoppingList
 
 sealed class BottomNavItem(var title:String, var icon: ImageVector, var screen:String){
 
     object Home : BottomNavItem("Home",Icons.Default.Home,"home")
 
-    object ShoppingList: BottomNavItem("Shopping List", Icons.Default.List,"shoppingList")
+    object ShoppingList: BottomNavItem("Shopping List", Icons.Default.ShoppingCart,"shoppingList")
     object AddItem: BottomNavItem("Add Item",Icons.Default.Add,"scanner")
     object Recipes: BottomNavItem("Empty",Icons.Default.Info,"recipe")
-    object Settings: BottomNavItem("Empty",Icons.Default.Settings,"home")
+    object Settings: BottomNavItem("Empty",Icons.Default.Settings,"settings")
 
 }
 
@@ -96,6 +95,11 @@ fun NavGraph(navController: NavHostController, productList : List<Product>?) {
             route = "allItems",
         ) {
             AllItems()
+        }
+        composable(
+            route = BottomNavItem.Settings.screen,
+        ) {
+            SettingsPage(navController)
         }
     }
 }

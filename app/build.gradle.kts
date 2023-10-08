@@ -66,6 +66,8 @@ dependencies {
     // Material Design
     implementation("androidx.compose.material3:material3:1.2.0-alpha02")
     implementation("androidx.compose.material:material:1.5.2")
+    // Icons (For color palette, needed as dependency)
+    implementation("androidx.palette:palette-ktx:1.0.0")
     // Room
     val room_version = "2.5.2"
     implementation("androidx.room:room-runtime:$room_version")
