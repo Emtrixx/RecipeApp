@@ -34,7 +34,6 @@ fun SettingsPage(navController: NavController) {
     ) {
         items(getSettingsItems()) { item ->
             SettingItem(name = item.name, icon = item.icon) {
-                // Dummy navigation functionality
                 navController.navigate("settings/${item.name}")
             }
             HorizontalDivider(
@@ -74,13 +73,13 @@ fun getSettingsItems(): List<Setting> {
                 contentDescription = "Appearance settings"
             )
         },
-        Setting("OpenAI") { Icon(Icons.Default.Build, contentDescription = "OpenAI settings") },
         Setting("Notifications") {
             Icon(
                 Icons.Default.Notifications,
                 contentDescription = "Notification settings"
             )
-        }
+        },
+        Setting("Dev") { Icon(Icons.Default.Build, contentDescription = "Developer settings") },
     )
 }
 

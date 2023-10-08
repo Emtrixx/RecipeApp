@@ -29,6 +29,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.navArgument
+import androidx.navigation.navigation
 import com.example.recipeapp.AllItems.AllItems
 import com.example.recipeapp.HomeView.HomeListView
 import com.example.recipeapp.ItemView.ItemDetailView
@@ -39,6 +40,7 @@ import com.example.recipeapp.product.AddProductForm
 import com.example.recipeapp.product.AddProductViewModel
 import com.example.recipeapp.product.BarcodeScannerView
 import com.example.recipeapp.product.BarcodeViewModel
+import com.example.recipeapp.settings.NotificationSettingsView
 import com.example.recipeapp.shopping.ShoppingList
 
 sealed class BottomNavItem(var title:String, var icon: ImageVector, var screen:String){
@@ -96,10 +98,23 @@ fun NavGraph(navController: NavHostController, productList : List<Product>?) {
         ) {
             AllItems()
         }
-        composable(
-            route = BottomNavItem.Settings.screen,
+        navigation(
+            route = BottomNavItem.Settings.screen, startDestination = "${BottomNavItem.Settings.screen}/list"
         ) {
-            SettingsPage(navController)
+            composable("${BottomNavItem.Settings.screen}/list") { SettingsPage(navController) }
+            composable(
+                route = "${BottomNavItem.Settings.screen}/{settingName}",
+                arguments = listOf(navArgument("settingName") { type = NavType.StringType })
+            ) { backStackEntry ->
+                // Extract the itemId from the route and find the corresponding item
+                val settingName = backStackEntry.arguments?.getString("settingName")
+//                Text(settingName ?: "Setting not found")
+                settingName?.let {
+                    if (it == "Notifications") {
+                        NotificationSettingsView()
+                    }
+                }
+            }
         }
     }
 }
