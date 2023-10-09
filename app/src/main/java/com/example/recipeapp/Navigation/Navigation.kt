@@ -40,6 +40,9 @@ import com.example.recipeapp.product.AddProductForm
 import com.example.recipeapp.product.AddProductViewModel
 import com.example.recipeapp.product.BarcodeScannerView
 import com.example.recipeapp.product.BarcodeViewModel
+import com.example.recipeapp.settings.AppearanceSettings
+import com.example.recipeapp.settings.DevSettings
+import com.example.recipeapp.settings.GeneralSettings
 import com.example.recipeapp.settings.NotificationSettingsView
 import com.example.recipeapp.settings.SettingsPage
 import com.example.recipeapp.settings.SettingsViewModel
@@ -113,8 +116,19 @@ fun NavGraph(navController: NavHostController, productList : List<Product>?) {
                 val settingName = backStackEntry.arguments?.getString("settingName")
 //                Text(settingName ?: "Setting not found")
                 settingName?.let {
-                    if (it == "Notifications") {
-                        NotificationSettingsView(settingsViewModel)
+                    when (it) {
+                        "General" -> {
+                            GeneralSettings()
+                        }
+                        "Notifications" -> {
+                            NotificationSettingsView(settingsViewModel)
+                        }
+                        "Appearance" -> {
+                            AppearanceSettings()
+                        }
+                        "Dev" -> {
+                            DevSettings()
+                        }
                     }
                 }
             }

@@ -1,14 +1,9 @@
 package com.example.recipeapp.settings
 
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
@@ -25,6 +20,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import com.example.recipeapp.settings.components.SettingLink
+import com.example.recipeapp.settings.components.SettingLinkItem
 
 @Composable
 fun SettingsPage(navController: NavController) {
@@ -47,7 +44,7 @@ fun SettingsPage(navController: NavController) {
             Spacer(modifier = Modifier.padding(vertical = 8.dp))
         }
         items(getSettingsItems()) { item ->
-            SettingItem(name = item.name, icon = item.icon) {
+            SettingLinkItem(name = item.name, icon = item.icon) {
                 navController.navigate("settings/${item.name}")
             }
             Spacer(
@@ -57,41 +54,27 @@ fun SettingsPage(navController: NavController) {
     }
 }
 
-@Composable
-fun SettingItem(name: String, icon: @Composable () -> Unit, onClick: () -> Unit) {
-    Row(
-        modifier = Modifier.fillMaxWidth().clickable(onClick = onClick).padding(vertical = 8.dp),
-        horizontalArrangement = Arrangement.Start
-    ) {
-        icon()
-        Spacer(modifier = Modifier.width(16.dp))
-        Text(text = name, style = MaterialTheme.typography.headlineSmall)
-    }
-}
-
-data class Setting(val name: String, val icon: @Composable () -> Unit)
-
-fun getSettingsItems(): List<Setting> {
+private fun getSettingsItems(): List<SettingLink> {
     return listOf(
-        Setting("General") {
+        SettingLink("General") {
             Icon(
                 Icons.Default.Settings,
                 contentDescription = "General settings"
             )
         },
-        Setting("Appearance") {
+        SettingLink("Appearance") {
             Icon(
                 Icons.Default.Star,
                 contentDescription = "Appearance settings"
             )
         },
-        Setting("Notifications") {
+        SettingLink("Notifications") {
             Icon(
                 Icons.Default.Notifications,
                 contentDescription = "Notification settings"
             )
         },
-        Setting("Dev") { Icon(Icons.Default.Build, contentDescription = "Developer settings") },
+        SettingLink("Dev") { Icon(Icons.Default.Build, contentDescription = "Developer settings") },
     )
 }
 
