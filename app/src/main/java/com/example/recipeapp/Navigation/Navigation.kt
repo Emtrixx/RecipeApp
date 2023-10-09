@@ -20,6 +20,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavDestination
 import androidx.navigation.NavDestination.Companion.hierarchy
@@ -35,12 +36,13 @@ import com.example.recipeapp.HomeView.HomeListView
 import com.example.recipeapp.ItemView.ItemDetailView
 import com.example.recipeapp.RecipeView.RecipeViewTest
 import com.example.recipeapp.RecipeView.TestRecipeViewModel
-import com.example.recipeapp.settings.SettingsPage
 import com.example.recipeapp.product.AddProductForm
 import com.example.recipeapp.product.AddProductViewModel
 import com.example.recipeapp.product.BarcodeScannerView
 import com.example.recipeapp.product.BarcodeViewModel
 import com.example.recipeapp.settings.NotificationSettingsView
+import com.example.recipeapp.settings.SettingsPage
+import com.example.recipeapp.settings.SettingsViewModel
 import com.example.recipeapp.shopping.ShoppingList
 
 sealed class BottomNavItem(var title:String, var icon: ImageVector, var screen:String){
@@ -106,12 +108,13 @@ fun NavGraph(navController: NavHostController, productList : List<Product>?) {
                 route = "${BottomNavItem.Settings.screen}/{settingName}",
                 arguments = listOf(navArgument("settingName") { type = NavType.StringType })
             ) { backStackEntry ->
+                val settingsViewModel: SettingsViewModel = viewModel()
                 // Extract the itemId from the route and find the corresponding item
                 val settingName = backStackEntry.arguments?.getString("settingName")
 //                Text(settingName ?: "Setting not found")
                 settingName?.let {
                     if (it == "Notifications") {
-                        NotificationSettingsView()
+                        NotificationSettingsView(settingsViewModel)
                     }
                 }
             }

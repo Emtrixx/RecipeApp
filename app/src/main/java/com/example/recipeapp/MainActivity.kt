@@ -13,8 +13,14 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.preferencesDataStore
 import com.example.recipeapp.HomeView.HomeView
 import com.example.recipeapp.ui.theme.RecipeAppTheme
+
+val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "settings")
+
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
