@@ -5,6 +5,6 @@
     <string name="addProductAmountLabel">Amount</string>
     <string name="camera_button_label">Take Photo</string>
     <string name="product_image_desc">Product Image</string>
-    <string name="expiry_channel_name">expiry notiifcations</string>
+    <string name="expiry_channel_name">expiry notifications</string>
     <string name="expiry_channel_description">Notifies you if one of your products is about to expire</string>
 </resources>

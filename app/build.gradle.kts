@@ -80,6 +80,9 @@ dependencies {
     implementation ("com.squareup.okhttp3:logging-interceptor:4.9.1")
     // DataStore
     implementation("androidx.datastore:datastore-preferences:1.0.0")
+    // WorkManager
+    implementation("androidx.work:work-runtime-ktx:2.8.1")
+
 
     implementation("androidx.core:core-ktx:1.9.0")
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.6.2")
