@@ -317,8 +317,7 @@ fun ItemCard(
                                 modifier = Modifier.size(14.dp)
                             )
                             Text(
-                                //text = dateFormatter.format(product.bestbefore),
-                                text = product.bestbefore.toString(),
+                                text = product.bestbefore.take(1).toString(),
                                 fontSize = 10.sp,
                                 modifier = Modifier
                                     .padding(start = 4.dp),

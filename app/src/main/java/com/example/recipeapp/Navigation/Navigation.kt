@@ -3,7 +3,9 @@ package com.example.recipeapp.Navigation
 import Database.Product
 import android.util.Log
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.RowScope
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -24,6 +26,7 @@ import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -166,7 +169,7 @@ fun RowScope.AddItem(
             containerColor = androidx.compose.material3.MaterialTheme.colorScheme.primaryContainer,
             modifier = Modifier
                 .background(androidx.compose.material3.MaterialTheme.colorScheme.surfaceVariant)
-                .padding(2.dp)
+                .padding(1.dp)
         ) {
             Icon(imageVector = Icons.Default.Add, contentDescription = "Add icon")
         }
