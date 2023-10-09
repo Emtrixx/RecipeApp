@@ -8,6 +8,7 @@ import androidx.core.app.NotificationCompat
 import com.example.recipeapp.lib.EXPIRY_CHANNEL_ID
 import com.example.recipeapp.lib.sendNotification
 
+// NOT IN USE: NotificationWorker is used instead
 class NotificationService : Service() {
     override fun onBind(intent: Intent?): IBinder? {
         return null

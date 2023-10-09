@@ -6,10 +6,21 @@ import androidx.core.app.NotificationCompat
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
 import com.example.recipeapp.R
+import com.example.recipeapp.dataStore
+import com.example.recipeapp.settings.NOTIFICATIONS_STATE
+import kotlinx.coroutines.flow.first
 import java.time.LocalDate
 
 class NotificationWorker(appContext: Context, workerParams: WorkerParameters) : CoroutineWorker(appContext, workerParams) {
     override suspend fun doWork(): Result {
+
+        val notificationsState = applicationContext.dataStore.data.first()[NOTIFICATIONS_STATE] ?: false
+
+        if (!notificationsState) {
+            return Result.success()
+        }
+
+
         val db = Recipeapp.getInstance(applicationContext)
 
         val products = db.RecipeappDao().GetProducts()
