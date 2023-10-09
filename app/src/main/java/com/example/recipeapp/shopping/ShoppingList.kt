@@ -99,7 +99,7 @@ fun ShoppingList() {
                     },
                     actions = {
                         FilledTonalIconButton(
-                            colors = IconButtonDefaults.filledIconButtonColors(Color.White),
+                            colors = IconButtonDefaults.filledIconButtonColors(MaterialTheme.colorScheme.onSurfaceVariant),
                             onClick = {
                                 navController.navigate("shoppingForm")
                             }
@@ -192,13 +192,13 @@ fun ShoppingCard(item: ShoppingItem, onDeleteItem: (ShoppingItem) -> Unit) {
                 text = item.name,
                 modifier = Modifier
                     .padding(start = 16.dp),
-                color = if (checkedState) Color.Gray else Color.Black
+                color = if (checkedState) MaterialTheme.colorScheme.outline else MaterialTheme.colorScheme.onSurfaceVariant
             )
             Text(
                 text = "qty: ${item.amount}",
                 modifier = Modifier
                     .padding(start = 16.dp),
-                color = if (checkedState) Color.Gray else Color.Black
+                color = if (checkedState) MaterialTheme.colorScheme.outline else MaterialTheme.colorScheme.onSurfaceVariant
             )
             IconButton(
                 onClick = { onDeleteItem(item) },

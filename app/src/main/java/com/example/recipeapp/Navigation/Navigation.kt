@@ -4,8 +4,13 @@ import Database.Product
 import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.RowScope
+import androidx.compose.foundation.layout.offset
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.BottomNavigation
 import androidx.compose.material.BottomNavigationItem
+import androidx.compose.material.FabPosition
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
@@ -16,6 +21,7 @@ import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.List
 import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material3.FloatingActionButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
@@ -23,6 +29,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.navigation.NavController
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.unit.dp
 import androidx.navigation.NavDestination
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavHostController
@@ -42,19 +49,19 @@ import com.example.recipeapp.product.BarcodeViewModel
 import com.example.recipeapp.product.BarcodeScannerView
 import com.example.recipeapp.shopping.ShoppingList
 
-sealed class BottomNavItem(var title:String, var icon: ImageVector, var screen:String){
+sealed class BottomNavItem(var title: String, var icon: ImageVector, var screen: String) {
 
-    object Home : BottomNavItem("Home",Icons.Default.Home,"home")
+    object Home : BottomNavItem("Home", Icons.Default.Home, "home")
 
-    object ShoppingList: BottomNavItem("Shopping List", Icons.Default.List,"shoppingList")
-    object AddItem: BottomNavItem("Add Item",Icons.Default.Add,"scanner")
-    object Recipes: BottomNavItem("Empty",Icons.Default.Info,"recipe")
-    object Settings: BottomNavItem("Empty",Icons.Default.Settings,"home")
+    object ShoppingList : BottomNavItem("Shopping List", Icons.Default.List, "shoppingList")
+    object AddItem : BottomNavItem("Add Item", Icons.Default.Add, "scanner")
+    object Recipes : BottomNavItem("Empty", Icons.Default.Info, "recipe")
+    object Settings : BottomNavItem("Empty", Icons.Default.Settings, "home")
 
 }
 
 @Composable
-fun NavGraph(navController: NavHostController, productList : List<Product>?) {
+fun NavGraph(navController: NavHostController, productList: List<Product>?) {
     NavHost(navController = navController, startDestination = BottomNavItem.Home.screen)
     {
         composable(route = BottomNavItem.Home.screen) {
@@ -129,22 +136,41 @@ fun RowScope.AddItem(
     currentDestination: NavDestination?,
     navController: NavHostController
 ) {
-    BottomNavigationItem(
-        icon = {
-            Icon(imageVector = screen.icon,
-                contentDescription = "Navigation icon",
-                tint = androidx.compose.material3.MaterialTheme.colorScheme.onSurfaceVariant
+    if (screen.screen != "scanner") {
+        BottomNavigationItem(
+            icon = {
+                Icon(
+                    imageVector = screen.icon,
+                    contentDescription = "Navigation icon",
+                    tint = androidx.compose.material3.MaterialTheme.colorScheme.onSurfaceVariant
                 )
-        },
-        selected = currentDestination?.hierarchy?.any {
-            Log.d("DBG", screen.screen ?: "empty")
-            it.route == screen.screen
-        } == true,
-        onClick = {
-            navController.navigate(screen.screen)
-        },
-        modifier = Modifier.background(androidx.compose.material3.MaterialTheme.colorScheme.surfaceVariant),
-    )
+            },
+            selected = currentDestination?.hierarchy?.any {
+                Log.d("DBG", screen.screen ?: "empty")
+                it.route == screen.screen
+            } == true,
+            onClick = {
+                navController.navigate(screen.screen)
+            },
+            modifier = Modifier.background(androidx.compose.material3.MaterialTheme.colorScheme.surfaceVariant),
+            selectedContentColor = Color.White,
+            unselectedContentColor = Color.Gray,
+        )
+    } else {
+        FloatingActionButton(
+            shape = CircleShape,
+            onClick = {
+                navController.navigate(screen.screen)
+            },
+            contentColor = Color.White,
+            containerColor = androidx.compose.material3.MaterialTheme.colorScheme.primaryContainer,
+            modifier = Modifier
+                .background(androidx.compose.material3.MaterialTheme.colorScheme.surfaceVariant)
+                .padding(2.dp)
+        ) {
+            Icon(imageVector = Icons.Default.Add, contentDescription = "Add icon")
+        }
+    }
 }
 
 @Composable

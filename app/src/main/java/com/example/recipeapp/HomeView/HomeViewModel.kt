@@ -5,11 +5,9 @@ import Database.Recipeapp
 import Database.ShoppingItem
 import android.content.Context
 import android.graphics.Bitmap
-import android.graphics.drawable.BitmapDrawable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -17,7 +15,6 @@ import androidx.lifecycle.viewModelScope
 import com.example.recipeapp.components.camera.getImageFromInternalStorage
 import kotlinx.coroutines.launch
 import java.time.LocalDate
-import java.util.*
 import kotlin.random.Random
 
 
@@ -28,6 +25,8 @@ class HomeViewModel(context: Context) : ViewModel() {
     }
 
     private val productsLiveData: MutableLiveData<List<Product>> = MutableLiveData()
+
+    private var itemCount = 0
 
     private var savedImagePath = ""
 
@@ -59,9 +58,9 @@ class HomeViewModel(context: Context) : ViewModel() {
         }
     }
 
-    fun removeProduct(barcode: String) {
-        viewModelScope.launch {
-            db.RecipeappDao().deleteProductById(barcode)
+    fun removeProduct(product: Product) {
+        viewModelScope.launch() {
+            db.RecipeappDao().deleteProductById(product)
             val products = db.RecipeappDao().GetProducts()
             productsLiveData.postValue(products)
         }
@@ -79,5 +78,13 @@ class HomeViewModel(context: Context) : ViewModel() {
             savedImagePath = product.image
             storedImage = getImageFromInternalStorage(context, savedImagePath)
         }
+    }
+
+    fun getProductCount(): Int {
+        viewModelScope.launch {
+            val products = db.RecipeappDao().GetProducts()
+            itemCount = products.size
+        }
+        return itemCount
     }
 }

@@ -1,10 +1,7 @@
 package com.example.recipeapp.HomeView
 
 import Database.Product
-import Database.ShoppingItem
 import android.annotation.SuppressLint
-import android.graphics.Bitmap
-import android.net.Uri
 import android.widget.Toast
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
@@ -57,7 +54,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.painter.BitmapPainter
-import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -65,20 +61,14 @@ import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import coil.compose.AsyncImage
-import coil.compose.AsyncImagePainter
-import coil.compose.rememberAsyncImagePainter
-import com.example.recipeapp.Navigation.NavGraph
 import com.example.recipeapp.Navigation.BottomNavigationBar
+import com.example.recipeapp.Navigation.NavGraph
 import com.example.recipeapp.R
-import com.example.recipeapp.components.camera.getImageFromInternalStorage
 import java.text.SimpleDateFormat
 import java.time.LocalDate
 import java.util.Locale
@@ -95,8 +85,6 @@ fun HomeView() {
     val homeViewModel = HomeViewModel(context)
 
     val productList by homeViewModel.getProductsLiveData().observeAsState(emptyList())
-
-    var filteredProducts = productList.take(3)
 
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
 
@@ -132,7 +120,7 @@ fun HomeView() {
         bottomBar = { BottomNavigationBar(navController = navController) },
     ) { innerPadding ->
         Column(modifier = Modifier.padding(innerPadding)) {
-            NavGraph(navController = navController, filteredProducts)
+            NavGraph(navController = navController, productList)
         }
     }
 }
@@ -144,8 +132,11 @@ fun HomeListView(productList: List<Product>?, navController: NavController) {
     val context = LocalContext.current
     val homeViewModel = HomeViewModel(context)
 
+    val productCount = productList?.size
+
+
     val onDeleteItem: (Product) -> Unit = { item ->
-        homeViewModel.removeProduct(item.barcode)
+        homeViewModel.removeProduct(product = item)
     }
 
     if (productList.isNullOrEmpty()) {
@@ -211,17 +202,17 @@ fun HomeListView(productList: List<Product>?, navController: NavController) {
                             modifier = Modifier
                                 .padding(4.dp),
                             colors = ButtonColors(
-                                containerColor = MaterialTheme.colorScheme.tertiaryContainer,
-                                contentColor = MaterialTheme.colorScheme.onTertiaryContainer,
+                                containerColor = MaterialTheme.colorScheme.primaryContainer,
+                                contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
                                 disabledContainerColor = MaterialTheme.colorScheme.errorContainer,
                                 disabledContentColor = MaterialTheme.colorScheme.onErrorContainer
                                 )
                         ) {
-                            Text("See all (21)")
+                            Text("See all (${productCount})")
                         }
                     }
                 }
-                items(productList) { item ->
+                items(productList.take(3)) { item ->
                     ItemCard(
                         product = item,
                         navController = navController,
@@ -331,7 +322,7 @@ fun ItemCard(
                                 fontSize = 10.sp,
                                 modifier = Modifier
                                     .padding(start = 4.dp),
-                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
                         }
                     }
