@@ -7,7 +7,6 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.icu.text.SimpleDateFormat
 import android.net.Uri
-import android.util.Log
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -19,10 +18,10 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -41,7 +40,6 @@ import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import androidx.navigation.NavController
-import coil.compose.rememberAsyncImagePainter
 import com.example.recipeapp.R
 import com.google.android.datatransport.BuildConfig
 import java.io.File
@@ -52,6 +50,7 @@ import java.util.Objects
 @Composable
 fun BarcodeScannerView(viewModel: BarcodeViewModel, navController: NavController) {
     val scanResult by viewModel.scanResult.observeAsState("")
+    val error by viewModel.error.observeAsState("")
 
     val context = LocalContext.current
     val file = context.createImageFile()
@@ -112,6 +111,15 @@ fun BarcodeScannerView(viewModel: BarcodeViewModel, navController: NavController
         verticalArrangement = Arrangement.Center
     ) {
         Text(text = "Add products", fontSize = 24.sp, modifier = Modifier.padding(8.dp))
+        if (error != "") {
+            Text(
+                text = error,
+                fontSize = 18.sp,
+                color = MaterialTheme.colorScheme.error,
+                style = MaterialTheme.typography.bodyMedium,
+                modifier = Modifier.padding(start = 8.dp)
+            )
+        }
         Card(
             modifier = Modifier
                 .padding(8.dp)
@@ -154,7 +162,6 @@ fun BarcodeScannerView(viewModel: BarcodeViewModel, navController: NavController
                 .padding(8.dp)
                 .fillMaxWidth(),
             onClick = {
-                viewModel.createBarCode()
                 navController.navigate("add")
             },
             elevation = CardDefaults.cardElevation(
