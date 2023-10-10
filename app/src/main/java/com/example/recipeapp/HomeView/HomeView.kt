@@ -4,6 +4,7 @@ import Database.Product
 import Database.Recipe
 import android.annotation.SuppressLint
 import android.widget.Toast
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -17,17 +18,20 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.ClickableText
 import androidx.compose.material.AlertDialog
 import androidx.compose.material.DropdownMenu
 import androidx.compose.material.DropdownMenuItem
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.Button
@@ -36,6 +40,7 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -114,9 +119,13 @@ fun HomeView() {
         topBar = {
             if (topAppBarTitle != "hide") {
                 TopAppBar(
-                    title = { Text(text = topAppBarTitle, style = TextStyle(
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    ), fontSize = 20.sp) },
+                    title = {
+                        Text(
+                            text = topAppBarTitle, style = TextStyle(
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            ), fontSize = 20.sp
+                        )
+                    },
                     colors = topAppBarColors(
                         containerColor = MaterialTheme.colorScheme.secondaryContainer,
                     ),
@@ -124,7 +133,28 @@ fun HomeView() {
                 )
             }
         },
-        bottomBar = { BottomNavigationBar(navController = navController) },
+        bottomBar = {
+            Box(modifier = Modifier.fillMaxWidth(),
+                contentAlignment = Alignment.Center
+            ) {
+                BottomNavigationBar(navController = navController)
+                FloatingActionButton(
+                    shape = CircleShape,
+                    onClick = {
+                        navController.navigate("scanner")
+                    },
+                    contentColor = Color.White,
+                    containerColor = MaterialTheme.colorScheme.primaryContainer,
+                    modifier = Modifier.offset(0.dp, (-7).dp),
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Add,
+                        contentDescription = "Add icon",
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
+            }
+        },
     ) { innerPadding ->
         Column(modifier = Modifier.padding(innerPadding)) {
             NavGraph(navController = navController, productList, recipeList)
@@ -134,7 +164,11 @@ fun HomeView() {
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun HomeListView(productList: List<Product>?, recipeList: List<Recipe>?, navController: NavController) {
+fun HomeListView(
+    productList: List<Product>?,
+    recipeList: List<Recipe>?,
+    navController: NavController
+) {
 
     val context = LocalContext.current
     val homeViewModel = HomeViewModel(context)
@@ -146,43 +180,39 @@ fun HomeListView(productList: List<Product>?, recipeList: List<Recipe>?, navCont
         homeViewModel.removeProduct(product = item)
     }
 
-    if (productList.isNullOrEmpty()) {
-        Box(
-            Modifier
-                .fillMaxSize(),
-            contentAlignment = Alignment.Center,
-        ) {
-            Column(
-                modifier = Modifier.fillMaxWidth(),
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+    ) {
+        if (productList.isNullOrEmpty()) {
+            Box(
+                Modifier
+                    .fillMaxSize(),
+                contentAlignment = Alignment.Center,
             ) {
-                Text(
-                    text = "You don't have any products saved yet.",
-                    style = MaterialTheme.typography.bodyMedium,
-                    modifier = Modifier,
-                    fontStyle = FontStyle.Italic
+                Column(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Text(
+                        text = "You don't have any products saved yet.",
+                        style = MaterialTheme.typography.bodyMedium,
+                        modifier = Modifier,
+                        fontStyle = FontStyle.Italic
 
-                )
-                ClickableText(
-                    text = AnnotatedString("Click here to add your first one"),
-                    modifier = Modifier.padding(8.dp),
-                    onClick = { offset ->
-                        if (offset in 0..21) {
-                            navController.navigate("scanner")
-                        }
-                    },
-                    style = TextStyle(
-                        color = Color.Blue,
                     )
-                )
+                    ClickableText(
+                        text = AnnotatedString("Click here to add your first one"),
+                        modifier = Modifier.padding(8.dp),
+                        onClick = { navController.navigate("scanner") },
+                        style = TextStyle(
+                            color = MaterialTheme.colorScheme.surfaceTint,
+                        )
+                    )
+                }
             }
-        }
-    } else {
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-        ) {
+        } else {
             LazyColumn(
                 modifier = Modifier
                     .weight(1f)
@@ -204,7 +234,7 @@ fun HomeListView(productList: List<Product>?, recipeList: List<Recipe>?, navCont
                                 .padding(4.dp),
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
 
-                        )
+                            )
                         Button(
                             onClick = { navController.navigate("allItems") },
                             modifier = Modifier
@@ -227,7 +257,7 @@ fun HomeListView(productList: List<Product>?, recipeList: List<Recipe>?, navCont
                         onDeleteItem = onDeleteItem
                     )
                 }
-                item {
+                stickyHeader {
                     Text(
                         text = "Recipes",
                         fontSize = 24.sp,
@@ -235,12 +265,40 @@ fun HomeListView(productList: List<Product>?, recipeList: List<Recipe>?, navCont
                             .padding(8.dp)
                     )
                 }
-                /*
-                items(items = recipeList) { item ->
-                    RecipeItemCard(
-                        recipe = item
-                    )
-                }*/
+
+                if (recipeList.isNullOrEmpty()) {
+                    item {
+                        Column(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(vertical = 100.dp),
+                            verticalArrangement = Arrangement.Center,
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+                            Text(
+                                text = "You don't have any recipes saved yet.",
+                                style = MaterialTheme.typography.bodyMedium,
+                                modifier = Modifier,
+                                fontStyle = FontStyle.Italic
+
+                            )
+                            ClickableText(
+                                text = AnnotatedString("Click here to create your first one"),
+                                modifier = Modifier.padding(8.dp),
+                                onClick = { navController.navigate("recipe") },
+                                style = TextStyle(
+                                    color = MaterialTheme.colorScheme.surfaceTint,
+                                )
+                            )
+                        }
+                    }
+                } else {
+                    items(items = recipeList) { item ->
+                        RecipeItemCard(
+                            recipe = item
+                        )
+                    }
+                }
             }
         }
     }
@@ -358,26 +416,41 @@ fun ItemCard(
                             openDialog.value = false
                         },
                         title = {
-                            Text(text = "Are you sure you want to delete this item?")
+                            Text(text = "Are you sure you want to delete this item?", color = Color.Black)
                         },
                         text = {
-                            Text("This will remove ${product.name} permanently")
+                            Text("This will remove ${product.name} permanently", color = Color.Black)
                         },
                         confirmButton = {
                             Button(
                                 onClick = {
                                     openDialog.value = false
                                     onDeleteItem(product)
-                                }) {
-                                Text("Confirm")
+                                    navController.navigate("home")
+                                },
+                                colors = ButtonColors(
+                                    containerColor = MaterialTheme.colorScheme.primaryContainer,
+                                    contentColor = Color.White,
+                                    disabledContainerColor = MaterialTheme.colorScheme.errorContainer,
+                                    disabledContentColor = MaterialTheme.colorScheme.onErrorContainer
+                                ),) {
+                                Text("Confirm", color = Color.White)
                             }
                         },
                         dismissButton = {
                             Button(
                                 onClick = {
                                     openDialog.value = false
-                                }) {
-                                Text("Cancel")
+                                },
+                                colors = ButtonColors(
+                                    containerColor = Color.Transparent,
+                                    contentColor = Color.Black,
+                                    disabledContainerColor = MaterialTheme.colorScheme.errorContainer,
+                                    disabledContentColor = MaterialTheme.colorScheme.onErrorContainer
+                                ),
+                                border = BorderStroke(2.dp, MaterialTheme.colorScheme.primaryContainer)
+                                ) {
+                                Text("Cancel", color = Color.Black)
                             }
                         }
                     )
@@ -454,48 +527,27 @@ fun ItemCard(
 }
 
 @Composable
-fun RecipeItemCard(recipe : Recipe) {
+fun RecipeItemCard(recipe: Recipe) {
 
-    if (recipe == null) {
-        Box(
-            Modifier
-                .fillMaxSize(),
-            contentAlignment = Alignment.Center,
-        ) {
+    ElevatedCard(
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.primaryContainer
+        ),
+        modifier = Modifier
+            .padding(12.dp)
+    ) {
+        Column {
             Column(
-                modifier = Modifier.fillMaxWidth(),
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally
+                modifier = Modifier
+                    .padding(all = 8.dp)
+                    .fillMaxWidth()
             ) {
-                Text(
-                    text = "You don't have any recipes yet",
-                    style = MaterialTheme.typography.bodyMedium,
-                    modifier = Modifier,
-                    fontStyle = FontStyle.Italic
-
-                )
+                Text(text = recipe.name, fontWeight = FontWeight.Bold)
+                Spacer(modifier = Modifier.height(4.dp))
             }
-        }
-    } else {
-        ElevatedCard(
-            colors = CardDefaults.cardColors(
-                containerColor = MaterialTheme.colorScheme.primaryContainer
-            ),
-            modifier = Modifier
-                .padding(12.dp)
-        ) {
-            Column {
-                Column(
-                    modifier = Modifier
-                        .padding(all = 8.dp)
-                        .fillMaxWidth()
-                ) {
-                    Text(text = recipe.name, fontWeight = FontWeight.Bold)
-                    Spacer(modifier = Modifier.height(4.dp))
-                }
-                Spacer(modifier = Modifier.height(8.dp))
-            }
+            Spacer(modifier = Modifier.height(8.dp))
         }
     }
 }
+
 

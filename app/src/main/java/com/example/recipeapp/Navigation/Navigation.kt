@@ -5,8 +5,6 @@ import Database.Recipe
 import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.RowScope
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.BottomNavigation
 import androidx.compose.material.BottomNavigationItem
 import androidx.compose.material.Icon
@@ -18,7 +16,6 @@ import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.ShoppingCart
-import androidx.compose.material3.FloatingActionButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
@@ -66,7 +63,11 @@ sealed class BottomNavItem(var title: String, var icon: ImageVector, var screen:
 }
 
 @Composable
-fun NavGraph(navController: NavHostController, productList : List<Product>?, recipeList: List<Recipe>?) {
+fun NavGraph(
+    navController: NavHostController,
+    productList: List<Product>?,
+    recipeList: List<Recipe>?
+) {
     NavHost(navController = navController, startDestination = BottomNavItem.Home.screen)
     {
         composable(route = BottomNavItem.Home.screen) {
@@ -178,41 +179,25 @@ fun RowScope.AddItem(
     currentDestination: NavDestination?,
     navController: NavHostController
 ) {
-    if (screen.screen != "scanner") {
-        BottomNavigationItem(
-            icon = {
-                Icon(
-                    imageVector = screen.icon,
-                    contentDescription = "Navigation icon",
-                    tint = androidx.compose.material3.MaterialTheme.colorScheme.onSurfaceVariant
-                )
-            },
-            selected = currentDestination?.hierarchy?.any {
-                Log.d("DBG", screen.screen ?: "empty")
-                it.route == screen.screen
-            } == true,
-            onClick = {
-                navController.navigate(screen.screen)
-            },
-            modifier = Modifier.background(androidx.compose.material3.MaterialTheme.colorScheme.secondaryContainer),
-            selectedContentColor = Color.White,
-            unselectedContentColor = Color.Gray,
-        )
-    } else {
-        FloatingActionButton(
-            shape = CircleShape,
-            onClick = {
-                navController.navigate(screen.screen)
-            },
-            contentColor = Color.White,
-            containerColor = androidx.compose.material3.MaterialTheme.colorScheme.primaryContainer,
-            modifier = Modifier
-                .background(androidx.compose.material3.MaterialTheme.colorScheme.secondaryContainer)
-                .padding(1.dp)
-        ) {
-            Icon(imageVector = Icons.Default.Add, contentDescription = "Add icon")
-        }
-    }
+    BottomNavigationItem(
+        icon = {
+            Icon(
+                imageVector = screen.icon,
+                contentDescription = "Navigation icon",
+                tint = androidx.compose.material3.MaterialTheme.colorScheme.onSurfaceVariant
+            )
+        },
+        selected = currentDestination?.hierarchy?.any {
+            Log.d("DBG", screen.screen ?: "empty")
+            it.route == screen.screen
+        } == true,
+        onClick = {
+            navController.navigate(screen.screen)
+        },
+        modifier = Modifier.background(androidx.compose.material3.MaterialTheme.colorScheme.secondaryContainer),
+        selectedContentColor = Color.White,
+        unselectedContentColor = Color.Gray,
+    )
 }
 
 @Composable

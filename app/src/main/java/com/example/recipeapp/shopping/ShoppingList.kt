@@ -22,6 +22,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardColors
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledTonalIconButton
@@ -182,7 +183,14 @@ fun ShoppingList() {
 @Composable
 fun ShoppingCard(item: ShoppingItem, onDeleteItem: (ShoppingItem) -> Unit) {
     val (checkedState, onStateChange) = remember { mutableStateOf(false) }
-    Card() {
+    Card(
+        colors = CardColors(
+            containerColor = MaterialTheme.colorScheme.secondaryContainer,
+            contentColor = MaterialTheme.colorScheme.onSurfaceVariant,
+            disabledContainerColor = MaterialTheme.colorScheme.secondaryContainer,
+            disabledContentColor = MaterialTheme.colorScheme.onSurfaceVariant
+        )
+    ) {
         Row(
             Modifier
                 .fillMaxWidth()

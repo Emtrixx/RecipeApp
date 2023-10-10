@@ -3,9 +3,9 @@ package com.example.recipeapp.ItemView
 import Database.Product
 import android.util.Log
 import android.widget.Toast
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -17,11 +17,14 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.AlertDialog
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.ShoppingCart
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardColors
 import androidx.compose.material3.CardDefaults
@@ -33,8 +36,12 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.painter.BitmapPainter
@@ -43,6 +50,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
@@ -81,6 +89,12 @@ fun ItemView(product: Product, navController: NavController) {
     }
 
     val barcodeImage = viewModel.generateBarcodeImage(product.barcode)
+
+    val openDialog = remember { mutableStateOf(false) }
+
+    val onDeleteItem: (Product) -> Unit = { item ->
+        viewModel.removeProduct(product = item)
+    }
 
     LazyColumn(modifier = Modifier.fillMaxWidth()) {
         stickyHeader {
@@ -125,14 +139,18 @@ fun ItemView(product: Product, navController: NavController) {
         }
         // Item Image
         item {
-            Box() {
+            Box(
+                modifier = Modifier
+                    .clip(shape = RoundedCornerShape(0.dp, 0.dp, 16.dp, 16.dp))
+                    .shadow(elevation = 12.dp)
+            ) {
                 Image(
                     painter = painter,
                     contentDescription = "Product image",
                     contentScale = ContentScale.Crop,
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(400.dp)
+                        .height(400.dp),
                 )
             }
         }
@@ -153,7 +171,8 @@ fun ItemView(product: Product, navController: NavController) {
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    IconButton(
+                    // add to shopping list button
+                    Button(
                         onClick = {
                             Toast.makeText(
                                 context,
@@ -163,51 +182,91 @@ fun ItemView(product: Product, navController: NavController) {
                             viewModel.addToShoppingList(product)
                             navController.navigate("shoppingList")
                         },
-                        Modifier
-                            .background(
-                                MaterialTheme.colorScheme.primaryContainer,
-                                shape = RoundedCornerShape(16.dp)
-                            )
-                            .weight(1f),
+                        Modifier.weight(1f),
+                        colors = ButtonColors(
+                            containerColor = MaterialTheme.colorScheme.primaryContainer,
+                            contentColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                            disabledContentColor = MaterialTheme.colorScheme.primaryContainer,
+                            disabledContainerColor = MaterialTheme.colorScheme.onSurfaceVariant
+                        ),
+                        shape = RoundedCornerShape(16.dp)
                     ) {
-                        Icon(
-                            Icons.Filled.ShoppingCart,
-                            contentDescription = "Shopping list",
-                            tint = Color.White
-                        )
-                    }
-                    IconButton(
-                        onClick = {},
-                        Modifier
-                            .background(
-                                MaterialTheme.colorScheme.primaryContainer,
-                                shape = RoundedCornerShape(16.dp)
+                        Column(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(75.dp),
+                            verticalArrangement = Arrangement.Center,
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+                            Icon(
+                                Icons.Filled.ShoppingCart,
+                                contentDescription = "Shopping list",
+                                tint = Color.White
                             )
-                            .weight(1f),
-                    ) {
-                        Icon(
-                            Icons.Filled.Menu,
-                            contentDescription = "Shopping list",
-                            tint = Color.White
-                        )
+                            Text(
+                                text = "Shopping list",
+                                fontSize = 10.sp,
+                                textAlign = TextAlign.Center
+                            )
+                        }
                     }
-                    IconButton(
+                    // generate a recipe button
+                    Button(
                         onClick = {
-                            viewModel.removeProduct(product)
-                            navController.navigate("home")
+                            navController.navigate("recipe")
                         },
-                        Modifier
-                            .background(
-                                MaterialTheme.colorScheme.primaryContainer,
-                                shape = RoundedCornerShape(16.dp)
-                            )
-                            .weight(1f),
+                        Modifier.weight(1f),
+                        colors = ButtonColors(
+                            containerColor = MaterialTheme.colorScheme.primaryContainer,
+                            contentColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                            disabledContentColor = MaterialTheme.colorScheme.primaryContainer,
+                            disabledContainerColor = MaterialTheme.colorScheme.onSurfaceVariant
+                        ),
+                        shape = RoundedCornerShape(16.dp)
                     ) {
-                        Icon(
-                            Icons.Filled.Delete,
-                            contentDescription = "Shopping list",
-                            tint = Color.Red
-                        )
+                        Column(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(75.dp),
+                            verticalArrangement = Arrangement.Center,
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+                            Icon(
+                                Icons.Filled.Menu,
+                                contentDescription = "Generate recipe",
+                                tint = Color.White
+                            )
+                            Text(text = "Recipe", fontSize = 10.sp)
+                        }
+                    }
+                    //delete button
+                    Button(
+                        onClick = {
+                            openDialog.value = true
+                        },
+                        Modifier.weight(1f),
+                        colors = ButtonColors(
+                            containerColor = MaterialTheme.colorScheme.primaryContainer,
+                            contentColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                            disabledContentColor = MaterialTheme.colorScheme.primaryContainer,
+                            disabledContainerColor = MaterialTheme.colorScheme.onSurfaceVariant
+                        ),
+                        shape = RoundedCornerShape(16.dp)
+                    ) {
+                        Column(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(75.dp),
+                            verticalArrangement = Arrangement.Center,
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+                            Icon(
+                                Icons.Filled.Delete,
+                                contentDescription = "Delete",
+                                tint = Color.Red
+                            )
+                            Text(text = "Delete", fontSize = 10.sp, color = Color.Red)
+                        }
                     }
                 }
                 // Item Description
@@ -287,7 +346,10 @@ fun ItemView(product: Product, navController: NavController) {
                         .padding(4.dp)
                 ) {
                     Column(Modifier.padding(8.dp)) {
-                        Text(text = "Current dates in your fridge", fontWeight = FontWeight.Bold)
+                        Text(
+                            text = "Current dates in your fridge",
+                            fontWeight = FontWeight.Bold
+                        )
 
                         if (product.bestbefore.all { it.toString() == "null" }) {
 
@@ -309,7 +371,8 @@ fun ItemView(product: Product, navController: NavController) {
                     Card(
                         Modifier
                             .padding(4.dp)
-                            .fillMaxWidth()) {
+                            .fillMaxWidth()
+                    ) {
                         Column(
                             modifier = Modifier
                                 .fillMaxWidth(),
@@ -335,7 +398,63 @@ fun ItemView(product: Product, navController: NavController) {
                         }
                     }
                 }
+                if (openDialog.value) {
+                    AlertDialog(
+                        onDismissRequest = {
+                            openDialog.value = false
+                        },
+                        title = {
+                            Text(
+                                text = "Are you sure you want to delete this item?",
+                                color = Color.Black
+                            )
+                        },
+                        text = {
+                            Text(
+                                "This will remove ${product.name} permanently",
+                                color = Color.Black
+                            )
+                        },
+                        confirmButton = {
+                            Button(
+                                onClick = {
+                                    openDialog.value = false
+                                    onDeleteItem(product)
+                                    navController.navigate("home")
+                                },
+                                colors = ButtonColors(
+                                    containerColor = MaterialTheme.colorScheme.primaryContainer,
+                                    contentColor = Color.White,
+                                    disabledContainerColor = MaterialTheme.colorScheme.errorContainer,
+                                    disabledContentColor = MaterialTheme.colorScheme.onErrorContainer
+                                ),
+                            ) {
+                                Text("Confirm", color = Color.White)
+                            }
+                        },
+                        dismissButton = {
+                            Button(
+                                onClick = {
+                                    openDialog.value = false
+                                },
+                                colors = ButtonColors(
+                                    containerColor = Color.Transparent,
+                                    contentColor = Color.Black,
+                                    disabledContainerColor = MaterialTheme.colorScheme.errorContainer,
+                                    disabledContentColor = MaterialTheme.colorScheme.onErrorContainer
+                                ),
+                                border = BorderStroke(
+                                    2.dp,
+                                    MaterialTheme.colorScheme.primaryContainer
+                                )
+                            ) {
+                                Text("Cancel", color = Color.Black)
+                            }
+                        }
+                    )
+                }
             }
         }
     }
 }
+
