@@ -53,19 +53,19 @@ import com.example.recipeapp.settings.SettingsPage
 import com.example.recipeapp.settings.SettingsViewModel
 import com.example.recipeapp.shopping.ShoppingList
 
-sealed class BottomNavItem(var title:String, var icon: ImageVector, var screen:String){
+sealed class BottomNavItem(var title: String, var icon: ImageVector, var screen: String) {
 
     object Home : BottomNavItem("Home", Icons.Default.Home, "home")
 
-    object ShoppingList: BottomNavItem("Shopping List", Icons.Default.ShoppingCart,"shoppingList")
-    object AddItem: BottomNavItem("Add Item",Icons.Default.Add,"scanner")
-    object Recipes: BottomNavItem("Empty",Icons.Default.Info,"recipe")
-    object Settings: BottomNavItem("Empty",Icons.Default.Settings,"settings")
+    object ShoppingList : BottomNavItem("Shopping List", Icons.Default.ShoppingCart, "shoppingList")
+    object AddItem : BottomNavItem("Add Item", Icons.Default.Add, "scanner")
+    object Recipes : BottomNavItem("Empty", Icons.Default.Info, "recipe")
+    object Settings : BottomNavItem("Empty", Icons.Default.Settings, "settings")
 
 }
 
 @Composable
-fun NavGraph(navController: NavHostController, productList : List<Product>?) {
+fun NavGraph(navController: NavHostController, productList: List<Product>?) {
     NavHost(navController = navController, startDestination = BottomNavItem.Home.screen)
     {
         composable(route = BottomNavItem.Home.screen) {
@@ -82,11 +82,14 @@ fun NavGraph(navController: NavHostController, productList : List<Product>?) {
             RecipeViewTest(viewModel = TestRecipeViewModel())
         }
         composable(
-            "add?barcode={barcode}",
-            arguments = listOf(navArgument("barcode") { nullable = true })
+            "add?barcode={barcode}?edit={edit}",
+            arguments = listOf(
+                navArgument("barcode") { nullable = true },
+                navArgument("edit") { defaultValue = false })
         ) {
             val barcode = it.arguments?.getString("barcode")
-            val productViewModel = AddProductViewModel(barcode, LocalContext.current)
+            val edit = it.arguments?.getBoolean("edit") ?: false
+            val productViewModel = AddProductViewModel(barcode, LocalContext.current, edit)
             AddProductForm(productViewModel, navController)
         }
         composable(
@@ -109,7 +112,8 @@ fun NavGraph(navController: NavHostController, productList : List<Product>?) {
             AllItems()
         }
         navigation(
-            route = BottomNavItem.Settings.screen, startDestination = "${BottomNavItem.Settings.screen}/list"
+            route = BottomNavItem.Settings.screen,
+            startDestination = "${BottomNavItem.Settings.screen}/list"
         ) {
             composable("${BottomNavItem.Settings.screen}/list") { SettingsPage(navController) }
             composable(
@@ -125,12 +129,15 @@ fun NavGraph(navController: NavHostController, productList : List<Product>?) {
                         "General" -> {
                             GeneralSettings()
                         }
+
                         "Notifications" -> {
                             NotificationSettingsView(settingsViewModel)
                         }
+
                         "Appearance" -> {
                             AppearanceSettings()
                         }
+
                         "Dev" -> {
                             DevSettings()
                         }

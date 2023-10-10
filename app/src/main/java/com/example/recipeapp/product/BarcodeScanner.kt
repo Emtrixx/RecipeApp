@@ -100,7 +100,7 @@ fun BarcodeScannerView(viewModel: BarcodeViewModel, navController: NavController
 
     if (scanResult != "") {
         LaunchedEffect(Unit) {
-            navController.navigate("add?barcode=${scanResult}")
+            navController.navigate("add?barcode=${scanResult}?edit=${false}")
         }
     }
 
@@ -187,20 +187,6 @@ fun BarcodeScannerView(viewModel: BarcodeViewModel, navController: NavController
                         Text(text = "Add product without barcode", fontSize = 18.sp)
                     }
                 }
-            }
-
-            if (scanResult != "") {
-                Button(onClick = {
-                    navController.navigate("add?barcode=${scanResult}")
-                }) {
-                    Text(text = "Continue")
-                }
-                Image(
-                    modifier = Modifier
-                        .padding(16.dp, 8.dp),
-                    painter = rememberAsyncImagePainter(capturedImageUri),
-                    contentDescription = null
-                )
             }
         }
     }

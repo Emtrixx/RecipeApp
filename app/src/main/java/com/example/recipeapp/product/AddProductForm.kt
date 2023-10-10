@@ -82,6 +82,11 @@ fun AddProductForm(viewModel: AddProductViewModel, navController: NavController)
     val storedImage = viewModel.storedImage
 
     val barcode = viewModel.barcode
+    val title = if (viewModel.edit) {
+        "Edit"
+    } else {
+        "Add"
+    }
 
     val anyError = nameErrors.any { it.isNotEmpty() } ||
             descriptionErrors.any { it.isNotEmpty() } ||
@@ -106,11 +111,14 @@ fun AddProductForm(viewModel: AddProductViewModel, navController: NavController)
         Column(modifier = Modifier) {
             TopAppBar(
                 title = {
-                    Text(text = "Add Product:")
+                    Text(text = "$title Product:")
                 },
                 navigationIcon = {
                     IconButton(onClick = {
-                        navController.navigate(BottomNavItem.AddItem.screen)
+                        navController.navigate(
+                            navController.previousBackStackEntry?.destination?.route
+                                ?: BottomNavItem.Home.screen
+                        )
                     }) {
                         Icon(Icons.Default.ArrowBack, contentDescription = "Back")
                     }
