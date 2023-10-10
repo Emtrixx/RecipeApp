@@ -14,6 +14,9 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.recipeapp.components.camera.getImageFromInternalStorage
+import com.google.zxing.BarcodeFormat
+import com.google.zxing.MultiFormatWriter
+import com.google.zxing.common.BitMatrix
 import kotlinx.coroutines.launch
 import java.time.LocalDate
 import kotlin.random.Random
@@ -89,5 +92,21 @@ class HomeViewModel(context: Context) : ViewModel() {
         } else {
             storedImage = null
         }
+    }
+    fun generateBarcodeImage(barcodeValue: String): Bitmap? {
+        try {
+            val multiFormatWriter = MultiFormatWriter()
+            val bitMatrix: BitMatrix = multiFormatWriter.encode(barcodeValue, BarcodeFormat.CODE_128, 800, 400)
+            val barcodeBitmap = Bitmap.createBitmap(bitMatrix.width, bitMatrix.height, Bitmap.Config.ARGB_8888)
+            for (x in 0 until bitMatrix.width) {
+                for (y in 0 until bitMatrix.height) {
+                    barcodeBitmap.setPixel(x, y, if (bitMatrix[x, y]) android.graphics.Color.BLACK else android.graphics.Color.WHITE)
+                }
+            }
+            return barcodeBitmap
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+        return null
     }
 }

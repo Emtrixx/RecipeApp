@@ -39,7 +39,7 @@ import androidx.navigation.navArgument
 import androidx.navigation.navigation
 import com.example.recipeapp.AllItems.AllItems
 import com.example.recipeapp.HomeView.HomeListView
-import com.example.recipeapp.ItemView.ItemDetailView
+import com.example.recipeapp.ItemView.ItemView
 import com.example.recipeapp.RecipeView.RecipeViewTest
 import com.example.recipeapp.RecipeView.TestRecipeViewModel
 import com.example.recipeapp.product.AddProductForm
@@ -102,7 +102,7 @@ fun NavGraph(navController: NavHostController, productList : List<Product>?, rec
             val selectedItem = productList?.find { it.barcode == itemId }
 
             if (selectedItem != null) {
-                ItemDetailView(product = selectedItem)
+                ItemView(product = selectedItem, navController)
             } else {
                 Text("Item not found")
             }

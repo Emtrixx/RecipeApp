@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -22,6 +23,7 @@ import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardColors
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.Icon
@@ -44,17 +46,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import androidx.navigation.navArgument
-import com.example.recipeapp.HomeView.HomeListView
 import com.example.recipeapp.HomeView.HomeViewModel
-import com.example.recipeapp.Navigation.BottomNavItem
+import com.example.recipeapp.Navigation.NavGraph
 import com.example.recipeapp.R
-import com.example.recipeapp.product.AddProductForm
-import com.example.recipeapp.product.AddProductViewModel
-import com.example.recipeapp.shopping.ShoppingList
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -66,27 +61,7 @@ fun ItemDetailView(product: Product) {
     val productList by viewModel.getProductsLiveData().observeAsState(emptyList())
     val recipeList by viewModel.getRecipesLiveData().observeAsState(emptyList())
 
-//        TODO: Remove redundant code (get navController from HomeView)
-    NavHost(navController, startDestination = "itemDetail") {
-        composable("itemDetail") {
-            ItemView(product = product, navController)
-        }
-        composable(route = BottomNavItem.ShoppingList.screen) {
-            ShoppingList()
-        }
-        composable(route = BottomNavItem.Home.screen) {
-            HomeListView(productList, recipeList, navController = navController)
-        }
-        composable(
-            route = "add?barcode={barcode}?edit={edit}",
-            arguments = listOf(navArgument("barcode") { nullable = true }, navArgument("edit") { defaultValue = false })
-        ) {
-            val barcode = it.arguments?.getString("barcode")
-            val edit = it.arguments?.getBoolean("edit")?:false
-            val productViewModel = AddProductViewModel(barcode, LocalContext.current, edit)
-            AddProductForm(productViewModel, navController)
-        }
-    }
+    NavGraph(navController = navController, productList = productList, recipeList = recipeList)
 }
 
 @OptIn(ExperimentalFoundationApi::class)
@@ -105,6 +80,8 @@ fun ItemView(product: Product, navController: NavController) {
         painterResource(R.drawable.placeholder)
     }
 
+    val barcodeImage = viewModel.generateBarcodeImage(product.barcode)
+
     LazyColumn(modifier = Modifier.fillMaxWidth()) {
         stickyHeader {
             ElevatedCard(
@@ -113,6 +90,12 @@ fun ItemView(product: Product, navController: NavController) {
                 elevation = CardDefaults.cardElevation(
                     defaultElevation = 24.dp
                 ),
+                colors = CardColors(
+                    containerColor = MaterialTheme.colorScheme.secondaryContainer,
+                    contentColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                    disabledContainerColor = MaterialTheme.colorScheme.secondaryContainer,
+                    disabledContentColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
             ) {
                 Row(
                     modifier = Modifier
@@ -131,7 +114,7 @@ fun ItemView(product: Product, navController: NavController) {
                     Box(
                         Modifier.wrapContentSize(Alignment.TopEnd)
                     ) {
-                        IconButton(onClick = {navController.navigate("add?barcode=${product.barcode}?edit=${true}")}) {
+                        IconButton(onClick = { navController.navigate("add?barcode=${product.barcode}?edit=${true}") }) {
                             Icon(
                                 Icons.Filled.Edit, contentDescription = "Edit amount"
                             )
@@ -162,6 +145,71 @@ fun ItemView(product: Product, navController: NavController) {
                     .fillMaxWidth(),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
+                // function buttons
+                Row(
+                    Modifier
+                        .fillMaxWidth()
+                        .padding(4.dp),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    IconButton(
+                        onClick = {
+                            Toast.makeText(
+                                context,
+                                "${product.name} added to shopping list",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                            viewModel.addToShoppingList(product)
+                            navController.navigate("shoppingList")
+                        },
+                        Modifier
+                            .background(
+                                MaterialTheme.colorScheme.primaryContainer,
+                                shape = RoundedCornerShape(16.dp)
+                            )
+                            .weight(1f),
+                    ) {
+                        Icon(
+                            Icons.Filled.ShoppingCart,
+                            contentDescription = "Shopping list",
+                            tint = Color.White
+                        )
+                    }
+                    IconButton(
+                        onClick = {},
+                        Modifier
+                            .background(
+                                MaterialTheme.colorScheme.primaryContainer,
+                                shape = RoundedCornerShape(16.dp)
+                            )
+                            .weight(1f),
+                    ) {
+                        Icon(
+                            Icons.Filled.Menu,
+                            contentDescription = "Shopping list",
+                            tint = Color.White
+                        )
+                    }
+                    IconButton(
+                        onClick = {
+                            viewModel.removeProduct(product)
+                            navController.navigate("home")
+                        },
+                        Modifier
+                            .background(
+                                MaterialTheme.colorScheme.primaryContainer,
+                                shape = RoundedCornerShape(16.dp)
+                            )
+                            .weight(1f),
+                    ) {
+                        Icon(
+                            Icons.Filled.Delete,
+                            contentDescription = "Shopping list",
+                            tint = Color.Red
+                        )
+                    }
+                }
                 // Item Description
                 Card(
                     modifier = Modifier
@@ -243,7 +291,8 @@ fun ItemView(product: Product, navController: NavController) {
 
                         if (product.bestbefore.all { it.toString() == "null" }) {
 
-                            Text(text = "This product doesn't have expiry dates",
+                            Text(
+                                text = "This product doesn't have expiry dates",
                                 fontStyle = FontStyle.Italic
                             )
                         } else {
@@ -256,69 +305,34 @@ fun ItemView(product: Product, navController: NavController) {
                         }
                     }
                 }
-                // function buttons
-                Row(
-                    Modifier
-                        .fillMaxWidth()
-                        .padding(4.dp),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    IconButton(
-                        onClick = {
-                            Toast.makeText(
-                                context,
-                                "${product.name} added to shopping list",
-                                Toast.LENGTH_SHORT
-                            ).show()
-                            viewModel.addToShoppingList(product)
-                            navController.navigate("shoppingList")
-                        },
+                if (barcodeImage != null) {
+                    Card(
                         Modifier
-                            .background(
-                                MaterialTheme.colorScheme.primaryContainer,
-                                shape = RoundedCornerShape(16.dp)
+                            .padding(4.dp)
+                            .fillMaxWidth()) {
+                        Column(
+                            modifier = Modifier
+                                .fillMaxWidth(),
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            verticalArrangement = Arrangement.Center,
+                        ) {
+                            Text(
+                                text = "Scanned Barcode",
+                                fontSize = 24.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
                             )
-                            .weight(1f),
-                    ) {
-                        Icon(
-                            Icons.Filled.ShoppingCart,
-                            contentDescription = "Shopping list",
-                            tint = Color.White
-                        )
-                    }
-                    IconButton(
-                        onClick = {},
-                        Modifier
-                            .background(
-                                MaterialTheme.colorScheme.primaryContainer,
-                                shape = RoundedCornerShape(16.dp)
+                            Image(
+                                bitmap = barcodeImage.asImageBitmap(),
+                                contentDescription = "Barcode",
+                                modifier = Modifier.size(128.dp)
                             )
-                            .weight(1f),
-                    ) {
-                        Icon(
-                            Icons.Filled.Menu,
-                            contentDescription = "Shopping list",
-                            tint = Color.White
-                        )
-                    }
-                    IconButton(
-                        onClick = {
-                            viewModel.removeProduct(product)
-                            navController.navigate("home")
-                        },
-                        Modifier
-                            .background(
-                                MaterialTheme.colorScheme.primaryContainer,
-                                shape = RoundedCornerShape(16.dp)
+                            Text(
+                                text = product.barcode,
+                                fontSize = 14.sp,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
                             )
-                            .weight(1f),
-                    ) {
-                        Icon(
-                            Icons.Filled.Delete,
-                            contentDescription = "Shopping list",
-                            tint = Color.Red
-                        )
+                        }
                     }
                 }
             }
