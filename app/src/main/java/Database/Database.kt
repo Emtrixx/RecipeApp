@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.annotation.NonNull
 import androidx.room.Dao
 import androidx.room.Database
+import androidx.room.Delete
 import androidx.room.Entity
 import androidx.room.Insert
 import androidx.room.PrimaryKey
@@ -12,11 +13,8 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverter
 import androidx.room.TypeConverters
-import java.util.Date
 import androidx.room.Upsert
 import java.time.LocalDate
-import androidx.room.ColumnInfo
-import androidx.room.Delete
 
 @Database(entities = [Product::class, Recipe::class, ShoppingItem::class], version = 1, exportSchema = false)
 @TypeConverters(ListDateConverter::class, ListStringConverter::class)
@@ -94,6 +92,8 @@ interface ProductRecipeDao {
     @Upsert
     suspend  fun UpsertRecipe(vararg recipe: Recipe)
 
+    @Query("UPDATE Product SET tags = :newTags WHERE barcode = :barcode")
+    suspend fun UpdateProductTags(barcode: String, newTags: List<String>)
 }
 
 @Dao
