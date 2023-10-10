@@ -74,9 +74,11 @@ class HomeViewModel(context: Context) : ViewModel() {
     }
 
     fun getProductImage (product: Product, context : Context) {
-        if (product.image != null) {
-            savedImagePath = product.image
+        if (product.image != "") {
+            savedImagePath = product.image.toString()
             storedImage = getImageFromInternalStorage(context, savedImagePath)
+        } else {
+            storedImage = null
         }
     }
 

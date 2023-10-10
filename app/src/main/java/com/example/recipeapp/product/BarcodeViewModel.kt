@@ -19,6 +19,11 @@ class BarcodeViewModel : ViewModel() {
         Log.d("BarcodeViewModel", bitmap.byteCount.toString() + " bytes")
         barcodeScannerInstance.getScannedValue(bitmap)
     }
+
+    fun createBarCode() {
+        val randomBarcode = (100000..999999).random()
+        scanResult.postValue(randomBarcode.toString())
+    }
 }
 
 class BarcodeScannerInstance(private val scanResult: MutableLiveData<String>) {

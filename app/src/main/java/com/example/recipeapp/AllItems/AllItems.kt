@@ -44,8 +44,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.graphics.painter.BitmapPainter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontStyle
@@ -57,7 +60,6 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import coil.compose.rememberAsyncImagePainter
 import com.example.recipeapp.ItemView.ItemDetailView
 import com.example.recipeapp.R
 
@@ -271,9 +273,9 @@ fun ItemCard(
     val storedImage = allItemsViewModel.storedImage
 
     val painter = if (storedImage != null) {
-        rememberAsyncImagePainter(storedImage)
+        BitmapPainter(storedImage.asImageBitmap())
     } else {
-        rememberAsyncImagePainter(R.drawable.egg)
+        painterResource(R.drawable.placeholder)
     }
 
     Card(

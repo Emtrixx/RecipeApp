@@ -36,8 +36,11 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.graphics.painter.BitmapPainter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -46,11 +49,13 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import coil.compose.rememberAsyncImagePainter
+import androidx.navigation.navArgument
 import com.example.recipeapp.HomeView.HomeListView
 import com.example.recipeapp.HomeView.HomeViewModel
 import com.example.recipeapp.Navigation.BottomNavItem
 import com.example.recipeapp.R
+import com.example.recipeapp.product.AddProductForm
+import com.example.recipeapp.product.AddProductViewModel
 import com.example.recipeapp.shopping.ShoppingList
 
 @OptIn(ExperimentalFoundationApi::class)
@@ -72,6 +77,14 @@ fun ItemDetailView(product: Product) {
         composable(route = BottomNavItem.Home.screen) {
             HomeListView(productList, navController = navController)
         }
+        composable(
+            "add?barcode={barcode}",
+            arguments = listOf(navArgument("barcode") { nullable = true })
+        ) {
+            val barcode = it.arguments?.getString("barcode")
+            val productViewModel = AddProductViewModel(barcode, LocalContext.current)
+            AddProductForm(productViewModel, navController)
+        }
     }
 }
 
@@ -86,9 +99,9 @@ fun ItemView(product: Product, navController: NavController) {
     val storedImage = viewModel.storedImage
 
     val painter = if (storedImage != null) {
-        rememberAsyncImagePainter(storedImage)
+        BitmapPainter(storedImage.asImageBitmap())
     } else {
-        rememberAsyncImagePainter(R.drawable.egg)
+        painterResource(R.drawable.placeholder)
     }
 
     LazyColumn(modifier = Modifier.fillMaxWidth()) {
@@ -146,7 +159,7 @@ fun ItemView(product: Product, navController: NavController) {
                     Box(
                         Modifier.wrapContentSize(Alignment.TopEnd)
                     ) {
-                        IconButton(onClick = {}) {
+                        IconButton(onClick = {navController.navigate("add?barcode=${product.barcode}")}) {
                             Icon(
                                 Icons.Filled.Edit, contentDescription = "Edit amount"
                             )
@@ -262,7 +275,7 @@ fun ItemView(product: Product, navController: NavController) {
                                 fontStyle = FontStyle.Italic
                             )
                         } else {
-                            for (date in product.bestbefore) {
+                            for (date in product.bestbefore.filterNotNull()) {
                                 Text(
                                     text = date.toString(),
                                     modifier = Modifier.padding(bottom = 8.dp)

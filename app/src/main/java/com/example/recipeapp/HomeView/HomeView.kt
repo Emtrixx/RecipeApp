@@ -42,6 +42,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.TopAppBarDefaults.topAppBarColors
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -96,7 +97,7 @@ fun HomeView() {
     val topAppBarTitle =
         when (navController.currentBackStackEntryAsState().value?.destination?.route) {
             "home" -> "Home"
-            "itemDetail/{itemId}" -> "Product"
+            "itemDetail/{itemId}" -> "hide"
             "recipe" -> "Recipes"
             "settings" -> "Settings"
             "allItems" -> "Your Items"
@@ -113,6 +114,9 @@ fun HomeView() {
             if (topAppBarTitle != "hide") {
                 TopAppBar(
                     title = { Text(text = topAppBarTitle) },
+                    colors = topAppBarColors(
+                        containerColor = MaterialTheme.colorScheme.surfaceVariant,
+                    )
                     //scrollBehavior = scrollBehavior,
                 )
             }
@@ -203,10 +207,10 @@ fun HomeListView(productList: List<Product>?, navController: NavController) {
                                 .padding(4.dp),
                             colors = ButtonColors(
                                 containerColor = MaterialTheme.colorScheme.primaryContainer,
-                                contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
+                                contentColor = Color.White,
                                 disabledContainerColor = MaterialTheme.colorScheme.errorContainer,
                                 disabledContentColor = MaterialTheme.colorScheme.onErrorContainer
-                                )
+                            )
                         ) {
                             Text("See all (${productCount})")
                         }
@@ -254,14 +258,13 @@ fun ItemCard(
 
     homeViewModel.getProductImage(product, context)
 
-    val storedImage = homeViewModel.storedImage
+    val storedImage = remember { homeViewModel.storedImage }
 
     val painter = if (storedImage != null) {
         BitmapPainter(storedImage.asImageBitmap())
     } else {
-        painterResource(id = R.drawable.egg)
+        painterResource(id = R.drawable.placeholder)
     }
-
     Card(
         modifier = Modifier
             .padding(8.dp)
@@ -314,14 +317,15 @@ fun ItemCard(
                             Icon(
                                 Icons.Default.DateRange,
                                 contentDescription = "Best before date",
-                                modifier = Modifier.size(14.dp)
+                                modifier = Modifier.size(14.dp),
+                                tint = MaterialTheme.colorScheme.onTertiaryContainer
                             )
                             Text(
                                 text = product.bestbefore.take(1).toString(),
                                 fontSize = 10.sp,
                                 modifier = Modifier
                                     .padding(start = 4.dp),
-                                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                                color = MaterialTheme.colorScheme.onTertiaryContainer
                             )
                         }
                     }
@@ -438,7 +442,7 @@ fun ItemCard(
                 contentDescription = "Product image",
                 contentScale = ContentScale.Crop,
                 modifier = Modifier
-                    .height(120.dp)
+                    .height(120.dp),
             )
         }
     }
