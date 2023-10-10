@@ -1,13 +1,13 @@
 package com.example.recipeapp.components
 
-import androidx.compose.foundation.layout.IntrinsicSize
-import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
@@ -31,24 +31,29 @@ fun IntegerInputStepper(
     maxValue: Int = Int.MAX_VALUE
 ) {
     Surface(
-        modifier = modifier.clip(RoundedCornerShape(8.dp)),
+        modifier = modifier.clip(CircleShape),
         color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.12f),
         contentColor = MaterialTheme.colorScheme.onSurface
     ) {
         Row(
-            verticalAlignment = Alignment.CenterVertically
+            verticalAlignment = Alignment.CenterVertically,
         ) {
-            Button(
-                onClick = {
-                    if (value > minValue) {
-                        onValueChange(value - 1)
-                    }
-                },
-                modifier = Modifier.width(60.dp).height(IntrinsicSize.Max),
-                contentPadding = PaddingValues(0.dp),
-                shape = RoundedCornerShape(8.dp, 0.dp, 0.dp, 8.dp)
+            Column(
+                modifier = Modifier
+                    .size(55.dp)
+                    .background(MaterialTheme.colorScheme.primaryContainer)
+                    .clickable(onClick = {
+                        if (value > minValue) {
+                            onValueChange(value - 1)
+                        }
+                    }),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center
             ) {
-                Text("-")
+                Text(
+                    "-",
+                    color = Color.White
+                )
             }
 
             OutlinedTextField(
@@ -71,17 +76,26 @@ fun IntegerInputStepper(
                 )
             )
 
-            Button(
-                onClick = {
-                    if (value < maxValue) {
-                        onValueChange(value + 1)
-                    }
-                },
-                modifier = Modifier.width(60.dp).height(IntrinsicSize.Max),
-                contentPadding = PaddingValues(0.dp),
-                shape = RoundedCornerShape(0.dp, 8.dp, 8.dp, 0.dp)
+            Row(
+                //verticalAlignment = Alignment.CenterVertically,
             ) {
-                Text("+")
+                Column(
+                    modifier = Modifier
+                        .size(55.dp)
+                        .background(MaterialTheme.colorScheme.primaryContainer)
+                        .clickable(onClick = {
+                            if (value < maxValue) {
+                                onValueChange(value + 1)
+                            }
+                        }),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center
+                ) {
+                    Text(
+                        "+",
+                        color = Color.White
+                    )
+                }
             }
         }
     }

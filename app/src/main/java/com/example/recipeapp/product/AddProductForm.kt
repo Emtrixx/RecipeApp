@@ -3,29 +3,34 @@ package com.example.recipeapp.product
 import android.net.Uri
 import android.widget.Toast
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AddCircle
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonColors
+import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -36,13 +41,18 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.painter.BitmapPainter
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import coil.compose.rememberAsyncImagePainter
 import com.example.recipeapp.Navigation.BottomNavItem
@@ -109,118 +119,195 @@ fun AddProductForm(viewModel: AddProductViewModel, navController: NavController)
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(16.dp, 0.dp)
+                    .padding(12.dp)
                     .verticalScroll(rememberScrollState()),
-                verticalArrangement = Arrangement.spacedBy(10.dp)
+                verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                Column {
-                    OutlinedTextField(
-                        value = name,
-                        label = { Text(text = stringResource(R.string.addProductNameLabel)) },
-                        singleLine = true,
-                        shape = MaterialTheme.shapes.large,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(8.dp),
-                        onValueChange = { viewModel.updateName(it) },
-                        keyboardOptions = KeyboardOptions.Default.copy(
-                            imeAction = ImeAction.Done
-                        ),
-                    )
-                    ErrorLabel(nameErrors)
-                }
-                Column {
-                    OutlinedTextField(
-                        value = description,
-                        label = { Text(text = stringResource(R.string.addProductDescriptionLabel)) },
-                        singleLine = true,
-                        shape = MaterialTheme.shapes.large,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(8.dp),
-                        onValueChange = { viewModel.updateDescription(it) },
-                        keyboardOptions = KeyboardOptions.Default.copy(
-                            imeAction = ImeAction.Done
-                        ),
-                    )
-                    ErrorLabel(descriptionErrors)
-                }
-
-                Column {
-
-                    IntegerInputStepper(
-                        value = amount,
-                        onValueChange = { viewModel.updateAmount(it) },
-                        modifier = Modifier
-                            .align(Alignment.CenterHorizontally)
-                            .padding(8.dp),
-                        minValue = 1,
-                        maxValue = 100
-                    )
-                    ErrorLabel(amountErrors)
-                }
-
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(8.dp)
-                ) {
-                    Text(text = "Best Before Dates")
-                    bestBeforeList.forEachIndexed { index, date ->
-                        // Assuming there's a DatePicker or similar component to pick dates
-                        ProductFormDatePicker(
-                            date = date,
-                            onDateSelected = {
-                                viewModel.updateBestBefore(it, index)
-                            }
+                Card(modifier = Modifier.fillMaxWidth()) {
+                    Column {
+                        Text(
+                            text = "Product Details",
+                            fontWeight = FontWeight.Bold,
+                            modifier = Modifier.padding(8.dp),
+                            fontSize = 18.sp
                         )
+                        OutlinedTextField(
+                            value = name,
+                            label = { Text(text = stringResource(R.string.addProductNameLabel)) },
+                            singleLine = true,
+                            shape = CircleShape,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(8.dp),
+                            onValueChange = { viewModel.updateName(it) },
+                            keyboardOptions = KeyboardOptions.Default.copy(
+                                imeAction = ImeAction.Done
+                            ),
+                            colors = TextFieldDefaults.outlinedTextFieldColors(
+                                focusedBorderColor = MaterialTheme.colorScheme.primaryContainer,
+                                focusedLabelColor = MaterialTheme.colorScheme.primaryContainer,
+                                containerColor = MaterialTheme.colorScheme.surfaceVariant,
+                            )
+                        )
+                        ErrorLabel(nameErrors)
                     }
-                    ErrorLabel(bestBeforeErrors)
-                }
+                    Column {
+                        OutlinedTextField(
+                            value = description,
+                            label = { Text(text = stringResource(R.string.addProductDescriptionLabel)) },
+                            singleLine = true,
+                            shape = CircleShape,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(8.dp),
+                            onValueChange = { viewModel.updateDescription(it) },
+                            keyboardOptions = KeyboardOptions.Default.copy(
+                                imeAction = ImeAction.Done
+                            ),
+                            colors = TextFieldDefaults.outlinedTextFieldColors(
+                                focusedBorderColor = MaterialTheme.colorScheme.primaryContainer,
+                                focusedLabelColor = MaterialTheme.colorScheme.primaryContainer,
+                                containerColor = MaterialTheme.colorScheme.surfaceVariant,
+                            )
+                        )
+                        ErrorLabel(descriptionErrors)
+                    }
+                    Column {
+                        IntegerInputStepper(
+                            value = amount,
+                            onValueChange = { viewModel.updateAmount(it) },
+                            modifier = Modifier
+                                .align(Alignment.CenterHorizontally)
+                                .padding(8.dp),
+                            minValue = 1,
+                            maxValue = 100,
+                        )
+                        ErrorLabel(amountErrors)
+                    }
 
-                Box(
-                    modifier = Modifier
-                        .height(200.dp)
-                        .width(200.dp)
-                        .padding(16.dp)
-                        .border(2.dp, MaterialTheme.colorScheme.primary, RoundedCornerShape(4.dp))
-                        .clip(RoundedCornerShape(4.dp)),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Image(
+                    Column(
                         modifier = Modifier
-                            .width(200.dp)
-                            .height(200.dp),
-                        painter = painter,
-                        contentDescription = stringResource(R.string.product_image_desc)
-                    )
-                    CameraComponent(
-                        Modifier
-                            .width(200.dp)
-                            .height(200.dp)
-                            .alpha(0f)
-                    ) { success, uri ->
-                        if (success) {
-                            viewModel.updatePicture(uri)
+                            .fillMaxWidth()
+                            .padding(8.dp)
+                    ) {
+                        Text(
+                            text = "Best before",
+                            fontWeight = FontWeight.Bold,
+                            modifier = Modifier.padding(8.dp),
+                            fontSize = 18.sp
+                        )
+                        bestBeforeList.forEachIndexed { index, date ->
+                            // Assuming there's a DatePicker or similar component to pick dates
+                            ProductFormDatePicker(
+                                date = date,
+                                onDateSelected = {
+                                    viewModel.updateBestBefore(it, index)
+                                }
+                            )
                         }
+                        ErrorLabel(bestBeforeErrors)
                     }
-                    Icon(imageVector = Icons.Default.AddCircle, contentDescription = "Camera Icon")
                 }
 
-                Button(modifier = Modifier.padding(8.dp), onClick = {
-                    if (capturedImageUri != Uri.EMPTY) {
-                        val path = saveImageToInternalStorage(context, capturedImageUri, barcode)
-                        if (path != null) {
-                            viewModel.updateSavedImagePath(path)
-                        } else {
-                            Toast.makeText(context, "Saving image failed", Toast.LENGTH_SHORT).show()
-                            return@Button
+                Card(modifier = Modifier.fillMaxWidth()) {
+                    Text(
+                        text = "Product image",
+                        fontWeight = FontWeight.Bold,
+                        modifier = Modifier.padding(8.dp),
+                        fontSize = 18.sp
+                    )
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth(),
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.Center
+                    ) {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(200.dp)
+                                .padding(16.dp)
+                                .border(
+                                    2.dp,
+                                    MaterialTheme.colorScheme.primaryContainer,
+                                    RoundedCornerShape(4.dp)
+                                )
+                                .clip(RoundedCornerShape(4.dp)),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Image(
+                                modifier = Modifier
+                                    .fillMaxWidth(),
+                                painter = painter,
+                                contentScale = ContentScale.Crop,
+                                contentDescription = stringResource(R.string.product_image_desc)
+                            )
+                            CameraComponent(
+                                Modifier
+                                    .fillMaxWidth()
+                                    .alpha(0f)
+                            ) { success, uri ->
+                                if (success) {
+                                    viewModel.updatePicture(uri)
+                                }
+                            }
+                            Column(
+                                modifier = Modifier
+                                    .clip(CircleShape)
+                                    .background(Color.White.copy(alpha = 0.7f))
+                                    .size(48.dp),
+                                horizontalAlignment = Alignment.CenterHorizontally,
+                                verticalArrangement = Arrangement.Center
+                            ) {
+                                Image(
+                                    painter = painterResource(id = R.drawable.baseline_add_a_photo_24),
+                                    contentDescription = "Camera Icon",
+                                )
+                            }
                         }
                     }
-                    viewModel.upsertProduct()
-                    navController.navigate(BottomNavItem.Home.screen)
-                }, enabled = !anyError) {
-                    Text(text = "Save")
+
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.Center
+                    ) {
+                        Button(
+                            modifier = Modifier
+                                .padding(8.dp)
+                                .fillMaxWidth(),
+                            onClick = {
+                                if (capturedImageUri != Uri.EMPTY) {
+                                    val path =
+                                        saveImageToInternalStorage(
+                                            context,
+                                            capturedImageUri,
+                                            barcode
+                                        )
+                                    if (path != null) {
+                                        viewModel.updateSavedImagePath(path)
+                                    } else {
+                                        Toast.makeText(
+                                            context,
+                                            "Saving image failed",
+                                            Toast.LENGTH_SHORT
+                                        )
+                                            .show()
+                                        return@Button
+                                    }
+                                }
+                                viewModel.upsertProduct()
+                                navController.navigate(BottomNavItem.Home.screen)
+                            }, enabled = !anyError,
+                            colors = ButtonColors(
+                                containerColor = MaterialTheme.colorScheme.primaryContainer,
+                                contentColor = Color.White,
+                                disabledContainerColor = MaterialTheme.colorScheme.errorContainer,
+                                disabledContentColor = MaterialTheme.colorScheme.onErrorContainer
+                            )
+                        ) {
+                            Text(text = "Save")
+                        }
+                    }
                 }
             }
         }
@@ -241,8 +328,21 @@ fun ProductFormDatePicker(date: String?, onDateSelected: (String) -> Unit) {
 //    val initialSelectedDateMillis = convertDateToMillis(date)
 
     Box(contentAlignment = Alignment.Center, modifier = Modifier.fillMaxWidth()) {
-        Button(modifier = Modifier.fillMaxWidth(), onClick = { showDatePicker = true }) {
-            Text(text = dateText, modifier = Modifier.fillMaxWidth(), textAlign = TextAlign.Center)
+        Button(
+            modifier = Modifier.fillMaxWidth(),
+            onClick = { showDatePicker = true },
+            colors = ButtonColors(
+                containerColor = MaterialTheme.colorScheme.primaryContainer,
+                contentColor = Color.White,
+                disabledContainerColor = MaterialTheme.colorScheme.errorContainer,
+                disabledContentColor = MaterialTheme.colorScheme.onErrorContainer
+            )
+        ) {
+            Text(
+                text = dateText,
+                modifier = Modifier.fillMaxWidth(),
+                textAlign = TextAlign.Center,
+            )
         }
     }
 

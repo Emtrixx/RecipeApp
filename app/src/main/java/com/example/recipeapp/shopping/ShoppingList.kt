@@ -144,7 +144,6 @@ fun ShoppingList() {
                                         style = MaterialTheme.typography.bodyMedium,
                                         modifier = Modifier,
                                         fontStyle = FontStyle.Italic
-
                                     )
                                 }
                             }
