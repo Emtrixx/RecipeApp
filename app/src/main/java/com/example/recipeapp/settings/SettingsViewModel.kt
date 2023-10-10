@@ -1,5 +1,6 @@
 package com.example.recipeapp.settings
 
+import android.app.Activity
 import android.app.Application
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -31,8 +32,8 @@ class SettingsViewModel(application: Application) : AndroidViewModel(application
         }
     }
 
-    fun setNotificationState(state: Boolean) {
-        val context = getApplication<Application>().applicationContext
+    fun setNotificationState(context: Activity ,state: Boolean) {
+//        val context = getApplication<Application>().applicationContext
         viewModelScope.launch {
             if (state) {
                 val builder = NotificationCompat.Builder(context, EXPIRY_CHANNEL_ID)

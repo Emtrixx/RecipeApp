@@ -1,6 +1,7 @@
 package com.example.recipeapp.lib
 
 import android.Manifest
+import android.app.Activity
 import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
@@ -14,7 +15,6 @@ import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat.getString
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
-import com.example.recipeapp.MainActivity
 import com.example.recipeapp.R
 import java.util.concurrent.TimeUnit
 
@@ -44,21 +44,23 @@ fun sendNotification(context: Context, notificationId: Int, notification: Notifi
                 Manifest.permission.POST_NOTIFICATIONS
             ) != PackageManager.PERMISSION_GRANTED
         ) {
-            Log.d("NotificationSettingsView", "No permission")
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                ActivityCompat.requestPermissions(
-                    context as MainActivity,
-                    arrayOf(Manifest.permission.POST_NOTIFICATIONS),
-                    1
-                )
-            } else {
-                val toast = Toast.makeText(
-                    context,
-                    "Please enable notifications in your settings",
-                    Toast.LENGTH_SHORT
-                )
-                toast.show()
-                return
+            if (context is Activity) {
+                Log.d("NotificationSettingsView", "No permission")
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                    ActivityCompat.requestPermissions(
+                        context,
+                        arrayOf(Manifest.permission.POST_NOTIFICATIONS),
+                        1
+                    )
+                } else {
+                    val toast = Toast.makeText(
+                        context,
+                        "Please enable notifications in your settings",
+                        Toast.LENGTH_SHORT
+                    )
+                    toast.show()
+                    return
+                }
             }
         }
         notify(notificationId, notification)

@@ -13,12 +13,15 @@ import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import com.example.recipeapp.MainActivity
 import com.example.recipeapp.settings.components.SettingItem
 
 @Composable
 fun NotificationSettingsView(viewModel: SettingsViewModel) {
     val notificationState = viewModel.notificationsState
+    val context = LocalContext.current
 
     LazyColumn(
         modifier = Modifier
@@ -52,10 +55,10 @@ fun NotificationSettingsView(viewModel: SettingsViewModel) {
                 input = {
                     Switch(
                         checked = notificationState,
-                        onCheckedChange = { viewModel.setNotificationState(!notificationState) }
+                        onCheckedChange = { viewModel.setNotificationState(context as MainActivity, !notificationState) }
                     )
                 },
-                onClick = { viewModel.setNotificationState(!notificationState) },
+                onClick = { viewModel.setNotificationState(context as MainActivity,!notificationState) },
             )
         }
         item {
