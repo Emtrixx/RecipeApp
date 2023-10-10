@@ -119,11 +119,15 @@ fun AddProductForm(viewModel: AddProductViewModel, navController: NavController)
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(12.dp)
+                    .padding(horizontal = 12.dp)
                     .verticalScroll(rememberScrollState()),
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                Card(modifier = Modifier.fillMaxWidth()) {
+                Card(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 8.dp)
+                ) {
                     Column {
                         Text(
                             text = "Product Details",
@@ -209,7 +213,7 @@ fun AddProductForm(viewModel: AddProductViewModel, navController: NavController)
                     }
                 }
 
-                Card(modifier = Modifier.fillMaxWidth()) {
+                Card(modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp)) {
                     Text(
                         text = "Product image",
                         fontWeight = FontWeight.Bold,

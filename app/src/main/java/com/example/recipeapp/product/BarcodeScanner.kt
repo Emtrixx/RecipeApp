@@ -7,7 +7,6 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.icu.text.SimpleDateFormat
 import android.net.Uri
-import android.util.Log
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -111,7 +110,7 @@ fun BarcodeScannerView(viewModel: BarcodeViewModel, navController: NavController
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
-        Text(text = "Add products", fontSize = 24.sp, modifier = Modifier.padding(8.dp))
+        Text(text = "Product type", fontSize = 24.sp, modifier = Modifier.padding(8.dp))
         Card(
             modifier = Modifier
                 .padding(8.dp)

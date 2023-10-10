@@ -42,7 +42,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.TopAppBarDefaults.topAppBarColors
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -87,7 +86,7 @@ fun HomeView() {
 
     val recipeList by homeViewModel.getRecipesLiveData().observeAsState(emptyList())
 
-    val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
+    //val scrollBehavior = rememberUpdatedState(TopAppBarDefaults.exitUntilCollapsedScrollBehavior())
 
     LaunchedEffect(Unit) {
         homeViewModel.getProductsLiveData()
@@ -97,28 +96,31 @@ fun HomeView() {
 
     val topAppBarTitle =
         when (navController.currentBackStackEntryAsState().value?.destination?.route) {
-            "home" -> "Home"
+            "home" -> "hide"
             "itemDetail/{itemId}" -> "hide"
             "recipe" -> "Recipes"
             "settings" -> "Settings"
             "allItems" -> "Your Items"
             "shoppingList" -> "hide"
+            "scanner" -> "Add products"
             "add?barcode={barcode}" -> "hide"
             else -> "hide"
         }
 
     Scaffold(
         modifier = Modifier
-            //.nestedScroll(scrollBehavior.nestedScrollConnection)
+            //.nestedScroll(scrollBehavior.value.nestedScrollConnection)
             .fillMaxSize(),
         topBar = {
             if (topAppBarTitle != "hide") {
                 TopAppBar(
-                    title = { Text(text = topAppBarTitle) },
+                    title = { Text(text = topAppBarTitle, style = TextStyle(
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    ), fontSize = 20.sp) },
                     colors = topAppBarColors(
-                        containerColor = MaterialTheme.colorScheme.surfaceVariant,
-                    )
-                    //scrollBehavior = scrollBehavior,
+                        containerColor = MaterialTheme.colorScheme.secondaryContainer,
+                    ),
+                    //scrollBehavior = scrollBehavior.value
                 )
             }
         },
@@ -180,7 +182,6 @@ fun HomeListView(productList: List<Product>?, recipeList: List<Recipe>?, navCont
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(4.dp)
         ) {
             LazyColumn(
                 modifier = Modifier
@@ -191,7 +192,7 @@ fun HomeListView(productList: List<Product>?, recipeList: List<Recipe>?, navCont
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .background(MaterialTheme.colorScheme.background),
+                            .background(MaterialTheme.colorScheme.secondaryContainer),
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.SpaceBetween,
                     ) {
@@ -200,7 +201,9 @@ fun HomeListView(productList: List<Product>?, recipeList: List<Recipe>?, navCont
                             fontWeight = FontWeight.Bold,
                             fontSize = 24.sp,
                             modifier = Modifier
-                                .padding(4.dp)
+                                .padding(4.dp),
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+
                         )
                         Button(
                             onClick = { navController.navigate("allItems") },
@@ -399,7 +402,7 @@ fun ItemCard(
                                 content = {
                                     Text(
                                         text = "Create a recipe",
-                                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                        color = Color.Black,
                                     )
                                 }
                             )
@@ -418,7 +421,7 @@ fun ItemCard(
                                 content = {
                                     Text(
                                         text = "Add to shopping list",
-                                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                        color = Color.Black,
                                     )
                                 }
                             )

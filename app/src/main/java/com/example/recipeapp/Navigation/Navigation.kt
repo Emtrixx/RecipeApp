@@ -154,7 +154,7 @@ fun BottomNavigationBar(navController: NavHostController) {
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentDestination = navBackStackEntry?.destination
 
-    BottomNavigation() {
+    BottomNavigation(elevation = 24.dp) {
         screens.forEach { screen ->
             AddItem(
                 screen = screen,
@@ -187,7 +187,7 @@ fun RowScope.AddItem(
             onClick = {
                 navController.navigate(screen.screen)
             },
-            modifier = Modifier.background(androidx.compose.material3.MaterialTheme.colorScheme.surfaceVariant),
+            modifier = Modifier.background(androidx.compose.material3.MaterialTheme.colorScheme.secondaryContainer),
             selectedContentColor = Color.White,
             unselectedContentColor = Color.Gray,
         )
@@ -200,7 +200,7 @@ fun RowScope.AddItem(
             contentColor = Color.White,
             containerColor = androidx.compose.material3.MaterialTheme.colorScheme.primaryContainer,
             modifier = Modifier
-                .background(androidx.compose.material3.MaterialTheme.colorScheme.surfaceVariant)
+                .background(androidx.compose.material3.MaterialTheme.colorScheme.secondaryContainer)
                 .padding(1.dp)
         ) {
             Icon(imageVector = Icons.Default.Add, contentDescription = "Add icon")

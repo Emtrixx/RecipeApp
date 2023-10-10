@@ -13,12 +13,10 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Menu
@@ -126,37 +124,8 @@ fun ItemView(product: Product, navController: NavController) {
                         text = product.name,
                         fontSize = 24.sp,
                         fontWeight = FontWeight.Bold,
-                        color = Color.White,
-                    )                // Best Before
-                    Box(
-                        modifier = Modifier
-                            .padding(8.dp)
-                            .background(
-                                color = Color.Red, shape = RoundedCornerShape(16.dp)
-                            ),
-                    ) {
-                        Row(
-                            modifier = Modifier,
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.Center
-                        ) {
-                            Icon(
-                                Icons.Default.DateRange,
-                                contentDescription = "Calendar Icon",
-                                modifier = Modifier
-                                    .size(14.dp)
-                                    .padding(3.dp),
-                            )
-                            Text(
-                                text = "${
-                                    product.bestbefore.take(1)
-                                }",
-                                fontSize = 8.sp,
-                                color = Color.White,
-                                modifier = Modifier.padding(8.dp)
-                            )
-                        }
-                    }
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
                     Box(
                         Modifier.wrapContentSize(Alignment.TopEnd)
                     ) {
@@ -198,11 +167,11 @@ fun ItemView(product: Product, navController: NavController) {
                         .padding(4.dp)
                 ) {
                     Column(Modifier.padding(8.dp)) {
-                        Text(text = "Description")
+                        Text(text = "Description", fontWeight = FontWeight.Bold)
                         Text(
                             text = product.description,
                             fontSize = 18.sp,
-                            color = Color.White,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
                             modifier = Modifier.padding(8.dp)
                         )
                     }
@@ -222,11 +191,11 @@ fun ItemView(product: Product, navController: NavController) {
                             modifier = Modifier.padding(12.dp),
                             verticalArrangement = Arrangement.Center,
                         ) {
-                            Text(text = "Amount")
+                            Text(text = "Amount", fontWeight = FontWeight.Bold)
                             Text(
                                 text = "${product.amount.toInt()}",
                                 fontSize = 14.sp,
-                                color = Color.White,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
                                 modifier = Modifier
                             )
                         }
@@ -240,12 +209,12 @@ fun ItemView(product: Product, navController: NavController) {
                             modifier = Modifier.padding(12.dp),
                             verticalArrangement = Arrangement.Center,
                         ) {
-                            Text(text = "Tags")
+                            Text(text = "Tags", fontWeight = FontWeight.Bold)
                             if (product.tags.isNullOrEmpty()) {
                                 Text(
                                     text = "No tags",
                                     fontSize = 14.sp,
-                                    color = Color.White,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                                     fontStyle = FontStyle.Italic,
                                     modifier = Modifier
                                 )
@@ -254,7 +223,7 @@ fun ItemView(product: Product, navController: NavController) {
                                 Text(
                                     text = product.tags.joinToString(", "),
                                     fontSize = 14.sp,
-                                    color = Color.White,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                                     modifier = Modifier
                                 )
                             }
@@ -268,7 +237,7 @@ fun ItemView(product: Product, navController: NavController) {
                         .padding(4.dp)
                 ) {
                     Column(Modifier.padding(8.dp)) {
-                        Text(text = "Current dates in your fridge")
+                        Text(text = "Current dates in your fridge", fontWeight = FontWeight.Bold)
 
                         if (product.bestbefore.all { it.toString() == "null" }) {
 
@@ -313,7 +282,7 @@ fun ItemView(product: Product, navController: NavController) {
                         Icon(
                             Icons.Filled.ShoppingCart,
                             contentDescription = "Shopping list",
-                            tint = MaterialTheme.colorScheme.onPrimaryContainer
+                            tint = Color.White
                         )
                     }
                     IconButton(
@@ -328,7 +297,7 @@ fun ItemView(product: Product, navController: NavController) {
                         Icon(
                             Icons.Filled.Menu,
                             contentDescription = "Shopping list",
-                            tint = MaterialTheme.colorScheme.onPrimaryContainer
+                            tint = Color.White
                         )
                     }
                     IconButton(

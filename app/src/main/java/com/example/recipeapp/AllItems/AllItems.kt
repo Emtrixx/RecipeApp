@@ -18,8 +18,10 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.ClickableText
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.ExposedDropdownMenuBox
 import androidx.compose.material.Icon
@@ -31,6 +33,7 @@ import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Card
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -52,6 +55,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontStyle
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
@@ -165,31 +169,38 @@ fun AllItemsListView(productList: List<Product>?, navController: NavController) 
                         ) {
                             OutlinedTextField(
                                 value = searchText,
-                                onValueChange = { newQuery ->
-                                    searchText = newQuery
-                                },
-                                label = { Text("Search Products") },
+                                label = { Text(text = "Search Products") },
+                                singleLine = true,
+                                shape = CircleShape,
                                 modifier = Modifier
-                                    //.fillMaxWidth()
-                                    .padding(bottom = 8.dp)
-                                    .weight(1f),
+                                    .weight(1f)
+                                    .padding(bottom = 8.dp),
+                                onValueChange = { newQuery -> searchText = newQuery },
+                                keyboardOptions = KeyboardOptions.Default.copy(
+                                    imeAction = ImeAction.Done
+                                ),
                                 leadingIcon = {
                                     Icon(
                                         Icons.Filled.Search,
                                         contentDescription = null,
-                                        tint = Color.White
+                                        tint = MaterialTheme.colorScheme.onSurfaceVariant
                                     )
                                 },
-                                shape = RoundedCornerShape(12.dp),
                                 colors = TextFieldDefaults.outlinedTextFieldColors(
-                                    unfocusedBorderColor = Color.White,
-                                    textColor = Color.White
-                                ),
+                                    focusedBorderColor = MaterialTheme.colorScheme.primaryContainer,
+                                    unfocusedBorderColor = Color.Transparent,
+                                    focusedLabelColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                                    textColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                                    backgroundColor = MaterialTheme.colorScheme.surfaceVariant,
+                                    unfocusedLabelColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                                )
                             )
                             Box(
                                 modifier = Modifier
                                     .weight(0.5f)
                                     .padding(4.dp)
+                                    .clip(CircleShape),
+                                contentAlignment = Alignment.Center
                             ) {
                                 ExposedDropdownMenuBox(
                                     expanded = expanded,
@@ -205,9 +216,9 @@ fun AllItemsListView(productList: List<Product>?, navController: NavController) 
                                             contentDescription = "dropDown")},
                                         shape = RoundedCornerShape(8.dp),
                                         colors = TextFieldDefaults.textFieldColors(
-                                            textColor = Color.Black,
+                                            textColor = MaterialTheme.colorScheme.onSurfaceVariant,
                                             disabledTextColor = Color.Transparent,
-                                            backgroundColor = Color.White,
+                                            backgroundColor = MaterialTheme.colorScheme.surfaceVariant,
                                             focusedIndicatorColor = Color.Transparent,
                                             unfocusedIndicatorColor = Color.Transparent,
                                             disabledIndicatorColor = Color.Transparent
