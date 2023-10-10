@@ -1,6 +1,7 @@
 package com.example.recipeapp.HomeView
 
 import Database.Product
+import Database.Recipe
 import Database.Recipeapp
 import Database.ShoppingItem
 import android.content.Context
@@ -26,7 +27,7 @@ class HomeViewModel(context: Context) : ViewModel() {
 
     private val productsLiveData: MutableLiveData<List<Product>> = MutableLiveData()
 
-    private var itemCount = 0
+    private val recipesLiveData: MutableLiveData<List<Recipe>> = MutableLiveData()
 
     private var savedImagePath = ""
 
@@ -39,6 +40,14 @@ class HomeViewModel(context: Context) : ViewModel() {
             productsLiveData.postValue(products)
         }
         return productsLiveData
+    }
+
+    fun getRecipesLiveData(): LiveData<List<Recipe>> {
+        viewModelScope.launch {
+            val recipes = db.RecipeappDao().GetRecipes()
+            recipesLiveData.postValue(recipes)
+        }
+        return recipesLiveData
     }
 
     var date: LocalDate = LocalDate.of(2000, 10, 3)
@@ -80,13 +89,5 @@ class HomeViewModel(context: Context) : ViewModel() {
         } else {
             storedImage = null
         }
-    }
-
-    fun getProductCount(): Int {
-        viewModelScope.launch {
-            val products = db.RecipeappDao().GetProducts()
-            itemCount = products.size
-        }
-        return itemCount
     }
 }

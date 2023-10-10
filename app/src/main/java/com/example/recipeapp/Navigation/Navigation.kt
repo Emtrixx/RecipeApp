@@ -1,6 +1,7 @@
 package com.example.recipeapp.Navigation
 
 import Database.Product
+import Database.Recipe
 import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.RowScope
@@ -65,11 +66,11 @@ sealed class BottomNavItem(var title:String, var icon: ImageVector, var screen:S
 }
 
 @Composable
-fun NavGraph(navController: NavHostController, productList : List<Product>?) {
+fun NavGraph(navController: NavHostController, productList : List<Product>?, recipeList: List<Recipe>?) {
     NavHost(navController = navController, startDestination = BottomNavItem.Home.screen)
     {
         composable(route = BottomNavItem.Home.screen) {
-            HomeListView(productList, navController = navController)
+            HomeListView(productList, recipeList, navController = navController)
         }
         composable(route = BottomNavItem.ShoppingList.screen) {
             ShoppingList()

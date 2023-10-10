@@ -1,6 +1,7 @@
 package com.example.recipeapp.HomeView
 
 import Database.Product
+import Database.Recipe
 import android.annotation.SuppressLint
 import android.widget.Toast
 import androidx.compose.foundation.ExperimentalFoundationApi
@@ -70,9 +71,6 @@ import androidx.navigation.compose.rememberNavController
 import com.example.recipeapp.Navigation.BottomNavigationBar
 import com.example.recipeapp.Navigation.NavGraph
 import com.example.recipeapp.R
-import java.text.SimpleDateFormat
-import java.time.LocalDate
-import java.util.Locale
 
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
@@ -87,10 +85,13 @@ fun HomeView() {
 
     val productList by homeViewModel.getProductsLiveData().observeAsState(emptyList())
 
+    val recipeList by homeViewModel.getRecipesLiveData().observeAsState(emptyList())
+
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
 
     LaunchedEffect(Unit) {
         homeViewModel.getProductsLiveData()
+        homeViewModel.getRecipesLiveData()
         //homeViewModel.addProduct()
     }
 
@@ -124,14 +125,14 @@ fun HomeView() {
         bottomBar = { BottomNavigationBar(navController = navController) },
     ) { innerPadding ->
         Column(modifier = Modifier.padding(innerPadding)) {
-            NavGraph(navController = navController, productList)
+            NavGraph(navController = navController, productList, recipeList)
         }
     }
 }
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun HomeListView(productList: List<Product>?, navController: NavController) {
+fun HomeListView(productList: List<Product>?, recipeList: List<Recipe>?, navController: NavController) {
 
     val context = LocalContext.current
     val homeViewModel = HomeViewModel(context)
@@ -216,7 +217,7 @@ fun HomeListView(productList: List<Product>?, navController: NavController) {
                         }
                     }
                 }
-                items(productList.take(3)) { item ->
+                items(items = productList.take(3)) { item ->
                     ItemCard(
                         product = item,
                         navController = navController,
@@ -231,6 +232,12 @@ fun HomeListView(productList: List<Product>?, navController: NavController) {
                             .padding(8.dp)
                     )
                 }
+                /*
+                items(items = recipeList) { item ->
+                    RecipeItemCard(
+                        recipe = item
+                    )
+                }*/
             }
         }
     }
@@ -294,32 +301,34 @@ fun ItemCard(
                             .padding(end = 8.dp)
                     )
 
-                    Box(
-                        modifier = Modifier
-                            .background(
-                                color = MaterialTheme.colorScheme.tertiaryContainer,
-                                shape = RoundedCornerShape(16.dp)
-                            )
-                            .padding(4.dp)
-                    ) {
-                        Row(
-                            modifier = Modifier,
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.Center
+                    if (!(product.bestbefore.all { it.toString() == "null" })) {
+                        Box(
+                            modifier = Modifier
+                                .background(
+                                    color = MaterialTheme.colorScheme.tertiaryContainer,
+                                    shape = RoundedCornerShape(16.dp)
+                                )
+                                .padding(4.dp)
                         ) {
-                            Icon(
-                                Icons.Default.DateRange,
-                                contentDescription = "Best before date",
-                                modifier = Modifier.size(14.dp),
-                                tint = MaterialTheme.colorScheme.onTertiaryContainer
-                            )
-                            Text(
-                                text = product.bestbefore.take(1).toString(),
-                                fontSize = 10.sp,
-                                modifier = Modifier
-                                    .padding(start = 4.dp),
-                                color = MaterialTheme.colorScheme.onTertiaryContainer
-                            )
+                            Row(
+                                modifier = Modifier,
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.Center
+                            ) {
+                                Icon(
+                                    Icons.Default.DateRange,
+                                    contentDescription = "Best before date",
+                                    modifier = Modifier.size(14.dp),
+                                    tint = MaterialTheme.colorScheme.onTertiaryContainer
+                                )
+                                Text(
+                                    text = product.bestbefore.take(1).toString(),
+                                    fontSize = 10.sp,
+                                    modifier = Modifier
+                                        .padding(start = 4.dp),
+                                    color = MaterialTheme.colorScheme.onTertiaryContainer
+                                )
+                            }
                         }
                     }
 
@@ -442,27 +451,48 @@ fun ItemCard(
 }
 
 @Composable
-fun ExpiringItemCard(itemName: String, itemQuantity: Int, expiryDate: List<LocalDate?>) {
-    val dateFormatter = SimpleDateFormat("MMM dd", Locale.getDefault())
-    ElevatedCard(
-        colors = CardDefaults.cardColors(
-            containerColor = Color(0xFFFF4444),
-        ),
-        modifier = Modifier
-            .padding(12.dp)
-    ) {
-        Column {
+fun RecipeItemCard(recipe : Recipe) {
+
+    if (recipe == null) {
+        Box(
+            Modifier
+                .fillMaxSize(),
+            contentAlignment = Alignment.Center,
+        ) {
             Column(
-                modifier = Modifier
-                    .padding(all = 8.dp)
-                    .fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Text(text = itemName, fontWeight = FontWeight.Bold)
-                Spacer(modifier = Modifier.height(4.dp))
-                Text(text = itemQuantity.toString(), fontSize = 12.sp)
-                //Text(text = dateFormatter.format(expiryDate))
+                Text(
+                    text = "You don't have any recipes yet",
+                    style = MaterialTheme.typography.bodyMedium,
+                    modifier = Modifier,
+                    fontStyle = FontStyle.Italic
+
+                )
             }
-            Spacer(modifier = Modifier.height(8.dp))
+        }
+    } else {
+        ElevatedCard(
+            colors = CardDefaults.cardColors(
+                containerColor = MaterialTheme.colorScheme.primaryContainer
+            ),
+            modifier = Modifier
+                .padding(12.dp)
+        ) {
+            Column {
+                Column(
+                    modifier = Modifier
+                        .padding(all = 8.dp)
+                        .fillMaxWidth()
+                ) {
+                    Text(text = recipe.name, fontWeight = FontWeight.Bold)
+                    Spacer(modifier = Modifier.height(4.dp))
+                }
+                Spacer(modifier = Modifier.height(8.dp))
+            }
         }
     }
 }
+

@@ -66,6 +66,7 @@ fun ItemDetailView(product: Product) {
     val navController = rememberNavController()
     val viewModel = HomeViewModel(context)
     val productList by viewModel.getProductsLiveData().observeAsState(emptyList())
+    val recipeList by viewModel.getRecipesLiveData().observeAsState(emptyList())
 
     NavHost(navController, startDestination = "itemDetail") {
         composable("itemDetail") {
@@ -75,7 +76,7 @@ fun ItemDetailView(product: Product) {
             ShoppingList()
         }
         composable(route = BottomNavItem.Home.screen) {
-            HomeListView(productList, navController = navController)
+            HomeListView(productList, recipeList, navController = navController)
         }
         composable(
             "add?barcode={barcode}",
