@@ -52,7 +52,7 @@ class AddingTagsService : Service() {
                             "  tags: [String]\n" +
                             "}\n" +
                             "\n" +
-                            "The List of Strings in the tag property should contain 10 tags for categorizing groceries for the product: ${product.name}"
+                            "The list of strings in the tags property should contain a few tags for categorizing this product: ${product.name}"
                 )
             )
 
