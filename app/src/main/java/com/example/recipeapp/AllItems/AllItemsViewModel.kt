@@ -1,6 +1,7 @@
 package com.example.recipeapp.AllItems
 
 import Database.Product
+import Database.Recipe
 import Database.Recipeapp
 import android.content.Context
 import android.graphics.Bitmap
@@ -12,6 +13,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.recipeapp.components.camera.getImageFromInternalStorage
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 class AllItemsViewModel(context : Context) : ViewModel() {
@@ -26,12 +28,22 @@ class AllItemsViewModel(context : Context) : ViewModel() {
 
     private val productsLiveData: MutableLiveData<List<Product>> = MutableLiveData()
 
+    private val recipesLiveData: MutableLiveData<List<Recipe>> = MutableLiveData()
+
     fun getProductsLiveData(): LiveData<List<Product>> {
         viewModelScope.launch {
             val products = db.RecipeappDao().GetProducts()
             productsLiveData.postValue(products)
         }
         return productsLiveData
+    }
+
+    fun getRecipesLiveData(): LiveData<List<Recipe>> {
+        viewModelScope.launch(Dispatchers.IO){
+            val recipes = db.RecipeappDao().GetRecipes()
+            recipesLiveData.postValue(recipes)
+        }
+        return recipesLiveData
     }
 
     fun getProductImage (product: Product, context : Context) {

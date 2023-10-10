@@ -17,6 +17,7 @@ import com.example.recipeapp.components.camera.getImageFromInternalStorage
 import com.google.zxing.BarcodeFormat
 import com.google.zxing.MultiFormatWriter
 import com.google.zxing.common.BitMatrix
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.time.LocalDate
 import kotlin.random.Random
@@ -46,7 +47,7 @@ class HomeViewModel(context: Context) : ViewModel() {
     }
 
     fun getRecipesLiveData(): LiveData<List<Recipe>> {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO){
             val recipes = db.RecipeappDao().GetRecipes()
             recipesLiveData.postValue(recipes)
         }

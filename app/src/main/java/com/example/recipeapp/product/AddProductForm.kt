@@ -32,6 +32,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarColors
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -123,6 +124,13 @@ fun AddProductForm(viewModel: AddProductViewModel, navController: NavController)
                         Icon(Icons.Default.ArrowBack, contentDescription = "Back")
                     }
                 },
+                colors = TopAppBarColors(
+                    containerColor = MaterialTheme.colorScheme.secondaryContainer,
+                    actionIconContentColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                    navigationIconContentColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                    scrolledContainerColor = MaterialTheme.colorScheme.secondaryContainer,
+                    titleContentColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
             )
             Column(
                 modifier = Modifier

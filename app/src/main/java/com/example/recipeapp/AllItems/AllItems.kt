@@ -34,7 +34,6 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -59,12 +58,8 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import androidx.navigation.NavType
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import androidx.navigation.navArgument
-import com.example.recipeapp.ItemView.ItemDetailView
+import com.example.recipeapp.Navigation.NavGraph
 import com.example.recipeapp.R
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
@@ -79,12 +74,15 @@ fun AllItems() {
 
     val productList by allItemsViewModel.getProductsLiveData().observeAsState(emptyList())
 
+    val recipeList by allItemsViewModel.getRecipesLiveData().observeAsState(emptyList())
+
     LaunchedEffect(Unit) {
+        allItemsViewModel.getProductsLiveData()
         allItemsViewModel.getProductsLiveData()
     }
 
     // Set up the navigation route
-    NavHost(navController, startDestination = "allItemsList") {
+    /*NavHost(navController, startDestination = "allItemsList") {
         composable("allItemsList") {
             Scaffold(
                 content = {
@@ -106,7 +104,8 @@ fun AllItems() {
                 Text("Item not found")
             }
         }
-    }
+    }*/
+    NavGraph(navController = navController, productList = productList , recipeList = recipeList)
 }
 
 @OptIn(ExperimentalFoundationApi::class, ExperimentalMaterialApi::class)

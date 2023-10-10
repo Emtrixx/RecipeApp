@@ -220,7 +220,7 @@ fun HomeListView(productList: List<Product>?, recipeList: List<Recipe>?, navCont
                         }
                     }
                 }
-                items(items = productList.take(3)) { item ->
+                items(items = productList) { item ->
                     ItemCard(
                         product = item,
                         navController = navController,

@@ -37,7 +37,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.navArgument
 import androidx.navigation.navigation
-import com.example.recipeapp.AllItems.AllItems
+import com.example.recipeapp.AllItems.AllItemsListView
 import com.example.recipeapp.HomeView.HomeListView
 import com.example.recipeapp.ItemView.ItemView
 import com.example.recipeapp.RecipeView.RecipeViewTest
@@ -110,7 +110,7 @@ fun NavGraph(navController: NavHostController, productList : List<Product>?, rec
         composable(
             route = "allItems",
         ) {
-            AllItems()
+            AllItemsListView(navController = navController, productList = productList)
         }
         navigation(
             route = BottomNavItem.Settings.screen,
