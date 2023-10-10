@@ -12,21 +12,17 @@ import com.google.mlkit.vision.barcode.common.Barcode
 class BarcodeViewModel : ViewModel() {
 
     val scanResult: MutableLiveData<String> = MutableLiveData<String>("")
+    val error: MutableLiveData<String> = MutableLiveData<String>("")
 
-    private val barcodeScannerInstance = BarcodeScannerInstance(scanResult)
+    private val barcodeScannerInstance = BarcodeScannerInstance()
 
     fun getScannedValue(bitmap: Bitmap) {
         Log.d("BarcodeViewModel", bitmap.byteCount.toString() + " bytes")
-        barcodeScannerInstance.getScannedValue(bitmap)
-    }
-
-    fun createBarCode() {
-        val randomBarcode = (100000..999999).random()
-        scanResult.postValue(randomBarcode.toString())
+        barcodeScannerInstance.getScannedValue(bitmap, scanResult, error)
     }
 }
 
-class BarcodeScannerInstance(private val scanResult: MutableLiveData<String>) {
+class BarcodeScannerInstance {
 
     private val scanner: BarcodeScanner
 
@@ -55,7 +51,7 @@ class BarcodeScannerInstance(private val scanResult: MutableLiveData<String>) {
 //        return true
 //    }
 
-    fun getScannedValue(bitmap: Bitmap) {
+    fun getScannedValue(bitmap: Bitmap, scanResult: MutableLiveData<String>, error: MutableLiveData<String>) {
         scanner.process(bitmap, 0)
             .addOnSuccessListener { barcodes ->
                 Log.d("BarcodeScanner", "Success")
@@ -72,15 +68,17 @@ class BarcodeScannerInstance(private val scanResult: MutableLiveData<String>) {
 //                    val bounds = barcode.boundingBox
 //                    val corners = barcode.cornerPoints
                     val rawValue = barcode.rawValue
-                    val valueType = barcode.valueType
                     // See API reference for complete list of supported types
-                    when (valueType) {
+                    when (barcode.valueType) {
                         Barcode.TYPE_PRODUCT -> {
                             Log.d("BarcodeScanner", "Product Code found")
-                            scanResult.postValue(rawValue);
+                            scanResult.postValue(rawValue)
+                            return@addOnSuccessListener
                         }
                     }
                 }
+                error.postValue("No barcode found")
+                return@addOnSuccessListener
             }
             .addOnFailureListener {
                 Log.d("BarcodeScanner", "Failure")

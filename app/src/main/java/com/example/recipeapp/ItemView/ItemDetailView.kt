@@ -66,6 +66,7 @@ fun ItemDetailView(product: Product) {
     val productList by viewModel.getProductsLiveData().observeAsState(emptyList())
     val recipeList by viewModel.getRecipesLiveData().observeAsState(emptyList())
 
+//        TODO: Remove redundant code (get navController from HomeView)
     NavHost(navController, startDestination = "itemDetail") {
         composable("itemDetail") {
             ItemView(product = product, navController)
@@ -77,11 +78,12 @@ fun ItemDetailView(product: Product) {
             HomeListView(productList, recipeList, navController = navController)
         }
         composable(
-            "add?barcode={barcode}",
-            arguments = listOf(navArgument("barcode") { nullable = true })
+            route = "add?barcode={barcode}?edit={edit}",
+            arguments = listOf(navArgument("barcode") { nullable = true }, navArgument("edit") { defaultValue = false })
         ) {
             val barcode = it.arguments?.getString("barcode")
-            val productViewModel = AddProductViewModel(barcode, LocalContext.current)
+            val edit = it.arguments?.getBoolean("edit")?:false
+            val productViewModel = AddProductViewModel(barcode, LocalContext.current, edit)
             AddProductForm(productViewModel, navController)
         }
     }
@@ -129,7 +131,7 @@ fun ItemView(product: Product, navController: NavController) {
                     Box(
                         Modifier.wrapContentSize(Alignment.TopEnd)
                     ) {
-                        IconButton(onClick = {navController.navigate("add?barcode=${product.barcode}")}) {
+                        IconButton(onClick = {navController.navigate("add?barcode=${product.barcode}?edit=${true}")}) {
                             Icon(
                                 Icons.Filled.Edit, contentDescription = "Edit amount"
                             )
