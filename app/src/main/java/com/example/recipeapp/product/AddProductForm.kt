@@ -106,7 +106,7 @@ fun AddProductForm(viewModel: AddProductViewModel, navController: NavController)
         Column(modifier = Modifier) {
             TopAppBar(
                 title = {
-                    Text(text = "Add Product: $barcode")
+                    Text(text = "Add Product:")
                 },
                 navigationIcon = {
                     IconButton(onClick = {

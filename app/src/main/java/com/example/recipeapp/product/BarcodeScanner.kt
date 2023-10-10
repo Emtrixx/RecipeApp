@@ -155,8 +155,7 @@ fun BarcodeScannerView(viewModel: BarcodeViewModel, navController: NavController
                 .fillMaxWidth(),
             onClick = {
                 viewModel.createBarCode()
-                navController.navigate("add?barcode=${scanResult}")
-                Log.d("BARCODEADD", "$scanResult")
+                navController.navigate("add")
             },
             elevation = CardDefaults.cardElevation(
                 defaultElevation = 12.dp
