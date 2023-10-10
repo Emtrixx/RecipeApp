@@ -3,18 +3,10 @@ package com.example.recipeapp.Navigation
 import Database.Product
 import android.util.Log
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.RowScope
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.offset
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.BottomNavigation
 import androidx.compose.material.BottomNavigationItem
-import androidx.compose.material.FabPosition
 import androidx.compose.material.Icon
-import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
@@ -23,16 +15,12 @@ import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.List
 import androidx.compose.material.icons.filled.Settings
-import androidx.compose.material3.FloatingActionButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.navigation.NavController
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import androidx.navigation.NavDestination
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavHostController
@@ -48,23 +36,35 @@ import com.example.recipeapp.RecipeView.RecipeViewTest
 import com.example.recipeapp.RecipeView.TestRecipeViewModel
 import com.example.recipeapp.product.AddProductForm
 import com.example.recipeapp.product.AddProductViewModel
-import com.example.recipeapp.product.BarcodeViewModel
 import com.example.recipeapp.product.BarcodeScannerView
+import com.example.recipeapp.product.BarcodeViewModel
 import com.example.recipeapp.shopping.ShoppingList
+import androidx.compose.material.icons.filled.ShoppingCart
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
+import androidx.compose.ui.unit.dp
+import androidx.navigation.navigation
+import com.example.recipeapp.product.BarcodeViewModel
+import com.example.recipeapp.settings.AppearanceSettings
+import com.example.recipeapp.settings.DevSettings
+import com.example.recipeapp.settings.GeneralSettings
+import com.example.recipeapp.settings.NotificationSettingsView
+import com.example.recipeapp.settings.SettingsPage
+import com.example.recipeapp.settings.SettingsViewModel
 
-sealed class BottomNavItem(var title: String, var icon: ImageVector, var screen: String) {
+sealed class BottomNavItem(var title:String, var icon: ImageVector, var screen:String){
 
     object Home : BottomNavItem("Home", Icons.Default.Home, "home")
 
-    object ShoppingList : BottomNavItem("Shopping List", Icons.Default.List, "shoppingList")
-    object AddItem : BottomNavItem("Add Item", Icons.Default.Add, "scanner")
-    object Recipes : BottomNavItem("Empty", Icons.Default.Info, "recipe")
-    object Settings : BottomNavItem("Empty", Icons.Default.Settings, "home")
+    object ShoppingList: BottomNavItem("Shopping List", Icons.Default.ShoppingCart,"shoppingList")
+    object AddItem: BottomNavItem("Add Item",Icons.Default.Add,"scanner")
+    object Recipes: BottomNavItem("Empty",Icons.Default.Info,"recipe")
+    object Settings: BottomNavItem("Empty",Icons.Default.Settings,"settings")
 
 }
 
 @Composable
-fun NavGraph(navController: NavHostController, productList: List<Product>?) {
+fun NavGraph(navController: NavHostController, productList : List<Product>?) {
     NavHost(navController = navController, startDestination = BottomNavItem.Home.screen)
     {
         composable(route = BottomNavItem.Home.screen) {
@@ -106,6 +106,36 @@ fun NavGraph(navController: NavHostController, productList: List<Product>?) {
             route = "allItems",
         ) {
             AllItems()
+        }
+        navigation(
+            route = BottomNavItem.Settings.screen, startDestination = "${BottomNavItem.Settings.screen}/list"
+        ) {
+            composable("${BottomNavItem.Settings.screen}/list") { SettingsPage(navController) }
+            composable(
+                route = "${BottomNavItem.Settings.screen}/{settingName}",
+                arguments = listOf(navArgument("settingName") { type = NavType.StringType })
+            ) { backStackEntry ->
+                val settingsViewModel: SettingsViewModel = viewModel()
+                // Extract the itemId from the route and find the corresponding item
+                val settingName = backStackEntry.arguments?.getString("settingName")
+//                Text(settingName ?: "Setting not found")
+                settingName?.let {
+                    when (it) {
+                        "General" -> {
+                            GeneralSettings()
+                        }
+                        "Notifications" -> {
+                            NotificationSettingsView(settingsViewModel)
+                        }
+                        "Appearance" -> {
+                            AppearanceSettings()
+                        }
+                        "Dev" -> {
+                            DevSettings()
+                        }
+                    }
+                }
+            }
         }
     }
 }
