@@ -16,6 +16,7 @@ import kotlinx.coroutines.launch
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.time.format.DateTimeParseException
+import java.util.UUID
 
 
 class AddProductViewModel(barcodeArg: String?, context: Context) : ViewModel() {
@@ -61,6 +62,7 @@ class AddProductViewModel(barcodeArg: String?, context: Context) : ViewModel() {
             barcode = barcodeArg
             getProduct(barcodeArg, context)
         } else {
+            barcode = UUID.randomUUID().toString()
             loading = false
         }
     }
