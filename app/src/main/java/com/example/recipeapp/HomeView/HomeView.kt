@@ -231,13 +231,6 @@ fun HomeListView(productList: List<Product>?, navController: NavController) {
                             .padding(8.dp)
                     )
                 }
-                items(productList) { item ->
-                    ExpiringItemCard(
-                        itemName = item.name,
-                        itemQuantity = item.amount,
-                        expiryDate = item.bestbefore
-                    )
-                }
             }
         }
     }

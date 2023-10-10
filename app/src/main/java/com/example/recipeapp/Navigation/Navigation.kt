@@ -4,6 +4,8 @@ import Database.Product
 import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.RowScope
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.BottomNavigation
 import androidx.compose.material.BottomNavigationItem
 import androidx.compose.material.Icon
@@ -13,13 +15,17 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Info
-import androidx.compose.material.icons.filled.List
 import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.filled.ShoppingCart
+import androidx.compose.material3.FloatingActionButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavDestination
 import androidx.navigation.NavDestination.Companion.hierarchy
@@ -29,6 +35,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.navArgument
+import androidx.navigation.navigation
 import com.example.recipeapp.AllItems.AllItems
 import com.example.recipeapp.HomeView.HomeListView
 import com.example.recipeapp.ItemView.ItemDetailView
@@ -38,19 +45,13 @@ import com.example.recipeapp.product.AddProductForm
 import com.example.recipeapp.product.AddProductViewModel
 import com.example.recipeapp.product.BarcodeScannerView
 import com.example.recipeapp.product.BarcodeViewModel
-import com.example.recipeapp.shopping.ShoppingList
-import androidx.compose.material.icons.filled.ShoppingCart
-import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.navigation.NavController
-import androidx.compose.ui.unit.dp
-import androidx.navigation.navigation
-import com.example.recipeapp.product.BarcodeViewModel
 import com.example.recipeapp.settings.AppearanceSettings
 import com.example.recipeapp.settings.DevSettings
 import com.example.recipeapp.settings.GeneralSettings
 import com.example.recipeapp.settings.NotificationSettingsView
 import com.example.recipeapp.settings.SettingsPage
 import com.example.recipeapp.settings.SettingsViewModel
+import com.example.recipeapp.shopping.ShoppingList
 
 sealed class BottomNavItem(var title:String, var icon: ImageVector, var screen:String){
 

@@ -60,7 +60,7 @@ class HomeViewModel(context: Context) : ViewModel() {
 
     fun removeProduct(product: Product) {
         viewModelScope.launch() {
-            db.RecipeappDao().deleteProductById(product)
+            db.RecipeappDao().deleteProductById(product.barcode)
             val products = db.RecipeappDao().GetProducts()
             productsLiveData.postValue(products)
         }
