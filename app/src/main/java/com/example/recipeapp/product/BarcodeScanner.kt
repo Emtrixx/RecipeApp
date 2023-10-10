@@ -111,7 +111,6 @@ fun BarcodeScannerView(viewModel: BarcodeViewModel, navController: NavController
         verticalArrangement = Arrangement.Center
     ) {
         Text(text = "Product type", fontSize = 24.sp, modifier = Modifier.padding(8.dp))
-        Text(text = "Add products", fontSize = 24.sp, modifier = Modifier.padding(8.dp))
         if (error != "") {
             Text(
                 text = error,
