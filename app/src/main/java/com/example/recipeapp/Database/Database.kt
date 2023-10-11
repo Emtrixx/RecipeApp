@@ -18,7 +18,7 @@ import java.time.LocalDate
 import androidx.room.ColumnInfo
 import androidx.room.Delete
 
-@Database(entities = [Product::class, Recipe::class, ShoppingItem::class], version = 1, exportSchema = false)
+@Database(entities = [Product::class, Recipe::class, ShoppingItem::class], version = 2, exportSchema = false)
 @TypeConverters(ListDateConverter::class, ListStringConverter::class)
 abstract class Recipeapp : RoomDatabase() {
     abstract fun RecipeappDao(): ProductRecipeDao
@@ -33,7 +33,8 @@ abstract class Recipeapp : RoomDatabase() {
                     context.applicationContext,
                     Recipeapp::class.java,
                     "Recipeapp"
-                ).build()
+                ).fallbackToDestructiveMigration()
+                    .build()
                 INSTANCE = instance
                 instance
             }
@@ -53,10 +54,10 @@ data class Product(
 
 @Entity
 data class Recipe(
-    @TypeConverters(ListStringConverter::class) @NonNull val ingredients: List<String>,
+   // @TypeConverters(ListStringConverter::class) @NonNull val ingredients: List<String>,
     @NonNull @PrimaryKey val name: String,
     val description: String,
-    @TypeConverters(ListStringConverter::class) val tags: List<String>
+   // @TypeConverters(ListStringConverter::class) val tags: List<String>
 )
 @Entity
 data class ShoppingItem(
@@ -72,12 +73,17 @@ interface ProductRecipeDao {
 
     @Query("SELECT * FROM Recipe")
     suspend  fun GetRecipes(): List<Recipe>
+    @Query("SELECT * FROM Recipe WHERE name LIKE '%'||:search||'%'")
+    suspend  fun GetSearchedRecipes(search: String): List<Recipe>
 
     @Query("SELECT * FROM Product WHERE barcode = :barcode")
     suspend fun GetProductInfo(barcode: String): Product?
 
     @Query("DELETE FROM Product WHERE barcode = :barcode")
     suspend fun deleteProductById(barcode: String)
+
+    @Query("DELETE FROM Recipe WHERE name = :name")
+    suspend fun deleteRecipeById(name: String)
 
     @Query("SELECT * FROM Recipe WHERE name = :name")
     suspend fun GetRecipeInfo(name: String): Recipe

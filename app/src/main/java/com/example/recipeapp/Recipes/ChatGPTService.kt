@@ -1,4 +1,5 @@
-package com.example.recipeapp.ChatGPT
+package com.example.recipeapp.Recipes
+
 
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
@@ -21,7 +22,7 @@ interface OpenAiService {
 data class ChatRequest(
     val model: String = "gpt-3.5-turbo",
     val messages: List<Message>,
-    val max_tokens: Int = 1000
+    val max_tokens: Int = 500
 )
 
 data class Message(
@@ -62,9 +63,9 @@ object RetrofitInstance {
     private val client = OkHttpClient.Builder()
         .addInterceptor(interceptor)
         //Increase the timeouts if your prompt is long and results in response time out
-        .connectTimeout(30, TimeUnit.SECONDS)
-        .readTimeout(30, TimeUnit.SECONDS)
-        .writeTimeout(30, TimeUnit.SECONDS)
+        .connectTimeout(100, TimeUnit.SECONDS)
+        .readTimeout(100, TimeUnit.SECONDS)
+        .writeTimeout(100, TimeUnit.SECONDS)
         .build()
 
     val retrofit: Retrofit = Retrofit.Builder()

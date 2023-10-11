@@ -48,7 +48,7 @@ sealed class BottomNavItem(var title:String, var icon: ImageVector, var screen:S
 
     object ShoppingList: BottomNavItem("Shopping List", Icons.Default.List,"shoppingList")
     object AddItem: BottomNavItem("Add Item",Icons.Default.Add,"scanner")
-    object Recipes: BottomNavItem("Empty",Icons.Default.Info,"recipe")
+    object Recipes: BottomNavItem("Recipes",Icons.Default.Info,"recipe")
     object Settings: BottomNavItem("Empty",Icons.Default.Settings,"home")
 
 }
@@ -68,7 +68,8 @@ fun NavGraph(navController: NavHostController, productList : List<Product>?) {
             BarcodeScannerView(barcodeViewModel, navController)
         }
         composable(route = BottomNavItem.Recipes.screen) {
-            RecipeViewTest(viewModel = TestRecipeViewModel())
+            Log.d("DBG", "recipe route");
+            RecipeNavigation()
         }
         composable(
             "add?barcode={barcode}",
