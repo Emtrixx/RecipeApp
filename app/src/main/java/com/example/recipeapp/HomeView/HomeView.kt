@@ -449,7 +449,7 @@ fun ItemCard(
                                     disabledContentColor = MaterialTheme.colorScheme.onErrorContainer
                                 ),
                                 border = BorderStroke(2.dp, MaterialTheme.colorScheme.primaryContainer)
-                                ) {
+                            ) {
                                 Text("Cancel", color = Color.Black)
                             }
                         }
@@ -549,5 +549,4 @@ fun RecipeItemCard(recipe: Recipe) {
         }
     }
 }
-
 

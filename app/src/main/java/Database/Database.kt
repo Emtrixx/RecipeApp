@@ -64,6 +64,7 @@ data class ShoppingItem(
     val id: Long = 0,
     val name: String,
     val amount: Int,
+    var addedCount: Int = 0
 )
 @Dao
 interface ProductRecipeDao {
@@ -103,6 +104,9 @@ interface ShoppingItemDao {
 
     @Insert
     suspend fun insertShoppingItem(shoppingItem: ShoppingItem)
+
+    @Query("UPDATE ShoppingItem SET addedCount = addedCount + 1 WHERE name = :name")
+    suspend fun incrementAddedCount(name: String)
 
     @Delete
     suspend fun deleteShoppingItem(shoppingItem: ShoppingItem)

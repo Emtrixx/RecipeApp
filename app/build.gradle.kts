@@ -55,6 +55,7 @@ dependencies {
     implementation("com.google.mlkit:barcode-scanning:17.2.0")
     // Loading images
     implementation("io.coil-kt:coil-compose:2.4.0")
+    implementation("androidx.datastore:datastore-core:1.0.0")
     // Live Data
     val compose_version = "1.5.1"
     implementation("androidx.lifecycle:lifecycle-runtime-compose:2.6.2")
@@ -82,6 +83,8 @@ dependencies {
     implementation("androidx.datastore:datastore-preferences:1.0.0")
     // WorkManager
     implementation("androidx.work:work-runtime-ktx:2.8.1")
+    // Barcode image generator
+    implementation("com.google.zxing:core:3.4.1")
 
 
     implementation("androidx.core:core-ktx:1.9.0")

@@ -1,10 +1,18 @@
 package com.example.recipeapp.shopping
 
+import Database.ShoppingItem
+import android.annotation.SuppressLint
+import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -17,7 +25,9 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -25,7 +35,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 
+@SuppressLint("SuspiciousIndentation")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ShoppingForm(
@@ -37,8 +49,14 @@ fun ShoppingForm(
     var isItemInvalid by remember { mutableStateOf(false) }
     var isAmountInvalid by remember { mutableStateOf(false) }
 
+    val viewModel: ShoppingViewModel = viewModel()
+    val favorites by viewModel.getShoppingListLiveData().observeAsState(emptyList())
 
-        Column(
+    LaunchedEffect(Unit) {
+        viewModel.fetchShoppingList()
+    }
+
+    Column(
             modifier = Modifier
                 .padding(16.dp, 16.dp)
                 .verticalScroll(rememberScrollState()),
@@ -112,7 +130,6 @@ fun ShoppingForm(
                 )
             }
 
-
             //Button for adding items to list
             Column(
                 horizontalAlignment = Alignment.End,
@@ -129,9 +146,9 @@ fun ShoppingForm(
 
                         //Checks that the user puts required values
                         if (newItem.isNotBlank() && hasNonNumeric && amountValue != null) {
+                            viewModel.incrementAddedCount(newItem)
 
                             onItemAdded(newItem, amountValue)
-
                             newItem = ""
                             newAmount = ""
                             isItemInvalid = false // Reset item name error flag
@@ -151,6 +168,32 @@ fun ShoppingForm(
                     Text (text = "Save")
                 }
             }
+            ShoppingFavorites(favorites)
         }
     }
+
+@Composable
+fun ShoppingFavorites(favorites: List<ShoppingItem>) {
+
+    Log.d("ShoppingFavorites", "All items: $favorites")
+
+    // Filter items with addedCount greater than or equal to 3
+    val favoriteItems = favorites.filter { it.addedCount >= 3 }
+
+    Log.d("ShoppingFavorites", "Favorite items: $favoriteItems")
+
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+    ) {
+        LazyColumn(
+            modifier = Modifier
+                .height(100.dp)
+        ) {
+            items(favoriteItems) { shoppingItem ->
+                Text(text = shoppingItem.name)
+            }
+        }
+    }
+}
 

@@ -15,12 +15,18 @@ class ShoppingViewModel(application: Application) : AndroidViewModel(application
         Recipeapp.getInstance(application)
     }
 
+    //private val favoritesLiveData: MutableLiveData<List<ShoppingItem>> = MutableLiveData()
     private val shoppingLiveData: MutableLiveData<List<ShoppingItem>> = MutableLiveData()
 
     // Expose the shopping list data as LiveData
     fun getShoppingListLiveData(): LiveData<List<ShoppingItem>> {
         return shoppingLiveData
     }
+
+    // Expose favorites data as LiveData
+    //fun getFavoritesLiveData(): LiveData<List<ShoppingItem>> {
+      //  return favoritesLiveData
+    //}
 
     // Function to fetch the shopping list data
     fun fetchShoppingList() {
@@ -39,11 +45,19 @@ class ShoppingViewModel(application: Application) : AndroidViewModel(application
             fetchShoppingList()
         }
     }
+
     //Delete items
     fun deleteShoppingItem(item: ShoppingItem) {
         viewModelScope.launch(Dispatchers.IO) {
             db.shoppingItemDao().deleteShoppingItem(item)
             // After deleting, fetch the updated shopping list
+            fetchShoppingList()
+        }
+    }
+
+    fun incrementAddedCount(itemName: String) {
+        viewModelScope.launch(Dispatchers.IO) {
+            db.shoppingItemDao().incrementAddedCount(itemName)
             fetchShoppingList()
         }
     }
