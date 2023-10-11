@@ -133,46 +133,57 @@ class AddProductViewModel(barcodeArg: String?, context: Context, val edit: Boole
             intent.putExtra("barcode", product.barcode)
             context.startService(intent)
         }
-
     }
 
     fun updateName(name: String) {
         this.name = name
+        validateName(name)
+    }
+
+    private fun validateName(name: String): Boolean {
         nameErrors = listOf()
         if (name.isBlank()) {
             nameErrors = nameErrors + "Name cannot be empty."
         } else if (!name.matches(Regex("^[a-zA-Z0-9 ]+$"))) {
             nameErrors = nameErrors + "Name can only contain alphanumeric characters and spaces."
         }
+        return nameErrors.isEmpty()
     }
 
     fun updateDescription(description: String) {
         this.description = description
+        validateDescription(description)
+    }
+
+    private fun validateDescription(description: String): Boolean {
         descriptionErrors = listOf()
         if (description.length > 500) {
             descriptionErrors = descriptionErrors + "Description cannot exceed 500 characters."
         }
+        return descriptionErrors.isEmpty()
     }
 
     fun updateAmount(amount: Int) {
+        this.amount = amount
+        validateAmount(amount)
+
+        bestBeforeList = if (amount > bestBeforeList.size) {
+            bestBeforeList + List<String?>(amount - bestBeforeList.size) { null }
+        } else {
+            bestBeforeList.take(amount)
+        }
+    }
+
+    private fun validateAmount(amount: Int): Boolean {
         amountErrors = listOf()
         if (amount > 99) {
             amountErrors = amountErrors + "Amount cannot exceed 99."
         }
-        this.amount = amount
-
-        if (amount > bestBeforeList.size) {
-            bestBeforeList = bestBeforeList + List<String?>(amount - bestBeforeList.size) { null }
-        } else {
-            bestBeforeList = bestBeforeList.take(amount)
-        }
+        return amountErrors.isEmpty()
     }
 
     fun updateBestBefore(bestBefore: String, index: Int) {
-        bestBeforeErrors = listOf()
-        if (!isValidDate(bestBefore) && bestBefore.isNotBlank()) {
-            bestBeforeErrors = bestBeforeErrors + "Invalid date format. Use dd/MM/yyyy."
-        }
+        validateBestBefore(bestBefore)
 
         if (bestBeforeSetOnce || bestBefore.isBlank() || edit) {
             this.bestBeforeList = bestBeforeList.mapIndexed { i, s ->
@@ -192,6 +203,14 @@ class AddProductViewModel(barcodeArg: String?, context: Context, val edit: Boole
         }
     }
 
+    private fun validateBestBefore(bestBefore: String): Boolean {
+        bestBeforeErrors = listOf()
+        if (!isValidDate(bestBefore) && bestBefore.isNotBlank()) {
+            bestBeforeErrors = bestBeforeErrors + "Invalid date format. Use dd/MM/yyyy."
+        }
+        return bestBeforeErrors.isEmpty()
+    }
+
     private fun isValidDate(date: String): Boolean {
         return try {
             LocalDate.parse(date, DateTimeFormatter.ofPattern("dd/MM/yyyy"))
@@ -207,5 +226,16 @@ class AddProductViewModel(barcodeArg: String?, context: Context, val edit: Boole
 
     fun updateSavedImagePath(path: String) {
         this.savedImagePath = path
+    }
+
+    fun validateAll(): Boolean {
+        var valid = true
+        valid = validateName(name) && valid
+        valid = validateDescription(description) && valid
+        valid = validateAmount(amount) && valid
+        bestBeforeList.forEachIndexed { i, bestBefore ->
+            valid = validateBestBefore(bestBefore ?: "") && valid
+        }
+        return valid
     }
 }
