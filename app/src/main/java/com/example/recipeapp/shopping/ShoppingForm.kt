@@ -1,16 +1,26 @@
 package com.example.recipeapp.shopping
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.ExposedDropdownMenuBox
+import androidx.compose.material.Icon
+import androidx.compose.material.OutlinedTextField
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonColors
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -23,13 +33,14 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterialApi::class)
 @Composable
 fun ShoppingForm(
-    onItemAdded: (String, Int) -> Unit
+    onItemAdded: (String, String) -> Unit
 ) {
     var newItem by remember { mutableStateOf("") }
     var newAmount by remember { mutableStateOf("") }
@@ -37,6 +48,11 @@ fun ShoppingForm(
     var isItemInvalid by remember { mutableStateOf(false) }
     var isAmountInvalid by remember { mutableStateOf(false) }
 
+    var expanded by remember { mutableStateOf(false) }
+    var shownAmountType by remember { mutableStateOf("Add") }
+    var selectedAmountType by remember { mutableStateOf("") }
+
+    val amountTypes = listOf(" kg", " g", " mg", " l", " dl", " pcs", " pkg")
 
         Column(
             modifier = Modifier
@@ -86,32 +102,83 @@ fun ShoppingForm(
                 style = MaterialTheme.typography.bodyLarge
             )
 
-            //TextField for adding the amount of items to ShoppingList
-            TextField(
-                modifier = Modifier.fillMaxWidth(),
-                value = newAmount,
-                onValueChange = { newAmount = it },
-                placeholder = { Text(text = "e.g. 2") },
-                isError = isAmountInvalid,
-                singleLine = true,
-                shape = CircleShape,
-                colors = TextFieldDefaults.textFieldColors(
-                    focusedIndicatorColor = Color.Transparent,
-                    unfocusedIndicatorColor = Color.Transparent,
-                    errorContainerColor = MaterialTheme.colorScheme.errorContainer,
-                    errorIndicatorColor = Color.Transparent
+            Row(modifier = Modifier,
+                verticalAlignment = Alignment.CenterVertically) {
+                //TextField for adding the amount of items to ShoppingList
+                TextField(
+                    modifier = Modifier.weight(1f),
+                    value = newAmount,
+                    onValueChange = { newAmount = it },
+                    placeholder = { Text(text = "e.g. 2") },
+                    isError = isAmountInvalid,
+                    singleLine = true,
+                    shape = RoundedCornerShape(32.dp, 4.dp, 4.dp, 32.dp),
+                    colors = TextFieldDefaults.textFieldColors(
+                        focusedIndicatorColor = Color.Transparent,
+                        unfocusedIndicatorColor = Color.Transparent,
+                        errorContainerColor = MaterialTheme.colorScheme.errorContainer,
+                        errorIndicatorColor = Color.Transparent
+                    )
                 )
-            )
 
-            //Error handling
-            if (isAmountInvalid) {
-                Text(
-                    text = "Invalid amount. Please enter a valid number.",
-                    color = Color.Red,
-                    modifier = Modifier.padding(top = 4.dp)
-                )
+                //Error handling
+                if (isAmountInvalid) {
+                    Text(
+                        text = "Invalid amount. Please enter a valid number.",
+                        color = Color.Red,
+                        modifier = Modifier.padding(top = 4.dp)
+                    )
+                }
+
+                Box(
+                    modifier = Modifier
+                        .weight(0.5f)
+                        .padding(4.dp)
+                        .clip(RoundedCornerShape(0.dp, 32.dp, 32.dp, 0.dp)),
+                    contentAlignment = Alignment.Center
+                ) {
+                    ExposedDropdownMenuBox(
+                        expanded = expanded,
+                        onExpandedChange = {
+                            expanded = !expanded
+                        }
+                    ) {
+                        OutlinedTextField(
+                            value = shownAmountType,
+                            onValueChange = {},
+                            readOnly = true,
+                            trailingIcon = { Icon(imageVector = Icons.Default.ArrowDropDown,
+                                contentDescription = "dropDown")
+                            },
+                            colors = androidx.compose.material.TextFieldDefaults.textFieldColors(
+                                textColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                                disabledTextColor = Color.Transparent,
+                                backgroundColor = MaterialTheme.colorScheme.surfaceVariant,
+                                focusedIndicatorColor = Color.Transparent,
+                                unfocusedIndicatorColor = Color.Transparent,
+                                disabledIndicatorColor = Color.Transparent
+                            )
+                        )
+
+                        ExposedDropdownMenu(
+                            modifier = Modifier.height(250.dp),
+                            expanded = expanded,
+                            onDismissRequest = { expanded = false },
+                        ) {
+                            amountTypes.forEach { amountType ->
+                                DropdownMenuItem(
+                                    text = { Text(text = amountType, color = Color.Black) },
+                                    onClick = {
+                                        selectedAmountType = amountType
+                                        shownAmountType = selectedAmountType
+                                        expanded = false
+                                    }
+                                )
+                            }
+                        }
+                    }
+                }
             }
-
 
             //Button for adding items to list
             Column(
@@ -130,7 +197,7 @@ fun ShoppingForm(
                         //Checks that the user puts required values
                         if (newItem.isNotBlank() && hasNonNumeric && amountValue != null) {
 
-                            onItemAdded(newItem, amountValue)
+                            onItemAdded(newItem, StringBuilder().append(amountValue).append(selectedAmountType).toString())
 
                             newItem = ""
                             newAmount = ""

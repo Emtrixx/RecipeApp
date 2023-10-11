@@ -62,7 +62,7 @@ data class ShoppingItem(
     @PrimaryKey(autoGenerate = true)
     val id: Long = 0,
     val name: String,
-    val amount: Int,
+    val amount: String,
 )
 @Dao
 interface ProductRecipeDao {
