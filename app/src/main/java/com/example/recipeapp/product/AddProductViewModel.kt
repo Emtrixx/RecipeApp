@@ -5,6 +5,7 @@ import Database.Recipeapp
 import android.content.Context
 import android.graphics.Bitmap
 import android.net.Uri
+import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -16,9 +17,10 @@ import kotlinx.coroutines.launch
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.time.format.DateTimeParseException
+import java.util.UUID
 
 
-class AddProductViewModel(barcodeArg: String?, context: Context) : ViewModel() {
+class AddProductViewModel(barcodeArg: String?, context: Context, val edit: Boolean,) : ViewModel() {
 
     private val db: Recipeapp by lazy {
         Recipeapp.getInstance(context)
@@ -59,13 +61,17 @@ class AddProductViewModel(barcodeArg: String?, context: Context) : ViewModel() {
     init {
         if (barcodeArg != null) {
             barcode = barcodeArg
-            getProduct(barcodeArg, context)
+            getProduct(barcodeArg, context, edit)
         } else {
+            if (edit) {
+                throw IllegalArgumentException("Barcode cannot be null when editing.")
+            }
+            barcode = UUID.randomUUID().toString()
             loading = false
         }
     }
 
-    private fun getProduct(barcode: String, context: Context) {
+    private fun getProduct(barcode: String, context: Context, edit: Boolean) {
         viewModelScope.launch {
             val product = db.RecipeappDao().GetProductInfo(barcode)
 
@@ -77,9 +83,20 @@ class AddProductViewModel(barcodeArg: String?, context: Context) : ViewModel() {
                 name = product.name
                 description = product.description
 
-//              Save old values for updating (TODO: Should not change in DB while editing)
-                oldBestBeforeList = product.bestbefore
-                oldAmount = product.amount
+                if (edit) {
+                    Log.d("AddProductViewModel", "Editing product")
+                    amount = product.amount
+                    bestBeforeList = product.bestbefore.map { date ->
+                        if (date == null) {
+                            return@map null
+                        }
+                        return@map date.format(DateTimeFormatter.ofPattern("dd/MM/yyyy"))
+                    }
+                } else {
+                    // Save old values for adding to them (TODO: Should not change in DB while editing)
+                    oldBestBeforeList = product.bestbefore
+                    oldAmount = product.amount
+                }
             }
             loading = false
         }
@@ -143,7 +160,7 @@ class AddProductViewModel(barcodeArg: String?, context: Context) : ViewModel() {
             bestBeforeErrors = bestBeforeErrors + "Invalid date format. Use dd/MM/yyyy."
         }
 
-        if (bestBeforeSetOnce || bestBefore.isBlank()) {
+        if (bestBeforeSetOnce || bestBefore.isBlank() || edit) {
             this.bestBeforeList = bestBeforeList.mapIndexed { i, s ->
                 if (i == index) {
                     if (bestBefore.isBlank()) {
@@ -154,7 +171,7 @@ class AddProductViewModel(barcodeArg: String?, context: Context) : ViewModel() {
                 return@mapIndexed s
             }
         } else {
-            this.bestBeforeList = List(bestBeforeList.size) { i ->
+            this.bestBeforeList = List(bestBeforeList.size) { _ ->
                 return@List bestBefore
             }
             bestBeforeSetOnce = true

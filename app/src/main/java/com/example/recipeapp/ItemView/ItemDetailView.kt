@@ -1,74 +1,63 @@
 package com.example.recipeapp.ItemView
 
 import Database.Product
+import android.util.Log
 import android.widget.Toast
-import androidx.compose.animation.slideInHorizontally
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
-import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.Divider
+import androidx.compose.material.AlertDialog
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Menu
-import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardColors
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.ColorFilter.Companion.tint
-import androidx.compose.ui.input.nestedscroll.nestedScrollModifierNode
+import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.graphics.painter.BitmapPainter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import androidx.navigation.NavType
-import androidx.navigation.Navigation.findNavController
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import androidx.navigation.navArgument
-import coil.compose.rememberAsyncImagePainter
-import com.example.recipeapp.AllItems.AllItemsListView
-import com.example.recipeapp.HomeView.HomeListView
-import com.example.recipeapp.HomeView.HomeView
 import com.example.recipeapp.HomeView.HomeViewModel
-import com.example.recipeapp.Navigation.BottomNavItem
 import com.example.recipeapp.Navigation.NavGraph
 import com.example.recipeapp.R
-import com.example.recipeapp.shopping.ShoppingList
-import org.intellij.lang.annotations.JdkConstants.HorizontalAlignment
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -78,18 +67,9 @@ fun ItemDetailView(product: Product) {
     val navController = rememberNavController()
     val viewModel = HomeViewModel(context)
     val productList by viewModel.getProductsLiveData().observeAsState(emptyList())
+    val recipeList by viewModel.getRecipesLiveData().observeAsState(emptyList())
 
-    NavHost(navController, startDestination = "itemDetail") {
-        composable("itemDetail") {
-            ItemView(product = product, navController)
-        }
-        composable(route = BottomNavItem.ShoppingList.screen) {
-            ShoppingList()
-        }
-        composable(route = BottomNavItem.Home.screen) {
-            HomeListView(productList, navController = navController)
-        }
-    }
+    NavGraph(navController = navController, productList = productList, recipeList = recipeList)
 }
 
 @OptIn(ExperimentalFoundationApi::class)
@@ -103,51 +83,33 @@ fun ItemView(product: Product, navController: NavController) {
     val storedImage = viewModel.storedImage
 
     val painter = if (storedImage != null) {
-        rememberAsyncImagePainter(storedImage)
+        BitmapPainter(storedImage.asImageBitmap())
     } else {
-        rememberAsyncImagePainter(R.drawable.egg)
+        painterResource(R.drawable.placeholder)
+    }
+
+    val barcodeImage = viewModel.generateBarcodeImage(product.barcode)
+
+    val openDialog = remember { mutableStateOf(false) }
+
+    val onDeleteItem: (Product) -> Unit = { item ->
+        viewModel.removeProduct(product = item)
     }
 
     LazyColumn(modifier = Modifier.fillMaxWidth()) {
-        // Item Image
-        item {
-            Box() {
-                Image(
-                    painter = painter,
-                    contentDescription = "Product image",
-                    contentScale = ContentScale.Crop,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(400.dp)
-                )
-                // Best Before
-                Box(
-                    modifier = Modifier
-                        .padding(8.dp)
-                        .background(
-                            color = Color.Red,
-                            shape = RoundedCornerShape(16.dp)
-                        ),
-                ) {
-                    Text(
-                        text = "Best Before: ${
-                            product.bestbefore.toString()
-                        }",
-                        fontSize = 14.sp,
-                        color = Color.White,
-                        modifier = Modifier
-                            .padding(8.dp)
-                    )
-                }
-            }
-        }
         stickyHeader {
             ElevatedCard(
                 modifier = Modifier,
-                shape = RoundedCornerShape(0.dp, 0.dp, 16.dp, 16.dp),
+                shape = RoundedCornerShape(0.dp, 0.dp, 0.dp, 0.dp),
                 elevation = CardDefaults.cardElevation(
                     defaultElevation = 24.dp
                 ),
+                colors = CardColors(
+                    containerColor = MaterialTheme.colorScheme.secondaryContainer,
+                    contentColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                    disabledContainerColor = MaterialTheme.colorScheme.secondaryContainer,
+                    disabledContentColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
             ) {
                 Row(
                     modifier = Modifier
@@ -161,25 +123,38 @@ fun ItemView(product: Product, navController: NavController) {
                         text = product.name,
                         fontSize = 24.sp,
                         fontWeight = FontWeight.Bold,
-                        color = Color.White,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
                     Box(
-                        Modifier
-                            .wrapContentSize(Alignment.TopEnd)
+                        Modifier.wrapContentSize(Alignment.TopEnd)
                     ) {
-                        IconButton(
-                            onClick = {
-                            }
-                        ) {
+                        IconButton(onClick = { navController.navigate("add?barcode=${product.barcode}?edit=${true}") }) {
                             Icon(
-                                Icons.Filled.Edit,
-                                contentDescription = "Edit amount"
+                                Icons.Filled.Edit, contentDescription = "Edit amount"
                             )
                         }
                     }
                 }
             }
         }
+        // Item Image
+        item {
+            Box(
+                modifier = Modifier
+                    .clip(shape = RoundedCornerShape(0.dp, 0.dp, 16.dp, 16.dp))
+                    .shadow(elevation = 12.dp)
+            ) {
+                Image(
+                    painter = painter,
+                    contentDescription = "Product image",
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(400.dp),
+                )
+            }
+        }
+
 
         item {
             Column(
@@ -191,11 +166,13 @@ fun ItemView(product: Product, navController: NavController) {
                 // function buttons
                 Row(
                     Modifier
-                        .fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceEvenly,
+                        .fillMaxWidth()
+                        .padding(4.dp),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    IconButton(
+                    // add to shopping list button
+                    Button(
                         onClick = {
                             Toast.makeText(
                                 context,
@@ -205,100 +182,279 @@ fun ItemView(product: Product, navController: NavController) {
                             viewModel.addToShoppingList(product)
                             navController.navigate("shoppingList")
                         },
-                        Modifier
-                            .background(Color.Black, shape = RoundedCornerShape(16.dp))
-                            .size(75.dp),
-                    )
-                    {
-                        Icon(
-                            Icons.Filled.ShoppingCart,
-                            contentDescription = "Shopping list"
-                        )
+                        Modifier.weight(1f),
+                        colors = ButtonColors(
+                            containerColor = MaterialTheme.colorScheme.primaryContainer,
+                            contentColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                            disabledContentColor = MaterialTheme.colorScheme.primaryContainer,
+                            disabledContainerColor = MaterialTheme.colorScheme.onSurfaceVariant
+                        ),
+                        shape = RoundedCornerShape(16.dp)
+                    ) {
+                        Column(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(75.dp),
+                            verticalArrangement = Arrangement.Center,
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+                            Icon(
+                                Icons.Filled.ShoppingCart,
+                                contentDescription = "Shopping list",
+                                tint = Color.White
+                            )
+                            Text(
+                                text = "Shopping list",
+                                fontSize = 10.sp,
+                                textAlign = TextAlign.Center
+                            )
+                        }
                     }
-                    IconButton(
-                        onClick = {},
-                        Modifier
-                            .background(Color.Black, shape = RoundedCornerShape(16.dp))
-                            .size(75.dp),
-                    )
-                    {
-                        Icon(
-                            Icons.Filled.Edit,
-                            contentDescription = "Shopping list"
-                        )
-                    }
-                    IconButton(
-                        onClick = {},
-                        Modifier
-                            .background(Color.Black, shape = RoundedCornerShape(16.dp))
-                            .size(75.dp),
-                    )
-                    {
-                        Icon(
-                            Icons.Filled.Menu,
-                            contentDescription = "Shopping list"
-                        )
-                    }
-                    IconButton(
+                    // generate a recipe button
+                    Button(
                         onClick = {
-                            viewModel.removeProduct(product.barcode)
-                            navController.navigate("home")
+                            navController.navigate("recipe")
                         },
-                        Modifier
-                            .background(Color.Black, shape = RoundedCornerShape(16.dp))
-                            .size(75.dp),
-                    )
-                    {
-                        Icon(
-                            Icons.Filled.Delete,
-                            contentDescription = "Shopping list"
-                        )
+                        Modifier.weight(1f),
+                        colors = ButtonColors(
+                            containerColor = MaterialTheme.colorScheme.primaryContainer,
+                            contentColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                            disabledContentColor = MaterialTheme.colorScheme.primaryContainer,
+                            disabledContainerColor = MaterialTheme.colorScheme.onSurfaceVariant
+                        ),
+                        shape = RoundedCornerShape(16.dp)
+                    ) {
+                        Column(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(75.dp),
+                            verticalArrangement = Arrangement.Center,
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+                            Icon(
+                                Icons.Filled.Menu,
+                                contentDescription = "Generate recipe",
+                                tint = Color.White
+                            )
+                            Text(text = "Recipe", fontSize = 10.sp)
+                        }
+                    }
+                    //delete button
+                    Button(
+                        onClick = {
+                            openDialog.value = true
+                        },
+                        Modifier.weight(1f),
+                        colors = ButtonColors(
+                            containerColor = MaterialTheme.colorScheme.primaryContainer,
+                            contentColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                            disabledContentColor = MaterialTheme.colorScheme.primaryContainer,
+                            disabledContainerColor = MaterialTheme.colorScheme.onSurfaceVariant
+                        ),
+                        shape = RoundedCornerShape(16.dp)
+                    ) {
+                        Column(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(75.dp),
+                            verticalArrangement = Arrangement.Center,
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+                            Icon(
+                                Icons.Filled.Delete,
+                                contentDescription = "Delete",
+                                tint = Color.Red
+                            )
+                            Text(text = "Delete", fontSize = 10.sp, color = Color.Red)
+                        }
                     }
                 }
                 // Item Description
-                Text(
-                    text = product.description,
-                    fontSize = 18.sp,
-                    color = Color.White,
+                Card(
                     modifier = Modifier
-                        .padding(vertical = 64.dp)
-                )
-                Divider(thickness = 1.dp, color = Color.White)
-                // Amount
-                Row(
-                    modifier = Modifier,
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceBetween
+                        .fillMaxWidth()
+                        .padding(4.dp)
                 ) {
-                    Text(
-                        text = "Amount: ${product.amount.toInt()}",
-                        fontSize = 14.sp,
-                        color = Color.White,
-                        modifier = Modifier
-                            .padding(vertical = 64.dp)
-                    )
+                    Column(Modifier.padding(8.dp)) {
+                        Text(text = "Description", fontWeight = FontWeight.Bold)
+                        Text(
+                            text = product.description,
+                            fontSize = 18.sp,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            modifier = Modifier.padding(8.dp)
+                        )
+                    }
                 }
-                Divider(thickness = 1.dp, color = Color.White)
-                // Tags
-                if (product.tags.isNotEmpty()) {
-                    Text(
-                        text = "Tags: ${product.tags.joinToString(", ")}",
-                        fontSize = 14.sp,
-                        color = Color.White,
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceEvenly,
+                ) {
+                    // Amount
+                    Card(
                         modifier = Modifier
-                            .padding(vertical = 64.dp)
-                    )
-                    Divider(thickness = 1.dp, color = Color.White)
+                            .weight(1f)
+                            .padding(4.dp),
+                    ) {
+                        Column(
+                            modifier = Modifier.padding(12.dp),
+                            verticalArrangement = Arrangement.Center,
+                        ) {
+                            Text(text = "Amount", fontWeight = FontWeight.Bold)
+                            Text(
+                                text = "${product.amount.toInt()}",
+                                fontSize = 14.sp,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                modifier = Modifier
+                            )
+                        }
+                    }
+                    Card(
+                        modifier = Modifier
+                            .weight(1f)
+                            .padding(4.dp)
+                    ) {
+                        Column(
+                            modifier = Modifier.padding(12.dp),
+                            verticalArrangement = Arrangement.Center,
+                        ) {
+                            Text(text = "Tags", fontWeight = FontWeight.Bold)
+                            if (product.tags.isNullOrEmpty()) {
+                                Text(
+                                    text = "No tags",
+                                    fontSize = 14.sp,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                    fontStyle = FontStyle.Italic,
+                                    modifier = Modifier
+                                )
+                            } else {
+                                Log.d("TAGS", "${product.tags}")
+                                Text(
+                                    text = product.tags.joinToString(", "),
+                                    fontSize = 14.sp,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                    modifier = Modifier
+                                )
+                            }
+                        }
+                    }
                 }
-                // Carbon footprint
-                Text(
-                    text = "Carbon footprint: 1.6 kg CO2e ",
-                    fontSize = 18.sp,
-                    color = Color.White,
+                // List of dates
+                Card(
                     modifier = Modifier
-                        .padding(vertical = 64.dp)
-                )
+                        .fillMaxWidth()
+                        .padding(4.dp)
+                ) {
+                    Column(Modifier.padding(8.dp)) {
+                        Text(
+                            text = "Current dates in your fridge",
+                            fontWeight = FontWeight.Bold
+                        )
+
+                        if (product.bestbefore.all { it.toString() == "null" }) {
+
+                            Text(
+                                text = "This product doesn't have expiry dates",
+                                fontStyle = FontStyle.Italic
+                            )
+                        } else {
+                            for (date in product.bestbefore.filterNotNull()) {
+                                Text(
+                                    text = date.toString(),
+                                    modifier = Modifier.padding(bottom = 8.dp)
+                                )
+                            }
+                        }
+                    }
+                }
+                if (barcodeImage != null) {
+                    Card(
+                        Modifier
+                            .padding(4.dp)
+                            .fillMaxWidth()
+                    ) {
+                        Column(
+                            modifier = Modifier
+                                .fillMaxWidth(),
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            verticalArrangement = Arrangement.Center,
+                        ) {
+                            Text(
+                                text = "Scanned Barcode",
+                                fontSize = 24.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            )
+                            Image(
+                                bitmap = barcodeImage.asImageBitmap(),
+                                contentDescription = "Barcode",
+                                modifier = Modifier.size(128.dp)
+                            )
+                            Text(
+                                text = product.barcode,
+                                fontSize = 14.sp,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            )
+                        }
+                    }
+                }
+                if (openDialog.value) {
+                    AlertDialog(
+                        onDismissRequest = {
+                            openDialog.value = false
+                        },
+                        title = {
+                            Text(
+                                text = "Are you sure you want to delete this item?",
+                                color = Color.Black
+                            )
+                        },
+                        text = {
+                            Text(
+                                "This will remove ${product.name} permanently",
+                                color = Color.Black
+                            )
+                        },
+                        confirmButton = {
+                            Button(
+                                onClick = {
+                                    openDialog.value = false
+                                    onDeleteItem(product)
+                                    navController.navigate("home")
+                                },
+                                colors = ButtonColors(
+                                    containerColor = MaterialTheme.colorScheme.primaryContainer,
+                                    contentColor = Color.White,
+                                    disabledContainerColor = MaterialTheme.colorScheme.errorContainer,
+                                    disabledContentColor = MaterialTheme.colorScheme.onErrorContainer
+                                ),
+                            ) {
+                                Text("Confirm", color = Color.White)
+                            }
+                        },
+                        dismissButton = {
+                            Button(
+                                onClick = {
+                                    openDialog.value = false
+                                },
+                                colors = ButtonColors(
+                                    containerColor = Color.Transparent,
+                                    contentColor = Color.Black,
+                                    disabledContainerColor = MaterialTheme.colorScheme.errorContainer,
+                                    disabledContentColor = MaterialTheme.colorScheme.onErrorContainer
+                                ),
+                                border = BorderStroke(
+                                    2.dp,
+                                    MaterialTheme.colorScheme.primaryContainer
+                                )
+                            ) {
+                                Text("Cancel", color = Color.Black)
+                            }
+                        }
+                    )
+                }
             }
         }
     }
 }
+

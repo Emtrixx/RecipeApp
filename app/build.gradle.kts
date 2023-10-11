@@ -59,13 +59,15 @@ dependencies {
     val compose_version = "1.5.1"
     implementation("androidx.lifecycle:lifecycle-runtime-compose:2.6.2")
     implementation ("androidx.compose.runtime:runtime-livedata:$compose_version")
-    implementation("androidx.compose.material3:material3-android:1.2.0-alpha08")
     // Navigation
     val nav_version = "2.5.3"
     implementation("androidx.navigation:navigation-compose:$nav_version")
     // Material Design
     implementation("androidx.compose.material3:material3:1.2.0-alpha02")
+    implementation("androidx.compose.material3:material3-android:1.2.0-alpha08")
     implementation("androidx.compose.material:material:1.5.2")
+    // Icons (For color palette, needed as dependency)
+    implementation("androidx.palette:palette-ktx:1.0.0")
     // Room
     val room_version = "2.5.2"
     implementation("androidx.room:room-runtime:$room_version")
@@ -76,6 +78,11 @@ dependencies {
     implementation ("com.squareup.retrofit2:retrofit:2.9.0")
     implementation ("com.squareup.retrofit2:converter-gson:2.9.0")
     implementation ("com.squareup.okhttp3:logging-interceptor:4.9.1")
+    // DataStore
+    implementation("androidx.datastore:datastore-preferences:1.0.0")
+    // WorkManager
+    implementation("androidx.work:work-runtime-ktx:2.8.1")
+
 
     implementation("androidx.core:core-ktx:1.9.0")
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.6.2")

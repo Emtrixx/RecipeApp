@@ -3,11 +3,13 @@ package com.example.recipeapp.shopping
 import Database.ShoppingItem
 import android.annotation.SuppressLint
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -19,6 +21,8 @@ import androidx.compose.foundation.selection.toggleable
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardColors
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledTonalIconButton
@@ -27,7 +31,6 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
@@ -44,7 +47,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -85,7 +88,7 @@ fun ShoppingList() {
                     contentScale = ContentScale.Crop,
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(80.dp)
+                        .height(60.dp)
                 )
                 TopAppBar(
                     title = {
@@ -99,7 +102,7 @@ fun ShoppingList() {
                     },
                     actions = {
                         FilledTonalIconButton(
-                            colors = IconButtonDefaults.filledIconButtonColors(Color.White),
+                            colors = IconButtonDefaults.filledIconButtonColors(MaterialTheme.colorScheme.primaryContainer),
                             onClick = {
                                 navController.navigate("shoppingForm")
                             }
@@ -107,7 +110,7 @@ fun ShoppingList() {
                             Icon(
                                 modifier = Modifier.size(30.dp),
                                 imageVector = Icons.Filled.Add,
-                                tint = Color.Black,
+                                tint = Color.White,
                                 contentDescription = "Add button icon"
                             )
                         }
@@ -123,24 +126,35 @@ fun ShoppingList() {
                     Column(
                         modifier = Modifier
                             .fillMaxSize()
-                            .padding(16.dp)
+                            .padding(4.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally
                     ) {
                         if (shoppingList.isEmpty()) {
-                            Text(
-                                text = "The shopping list is empty. Add something from top right corner",
-                                style = MaterialTheme.typography.bodyMedium,
-                                modifier = Modifier
-                                    .fillMaxSize()
-                                    .padding(top = 300.dp),
-                                textAlign = TextAlign.Center
-                            )
+                            Box(
+                                Modifier
+                                    .fillMaxHeight(),
+                                contentAlignment = Alignment.Center,
+                            ) {
+                                Column(
+                                    modifier = Modifier,
+                                    verticalArrangement = Arrangement.Center,
+                                    horizontalAlignment = Alignment.CenterHorizontally
+                                ) {
+                                    Text(
+                                        text = "Shopping list is empty. Add items from top right corner",
+                                        style = MaterialTheme.typography.bodyMedium,
+                                        modifier = Modifier,
+                                        fontStyle = FontStyle.Italic
+                                    )
+                                }
+                            }
                         } else {
                             LazyColumn(
                                 modifier = Modifier
                                     .weight(1f)
                                     .fillMaxWidth()
                                     .padding(top = 65.dp),
-                                contentPadding = PaddingValues(16.dp)
+                                contentPadding = PaddingValues(8.dp)
                             ) {
                                 items(shoppingList) { shoppingItem ->
                                     ShoppingCard(
@@ -169,9 +183,13 @@ fun ShoppingList() {
 @Composable
 fun ShoppingCard(item: ShoppingItem, onDeleteItem: (ShoppingItem) -> Unit) {
     val (checkedState, onStateChange) = remember { mutableStateOf(false) }
-
-    Surface(
-        modifier = Modifier.fillMaxWidth(),
+    Card(
+        colors = CardColors(
+            containerColor = MaterialTheme.colorScheme.secondaryContainer,
+            contentColor = MaterialTheme.colorScheme.onSurfaceVariant,
+            disabledContainerColor = MaterialTheme.colorScheme.secondaryContainer,
+            disabledContentColor = MaterialTheme.colorScheme.onSurfaceVariant
+        )
     ) {
         Row(
             Modifier
@@ -181,7 +199,8 @@ fun ShoppingCard(item: ShoppingItem, onDeleteItem: (ShoppingItem) -> Unit) {
                     value = checkedState,
                     onValueChange = { onStateChange(!checkedState) },
                     role = Role.Checkbox
-                ),
+                )
+                .padding(4.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Checkbox(
@@ -192,26 +211,32 @@ fun ShoppingCard(item: ShoppingItem, onDeleteItem: (ShoppingItem) -> Unit) {
                 text = item.name,
                 modifier = Modifier
                     .padding(start = 16.dp),
-                color = if (checkedState) Color.Gray else Color.Black
+                color = if (checkedState) MaterialTheme.colorScheme.outline else MaterialTheme.colorScheme.onSurfaceVariant,
             )
             Text(
                 text = "qty: ${item.amount}",
                 modifier = Modifier
                     .padding(start = 16.dp),
-                color = if (checkedState) Color.Gray else Color.Black
+                color = if (checkedState) MaterialTheme.colorScheme.outline else MaterialTheme.colorScheme.onSurfaceVariant,
             )
-            IconButton(
-                onClick = { onDeleteItem(item) },
-                modifier = Modifier
-                    .size(40.dp)
-                    .padding(8.dp),
+            Row(
+                Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.End
+            ) {
+                IconButton(
+                    onClick = { onDeleteItem(item) },
+                    modifier = Modifier
+                        .size(40.dp)
+                        .padding(8.dp),
                 ) {
-                Icon(
-                    imageVector = Icons.Filled.Delete,
-                    contentDescription = "Delete",
-                    tint = Color.Red)
-
+                    Icon(
+                        imageVector = Icons.Filled.Delete,
+                        contentDescription = "Delete",
+                        tint = Color.Red
+                    )
+                }
             }
         }
     }
 }
+

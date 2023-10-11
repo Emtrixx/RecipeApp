@@ -11,10 +11,17 @@ import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Button
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -25,20 +32,25 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import androidx.navigation.NavController
-import coil.compose.rememberAsyncImagePainter
+import com.example.recipeapp.R
 import com.google.android.datatransport.BuildConfig
 import java.io.File
 import java.util.Date
 import java.util.Objects
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun BarcodeScannerView(viewModel: BarcodeViewModel, navController: NavController) {
     val scanResult by viewModel.scanResult.observeAsState("")
+    val error by viewModel.error.observeAsState("")
 
     val context = LocalContext.current
     val file = context.createImageFile()
@@ -87,7 +99,7 @@ fun BarcodeScannerView(viewModel: BarcodeViewModel, navController: NavController
 
     if (scanResult != "") {
         LaunchedEffect(Unit) {
-            navController.navigate("add?barcode=${scanResult}")
+            navController.navigate("add?barcode=${scanResult}?edit=${false}")
         }
     }
 
@@ -95,29 +107,98 @@ fun BarcodeScannerView(viewModel: BarcodeViewModel, navController: NavController
         Modifier
             .fillMaxSize()
             .padding(10.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
     ) {
-        Text("BarcodeScanner")
-        Text(text = "Barcode result: ${scanResult}")
-        Button(onClick = openCameraCallback ) {
-            Text(text = "Capture Image From Camera")
-        }
-        if (scanResult != "") {
-            Button(onClick = {
-                navController.navigate("add?barcode=${scanResult}")
-            }) {
-                Text(text = "Continue")
-            }
-            Image(
-                modifier = Modifier
-                    .padding(16.dp, 8.dp),
-                painter = rememberAsyncImagePainter(capturedImageUri),
-                contentDescription = null
+        Text(text = "Product type", fontSize = 24.sp, modifier = Modifier.padding(8.dp))
+        if (error != "") {
+            Text(
+                text = error,
+                fontSize = 18.sp,
+                color = MaterialTheme.colorScheme.error,
+                style = MaterialTheme.typography.bodyMedium,
+                modifier = Modifier.padding(start = 8.dp)
             )
         }
-    }
+        Card(
+            modifier = Modifier
+                .padding(8.dp)
+                .fillMaxWidth(),
+            onClick = (openCameraCallback),
+            elevation = CardDefaults.cardElevation(
+                defaultElevation = 12.dp
+            ),
+        ) {
+            Column(
+                modifier = Modifier
 
+            ) {
+                // Card Content
+                Column(
+                    modifier = Modifier
+                ) {
+                    Image(
+                        painter = painterResource(id = R.drawable.withbarcode),
+                        contentDescription = "Product image",
+                        contentScale = ContentScale.Crop,
+                        modifier = Modifier
+                            .height(120.dp),
+                    )
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(8.dp),
+                        horizontalArrangement = Arrangement.Center,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(text = "Add product with barcode", fontSize = 18.sp)
+                    }
+                }
+            }
+        }
+
+        Card(
+            modifier = Modifier
+                .padding(8.dp)
+                .fillMaxWidth(),
+            onClick = {
+                navController.navigate("add")
+            },
+            elevation = CardDefaults.cardElevation(
+                defaultElevation = 12.dp
+            ),
+        ) {
+            Column(
+                modifier = Modifier,
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally,
+            ) {
+                // Card Content
+                Column(
+                    modifier = Modifier
+                ) {
+                    Image(
+                        painter = painterResource(id = R.drawable.withoutbarcode),
+                        contentDescription = "Product image",
+                        contentScale = ContentScale.Crop,
+                        modifier = Modifier
+                            .height(120.dp),
+                    )
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(8.dp),
+                        horizontalArrangement = Arrangement.Center,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(text = "Add product without barcode", fontSize = 18.sp)
+                    }
+                }
+            }
+        }
+    }
 }
+
 
 @SuppressLint("SimpleDateFormat")
 fun Context.createImageFile(): File {

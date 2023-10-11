@@ -1,28 +1,30 @@
 package com.example.recipeapp.Navigation
 
 import Database.Product
+import Database.Recipe
 import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.material.BottomNavigation
 import androidx.compose.material.BottomNavigationItem
 import androidx.compose.material.Icon
-import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Info
-import androidx.compose.material.icons.filled.List
 import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.navigation.NavController
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
 import androidx.navigation.NavDestination
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavHostController
@@ -31,34 +33,45 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.navArgument
-import com.example.recipeapp.AllItems.AllItems
+import androidx.navigation.navigation
+import com.example.recipeapp.AllItems.AllItemsListView
 import com.example.recipeapp.HomeView.HomeListView
-import com.example.recipeapp.ItemView.ItemDetailView
+import com.example.recipeapp.ItemView.ItemView
 import com.example.recipeapp.RecipeView.RecipeViewTest
 import com.example.recipeapp.RecipeView.TestRecipeViewModel
 import com.example.recipeapp.product.AddProductForm
 import com.example.recipeapp.product.AddProductViewModel
-import com.example.recipeapp.product.BarcodeViewModel
 import com.example.recipeapp.product.BarcodeScannerView
+import com.example.recipeapp.product.BarcodeViewModel
+import com.example.recipeapp.settings.AppearanceSettings
+import com.example.recipeapp.settings.DevSettings
+import com.example.recipeapp.settings.GeneralSettings
+import com.example.recipeapp.settings.NotificationSettingsView
+import com.example.recipeapp.settings.SettingsPage
+import com.example.recipeapp.settings.SettingsViewModel
 import com.example.recipeapp.shopping.ShoppingList
 
-sealed class BottomNavItem(var title:String, var icon: ImageVector, var screen:String){
+sealed class BottomNavItem(var title: String, var icon: ImageVector, var screen: String) {
 
-    object Home : BottomNavItem("Home",Icons.Default.Home,"home")
+    object Home : BottomNavItem("Home", Icons.Default.Home, "home")
 
-    object ShoppingList: BottomNavItem("Shopping List", Icons.Default.List,"shoppingList")
-    object AddItem: BottomNavItem("Add Item",Icons.Default.Add,"scanner")
-    object Recipes: BottomNavItem("Recipes",Icons.Default.Info,"recipe")
-    object Settings: BottomNavItem("Empty",Icons.Default.Settings,"home")
+    object ShoppingList : BottomNavItem("Shopping List", Icons.Default.ShoppingCart, "shoppingList")
+    object AddItem : BottomNavItem("Add Item", Icons.Default.Add, "scanner")
+    object Recipes : BottomNavItem("Empty", Icons.Default.Info, "recipe")
+    object Settings : BottomNavItem("Empty", Icons.Default.Settings, "settings")
 
 }
 
 @Composable
-fun NavGraph(navController: NavHostController, productList : List<Product>?) {
+fun NavGraph(
+    navController: NavHostController,
+    productList: List<Product>?,
+    recipeList: List<Recipe>?
+) {
     NavHost(navController = navController, startDestination = BottomNavItem.Home.screen)
     {
         composable(route = BottomNavItem.Home.screen) {
-            HomeListView(productList, navController = navController)
+            HomeListView(productList, recipeList, navController = navController)
         }
         composable(route = BottomNavItem.ShoppingList.screen) {
             ShoppingList()
@@ -68,15 +81,17 @@ fun NavGraph(navController: NavHostController, productList : List<Product>?) {
             BarcodeScannerView(barcodeViewModel, navController)
         }
         composable(route = BottomNavItem.Recipes.screen) {
-            Log.d("DBG", "recipe route");
-            RecipeNavigation()
+            RecipeViewTest(viewModel = TestRecipeViewModel())
         }
         composable(
-            "add?barcode={barcode}",
-            arguments = listOf(navArgument("barcode") { nullable = true })
+            "add?barcode={barcode}?edit={edit}",
+            arguments = listOf(
+                navArgument("barcode") { nullable = true },
+                navArgument("edit") { defaultValue = false })
         ) {
             val barcode = it.arguments?.getString("barcode")
-            val productViewModel = AddProductViewModel(barcode, LocalContext.current)
+            val edit = it.arguments?.getBoolean("edit") ?: false
+            val productViewModel = AddProductViewModel(barcode, LocalContext.current, edit)
             AddProductForm(productViewModel, navController)
         }
         composable(
@@ -88,7 +103,7 @@ fun NavGraph(navController: NavHostController, productList : List<Product>?) {
             val selectedItem = productList?.find { it.barcode == itemId }
 
             if (selectedItem != null) {
-                ItemDetailView(product = selectedItem)
+                ItemView(product = selectedItem, navController)
             } else {
                 Text("Item not found")
             }
@@ -96,7 +111,41 @@ fun NavGraph(navController: NavHostController, productList : List<Product>?) {
         composable(
             route = "allItems",
         ) {
-            AllItems()
+            AllItemsListView(navController = navController, productList = productList)
+        }
+        navigation(
+            route = BottomNavItem.Settings.screen,
+            startDestination = "${BottomNavItem.Settings.screen}/list"
+        ) {
+            composable("${BottomNavItem.Settings.screen}/list") { SettingsPage(navController) }
+            composable(
+                route = "${BottomNavItem.Settings.screen}/{settingName}",
+                arguments = listOf(navArgument("settingName") { type = NavType.StringType })
+            ) { backStackEntry ->
+                val settingsViewModel: SettingsViewModel = viewModel()
+                // Extract the itemId from the route and find the corresponding item
+                val settingName = backStackEntry.arguments?.getString("settingName")
+//                Text(settingName ?: "Setting not found")
+                settingName?.let {
+                    when (it) {
+                        "General" -> {
+                            GeneralSettings()
+                        }
+
+                        "Notifications" -> {
+                            NotificationSettingsView(settingsViewModel)
+                        }
+
+                        "Appearance" -> {
+                            AppearanceSettings()
+                        }
+
+                        "Dev" -> {
+                            DevSettings()
+                        }
+                    }
+                }
+            }
         }
     }
 }
@@ -113,7 +162,7 @@ fun BottomNavigationBar(navController: NavHostController) {
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentDestination = navBackStackEntry?.destination
 
-    BottomNavigation() {
+    BottomNavigation(elevation = 24.dp) {
         screens.forEach { screen ->
             AddItem(
                 screen = screen,
@@ -132,10 +181,11 @@ fun RowScope.AddItem(
 ) {
     BottomNavigationItem(
         icon = {
-            Icon(imageVector = screen.icon,
+            Icon(
+                imageVector = screen.icon,
                 contentDescription = "Navigation icon",
                 tint = androidx.compose.material3.MaterialTheme.colorScheme.onSurfaceVariant
-                )
+            )
         },
         selected = currentDestination?.hierarchy?.any {
             Log.d("DBG", screen.screen ?: "empty")
@@ -144,7 +194,9 @@ fun RowScope.AddItem(
         onClick = {
             navController.navigate(screen.screen)
         },
-        modifier = Modifier.background(androidx.compose.material3.MaterialTheme.colorScheme.surfaceVariant),
+        modifier = Modifier.background(androidx.compose.material3.MaterialTheme.colorScheme.secondaryContainer),
+        selectedContentColor = Color.White,
+        unselectedContentColor = Color.Gray,
     )
 }
 
