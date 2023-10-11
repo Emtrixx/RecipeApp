@@ -86,7 +86,6 @@ class ShoppingViewModel(application: Application) : AndroidViewModel(application
         }
     }
 
-
     // Get the list of favorite items
     fun getFavoriteItems(): LiveData<List<FavoriteShoppingItem>> {
         return favoriteLiveData
@@ -100,19 +99,22 @@ class ShoppingViewModel(application: Application) : AndroidViewModel(application
         }
     }
 
+    private val addedToFavoritesSet = mutableSetOf<String>()
     // Function to add an item to favorites
     fun addFavoriteItem(name: String) {
         viewModelScope.launch(Dispatchers.IO) {
-            val existingFavoriteItems = db.favoriteShoppingItemDao().getFavoriteItems()
+            if (!addedToFavoritesSet.contains(name)) {
+                addedToFavoritesSet.add(name)
 
-            // Check if an item with the same name already exists in favorites
-            val itemExists = existingFavoriteItems.any { favoriteItem -> favoriteItem.name == name }
-
-            if (!itemExists) {
                 val favoriteItem = FavoriteShoppingItem(name = name)
                 db.favoriteShoppingItemDao().insertFavoriteItem(favoriteItem)
                 fetchFavoriteItems()
             }
         }
+    }
+
+    // Add from favorites to shopping list
+    fun addFavoriteToShoppingList(item: FavoriteShoppingItem) {
+        addShoppingItem(item.name, amount = 1)
     }
 }
