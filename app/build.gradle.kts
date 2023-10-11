@@ -82,6 +82,8 @@ dependencies {
     implementation("androidx.datastore:datastore-preferences:1.0.0")
     // WorkManager
     implementation("androidx.work:work-runtime-ktx:2.8.1")
+    // Barcode image generator
+    implementation("com.google.zxing:core:3.4.1")
 
 
     implementation("androidx.core:core-ktx:1.9.0")
