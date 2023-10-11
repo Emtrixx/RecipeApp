@@ -46,7 +46,8 @@ data class Product(
     val description: String,
     val amount: Int,
     @TypeConverters(ListStringConverter::class) val tags: List<String>,
-    val image: String?
+    val image: String?,
+    val carbonFootprint: String?
 )
 
 @Entity
@@ -94,6 +95,9 @@ interface ProductRecipeDao {
 
     @Query("UPDATE Product SET tags = :newTags WHERE barcode = :barcode")
     suspend fun UpdateProductTags(barcode: String, newTags: List<String>)
+
+    @Query("UPDATE Product SET carbonFootprint = :carbonFootprint WHERE barcode = :barcode")
+    suspend fun UpdateProductCarbonFootprint(barcode: String, carbonFootprint: String)
 }
 
 @Dao
