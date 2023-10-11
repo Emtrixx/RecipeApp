@@ -319,7 +319,7 @@ fun ItemView(product: Product, navController: NavController) {
                             verticalArrangement = Arrangement.Center,
                         ) {
                             Text(text = "Tags", fontWeight = FontWeight.Bold)
-                            if (product.tags.isNullOrEmpty()) {
+                            if (product.tags.isEmpty()) {
                                 Text(
                                     text = "No tags",
                                     fontSize = 14.sp,
@@ -367,6 +367,28 @@ fun ItemView(product: Product, navController: NavController) {
                         }
                     }
                 }
+                // Carbon footprint
+                Card(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(4.dp)
+                ) {
+                    Column(Modifier.padding(8.dp)) {
+                        Text(text = "Carbon footprint", fontWeight = FontWeight.Bold)
+                        if (product.carbonFootprint == null) {
+                            Text(
+                                text = "No carbon footprint data available",
+                                fontStyle = FontStyle.Italic
+                            )
+                        } else {
+                            Text(
+                                text = product.carbonFootprint,
+                                modifier = Modifier.padding(bottom = 8.dp)
+                            )
+                        }
+                    }
+                }
+                // Barcode image
                 if (barcodeImage != null) {
                     Card(
                         Modifier

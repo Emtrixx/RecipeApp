@@ -3,6 +3,7 @@ package com.example.recipeapp.product
 import Database.Product
 import Database.Recipeapp
 import android.content.Context
+import android.content.Intent
 import android.graphics.Bitmap
 import android.net.Uri
 import android.util.Log
@@ -12,6 +13,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.recipeapp.AddingProductFieldsService
 import com.example.recipeapp.components.camera.getImageFromInternalStorage
 import kotlinx.coroutines.launch
 import java.time.LocalDate
@@ -20,7 +22,8 @@ import java.time.format.DateTimeParseException
 import java.util.UUID
 
 
-class AddProductViewModel(barcodeArg: String?, context: Context, val edit: Boolean,) : ViewModel() {
+class AddProductViewModel(barcodeArg: String?, context: Context, val edit: Boolean) :
+    ViewModel() {
 
     private val db: Recipeapp by lazy {
         Recipeapp.getInstance(context)
@@ -102,12 +105,11 @@ class AddProductViewModel(barcodeArg: String?, context: Context, val edit: Boole
         }
     }
 
-    fun upsertProduct() {
+    fun upsertProduct(context: Context) {
         val product = Product(
             barcode = barcode,
             name = name,
             description = description,
-            tags = listOf(),
             image = savedImagePath,
 //          Taking old values into consideration
             bestbefore = oldBestBeforeList + bestBeforeList.map {
@@ -117,9 +119,21 @@ class AddProductViewModel(barcodeArg: String?, context: Context, val edit: Boole
                 LocalDate.parse(it, DateTimeFormatter.ofPattern("dd/MM/yyyy"))
             },
             amount = oldAmount + amount,
+            // To be filled in background service
+            tags = listOf(),
+            carbonFootprint = null
         )
 
-        viewModelScope.launch { db.RecipeappDao().UpsertProduct(product) }
+        viewModelScope.launch {
+            db.RecipeappDao().UpsertProduct(product)
+
+            // Add tags in the background with ChatGPT
+            Log.d("AddProductViewModel", "Starting AddingTagsService")
+            val intent = Intent(context, AddingProductFieldsService::class.java)
+            intent.putExtra("barcode", product.barcode)
+            context.startService(intent)
+        }
+
     }
 
     fun updateName(name: String) {

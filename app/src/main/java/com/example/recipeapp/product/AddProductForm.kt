@@ -20,7 +20,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.Card
@@ -121,7 +121,7 @@ fun AddProductForm(viewModel: AddProductViewModel, navController: NavController)
                                 ?: BottomNavItem.Home.screen
                         )
                     }) {
-                        Icon(Icons.Default.ArrowBack, contentDescription = "Back")
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
                     }
                 },
                 colors = TopAppBarColors(
@@ -315,7 +315,7 @@ fun AddProductForm(viewModel: AddProductViewModel, navController: NavController)
                                         return@Button
                                     }
                                 }
-                                viewModel.upsertProduct()
+                                viewModel.upsertProduct(context)
                                 navController.navigate(BottomNavItem.Home.screen)
                             }, enabled = !anyError,
                             colors = ButtonColors(
