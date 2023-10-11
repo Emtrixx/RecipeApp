@@ -81,7 +81,7 @@ class HomeViewModel(context: Context) : ViewModel() {
 
     fun addToShoppingList(product: Product) {
         viewModelScope.launch {
-            val shoppingItem = ShoppingItem(name = product.name, amount = 1,)
+            val shoppingItem = ShoppingItem(name = product.name, amount = "1",)
             db.shoppingItemDao().insertShoppingItem(shoppingItem)
         }
     }

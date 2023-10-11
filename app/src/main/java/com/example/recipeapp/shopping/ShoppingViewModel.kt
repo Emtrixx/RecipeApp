@@ -31,7 +31,7 @@ class ShoppingViewModel(application: Application) : AndroidViewModel(application
     }
 
     // Function to add a shopping item
-    fun addShoppingItem(name: String, amount: Int) {
+    fun addShoppingItem(name: String, amount: String) {
         val shoppingItem = ShoppingItem(name = name, amount = amount)
         viewModelScope.launch(Dispatchers.IO) {
             db.shoppingItemDao().insertShoppingItem(shoppingItem)
