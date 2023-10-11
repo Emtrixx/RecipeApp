@@ -1,8 +1,7 @@
 package com.example.recipeapp.shopping
 
-import Database.ShoppingItem
+import Database.FavoriteShoppingItem
 import android.annotation.SuppressLint
-import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -50,10 +49,11 @@ fun ShoppingForm(
     var isAmountInvalid by remember { mutableStateOf(false) }
 
     val viewModel: ShoppingViewModel = viewModel()
-    val favorites by viewModel.getShoppingListLiveData().observeAsState(emptyList())
+    val favorites by viewModel.getFavoriteItems().observeAsState(emptyList())
 
     LaunchedEffect(Unit) {
         viewModel.fetchShoppingList()
+        viewModel.fetchFavoriteItems()
     }
 
     Column(
@@ -173,15 +173,9 @@ fun ShoppingForm(
     }
 
 @Composable
-fun ShoppingFavorites(favorites: List<ShoppingItem>) {
-
-    Log.d("ShoppingFavorites", "All items: $favorites")
-
-    // Filter items with addedCount greater than or equal to 3
-    val favoriteItems = favorites.filter { it.addedCount >= 3 }
-
-    Log.d("ShoppingFavorites", "Favorite items: $favoriteItems")
-
+fun ShoppingFavorites(
+    favoriteItems: List<FavoriteShoppingItem>
+) {
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -190,10 +184,13 @@ fun ShoppingFavorites(favorites: List<ShoppingItem>) {
             modifier = Modifier
                 .height(100.dp)
         ) {
-            items(favoriteItems) { shoppingItem ->
-                Text(text = shoppingItem.name)
+            items(favoriteItems) { favoriteItem ->
+                Text(text = favoriteItem.name)
             }
         }
     }
 }
+
+
+
 

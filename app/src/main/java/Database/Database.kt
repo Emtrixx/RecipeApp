@@ -18,11 +18,13 @@ import java.time.LocalDate
 import androidx.room.ColumnInfo
 import androidx.room.Delete
 
-@Database(entities = [Product::class, Recipe::class, ShoppingItem::class], version = 1, exportSchema = false)
+@Database(entities = [Product::class, Recipe::class, ShoppingItem::class, FavoriteShoppingItem::class], version = 1, exportSchema = false)
 @TypeConverters(ListDateConverter::class, ListStringConverter::class)
 abstract class Recipeapp : RoomDatabase() {
     abstract fun RecipeappDao(): ProductRecipeDao
     abstract fun shoppingItemDao(): ShoppingItemDao
+    abstract fun favoriteShoppingItemDao(): FavoriteShoppingItemDao
+
     companion object {
         @Volatile
         private var INSTANCE: Recipeapp? = null
@@ -66,6 +68,13 @@ data class ShoppingItem(
     val amount: Int,
     var addedCount: Int = 0
 )
+
+@Entity
+data class FavoriteShoppingItem(
+    @PrimaryKey(autoGenerate = true)
+    val id: Long = 0,
+    val name: String
+)
 @Dao
 interface ProductRecipeDao {
     @Query("SELECT * FROM Product")
@@ -108,8 +117,22 @@ interface ShoppingItemDao {
     @Query("UPDATE ShoppingItem SET addedCount = addedCount + 1 WHERE name = :name")
     suspend fun incrementAddedCount(name: String)
 
+    @Query("SELECT addedCount FROM ShoppingItem WHERE name = :itemName")
+    suspend fun getAddedCountByName(itemName: String): Int
+
     @Delete
     suspend fun deleteShoppingItem(shoppingItem: ShoppingItem)
+
+    @Query("SELECT * FROM ShoppingItem WHERE name = :name")
+    suspend fun getShoppingItemByName(name: String): ShoppingItem?
+}
+
+@Dao
+interface FavoriteShoppingItemDao {
+    @Query("SELECT * FROM FavoriteShoppingItem")
+    suspend fun getFavoriteItems(): List<FavoriteShoppingItem>
+    @Insert
+    suspend fun insertFavoriteItem(favoriteItem: FavoriteShoppingItem)
 }
 
 class DateConverter {
