@@ -15,11 +15,12 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
 import org.json.JSONObject
 
-class AddingTagsService : Service() {
+class AddingProductFieldsService : Service() {
 
     // Define a CoroutineScope for the service
     private val job = SupervisorJob()
     private val serviceScope = CoroutineScope(Dispatchers.IO + job)
+    private val maxTokens = 400;
 
     override fun onBind(intent: Intent?): IBinder? {
         return null
@@ -56,7 +57,7 @@ class AddingTagsService : Service() {
                 )
             )
 
-            val request = ChatRequest(messages = messages)
+            val request = ChatRequest(messages = messages, max_tokens = maxTokens)
             val tags = try {
                 val response =
                     RetrofitInstance.openAiService.getChatCompletion("Bearer $apiKey", request)
@@ -80,6 +81,35 @@ class AddingTagsService : Service() {
             } ?: return@launch
 
             db.RecipeappDao().UpdateProductTags(barcode, tags)
+
+            // Getting carbon footprint
+            val messagesCarbon = listOf(
+                Message(
+                    role = "user",
+                    content = "Give a brief summary of the carbon footprint of this product: ${product.name}. Also give specific numbers as to how many kg it produces if possible. Answer only with the text and no response"
+                )
+            )
+
+            val requestCarbon = ChatRequest(messages = messagesCarbon, max_tokens = maxTokens)
+            val carbonText = try {
+                val response =
+                    RetrofitInstance.openAiService.getChatCompletion(
+                        "Bearer $apiKey",
+                        requestCarbon
+                    )
+                val jsonString = response.choices[0].message.content
+
+                jsonString
+
+            } catch (e: Exception) {
+                Log.d("AddingTagsService", "Failed to get carbon footprint for: ${product.name}")
+                Log.d("AddingTagsService", "Error: ${e.message}")
+                null
+            } ?: return@launch
+
+            db.RecipeappDao().UpdateProductCarbonFootprint(barcode, carbonText)
+
+
             stopSelf()
         }
         return START_NOT_STICKY

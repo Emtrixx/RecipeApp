@@ -13,7 +13,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.recipeapp.AddingTagsService
+import com.example.recipeapp.AddingProductFieldsService
 import com.example.recipeapp.components.camera.getImageFromInternalStorage
 import kotlinx.coroutines.launch
 import java.time.LocalDate
@@ -110,7 +110,6 @@ class AddProductViewModel(barcodeArg: String?, context: Context, val edit: Boole
             barcode = barcode,
             name = name,
             description = description,
-            tags = listOf(),
             image = savedImagePath,
 //          Taking old values into consideration
             bestbefore = oldBestBeforeList + bestBeforeList.map {
@@ -120,6 +119,9 @@ class AddProductViewModel(barcodeArg: String?, context: Context, val edit: Boole
                 LocalDate.parse(it, DateTimeFormatter.ofPattern("dd/MM/yyyy"))
             },
             amount = oldAmount + amount,
+            // To be filled in background service
+            tags = listOf(),
+            carbonFootprint = null
         )
 
         viewModelScope.launch {
@@ -127,7 +129,7 @@ class AddProductViewModel(barcodeArg: String?, context: Context, val edit: Boole
 
             // Add tags in the background with ChatGPT
             Log.d("AddProductViewModel", "Starting AddingTagsService")
-            val intent = Intent(context, AddingTagsService::class.java)
+            val intent = Intent(context, AddingProductFieldsService::class.java)
             intent.putExtra("barcode", product.barcode)
             context.startService(intent)
         }
