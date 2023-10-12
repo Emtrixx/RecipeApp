@@ -38,7 +38,6 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
@@ -227,7 +226,7 @@ fun HomeListView(
                             modifier = Modifier
                                 .padding(4.dp),
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
-                            )
+                        )
                         Button(
                             onClick = { navController.navigate("allItems") },
                             modifier = Modifier
@@ -294,7 +293,7 @@ fun HomeListView(
                 } else {
                     items(items = recipeList) { item ->
                         RecipeItemCard(
-                            recipe = item
+                            recipe = item, navController = navController
                         )
                     }
                 }
@@ -534,15 +533,25 @@ fun ItemCard(
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun RecipeItemCard(recipe: Recipe) {
+fun RecipeItemCard(recipe: Recipe, navController: NavController) {
 
-    ElevatedCard(
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.primaryContainer
+    fun truncateString(input: String, maxLength: Int): String {
+        return if (input.length > maxLength) {
+            input.substring(0, maxLength) + "..."
+        } else {
+            input
+        }
+    }
+
+    Card(
+        onClick = { navController.navigate("recipe_description/${recipe.id}") },
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primaryContainer),
+        modifier = Modifier.padding(12.dp),
+        elevation = CardDefaults.cardElevation(
+            defaultElevation = 4.dp
         ),
-        modifier = Modifier
-            .padding(12.dp)
     ) {
         Column {
             Column(
@@ -550,8 +559,8 @@ fun RecipeItemCard(recipe: Recipe) {
                     .padding(all = 8.dp)
                     .fillMaxWidth()
             ) {
-                Text(text = recipe.name, fontWeight = FontWeight.Bold)
-                Spacer(modifier = Modifier.height(4.dp))
+                Text(text = recipe.name, fontWeight = FontWeight.Bold, color = Color.White)
+                Text(text = truncateString(recipe.description, 100), color = Color.LightGray)
             }
             Spacer(modifier = Modifier.height(8.dp))
         }

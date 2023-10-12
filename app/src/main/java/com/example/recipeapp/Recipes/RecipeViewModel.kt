@@ -1,20 +1,20 @@
 package com.example.recipeapp.Recipes
 
-import android.app.Application
-import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.viewModelScope
 import Database.Product
 import Database.Recipe
 import Database.Recipeapp
+import android.content.Context
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 const val apiKey = "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"
-class RecipeViewModel (application: Application) : AndroidViewModel(application) {
+class RecipeViewModel (context: Context) : ViewModel() {
         private val db: Recipeapp by lazy {
-            Recipeapp.getInstance(application)
+            Recipeapp.getInstance(context)
         }
 
         private val productsLiveData: MutableLiveData<List<Product>> = MutableLiveData()

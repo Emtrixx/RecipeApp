@@ -2,7 +2,11 @@ package com.example.recipeapp.Navigation
 
 import Database.Product
 import Database.Recipe
+import IngredientsSelectionScreen
+import Myrecipes
 import RecipeNavigation
+import Recipedescription
+import RecipesScreen
 import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.RowScope
@@ -36,6 +40,7 @@ import androidx.navigation.navigation
 import com.example.recipeapp.AllItems.AllItemsListView
 import com.example.recipeapp.HomeView.HomeListView
 import com.example.recipeapp.ItemView.ItemView
+import com.example.recipeapp.Recipes.RecipeViewModel
 import com.example.recipeapp.product.AddProductForm
 import com.example.recipeapp.product.AddProductViewModel
 import com.example.recipeapp.product.BarcodeScannerView
@@ -143,6 +148,62 @@ fun NavGraph(
                     }
                 }
             }
+        }
+        composable(
+            route = "allItems",
+        ) {
+            AllItemsListView(navController = navController, productList = productList)
+        }
+        composable(
+            route = "recipe_description/{id}",
+            arguments = listOf(navArgument("id") { type = NavType.LongType })
+        ) { backStackEntry ->
+
+            val recipeid = backStackEntry.arguments?.getLong("id")
+            val viewModel = RecipeViewModel(LocalContext.current)
+
+            val selectedItem = recipeList?.find { it.id == recipeid }
+
+            if (selectedItem != null) {
+                Recipedescription(recipe = selectedItem, viewModel = viewModel, navController = navController)
+            } else {
+                Text("Item not found")
+            }
+        }
+        composable("recipes") {
+            val viewModel = RecipeViewModel(LocalContext.current)
+            Myrecipes(
+                navController = navController,
+                viewModel = viewModel
+            )
+        }
+        // Define the ingredients selection screen
+        composable("ingredients") {
+            val viewModel = RecipeViewModel(LocalContext.current)
+            IngredientsSelectionScreen(
+                navController = navController,
+                viewModel = viewModel
+            )
+        }
+
+        // Define the recipes screen with ingredients as a route parameter
+        composable(
+            route = "recipes?ingredients={ingredients}?all={all}",
+            arguments = listOf(
+                navArgument("ingredients") { type = NavType.StringType },
+                navArgument("all") {type = NavType.BoolType}
+            )
+        ) { backStackEntry ->
+            val selectedIngredients =
+                backStackEntry.arguments?.getString("ingredients")
+            val allproducts = backStackEntry.arguments?.getBoolean("all") ?: true
+            val viewModel = RecipeViewModel(LocalContext.current)
+            RecipesScreen(
+                viewModel = viewModel,
+                selectedIngredients,
+                navController=navController,
+                allproducts
+            )
         }
     }
 }
