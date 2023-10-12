@@ -4,6 +4,7 @@ import Database.FavoriteShoppingItem
 import Database.Recipeapp
 import Database.ShoppingItem
 import android.app.Application
+import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -116,4 +117,42 @@ class ShoppingViewModel(application: Application) : AndroidViewModel(application
     fun addFavoriteToShoppingList(item: FavoriteShoppingItem) {
         addShoppingItem(item.name, amount = "1")
     }
+
+    // Inside the ShoppingViewModel class
+    fun deleteCheckedItems() {
+        viewModelScope.launch(Dispatchers.IO) {
+            val checkedItems = shoppingLiveData.value?.filter { it.checked } ?: emptyList()
+
+            // Log the checked items before deletion
+            checkedItems.forEach { item ->
+                Log.d("ShoppingViewModel", "Checked item: ${item.name}")
+            }
+
+            if (checkedItems.isNotEmpty()) {
+                // Log the deleted items
+                checkedItems.forEach { item ->
+                    Log.d("ShoppingViewModel", "Deleted item: ${item.name}")
+                }
+
+                db.shoppingItemDao().deleteShoppingItems(checkedItems)
+                fetchShoppingList()
+            }
+        }
+    }
+
+    // Inside the ShoppingViewModel class
+    fun toggleItemCheckedState(item: ShoppingItem, isChecked: Boolean) {
+        Log.d("ShoppingViewModel", "Toggling item checked state: ${item.name}, isChecked: $isChecked")
+        viewModelScope.launch(Dispatchers.IO) {
+            item.checked = isChecked
+            db.shoppingItemDao().updateShoppingItem(item)
+            fetchShoppingList()
+        }
+    }
+
+    fun hasCheckedItems(): Boolean {
+        return shoppingLiveData.value?.any { it.checked } == true
+    }
+
+
 }
