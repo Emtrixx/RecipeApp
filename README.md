@@ -6,6 +6,8 @@ FridgeMate is application that helps you manage your fridge, generate shopping l
 
 - <a href="https://platform.openai.com/docs/introduction](https://developers.google.com/ml-kit/vision/barcode-scanning" target="_blank">Google ML kit barcode scanner</a>
 - <a href="https://platform.openai.com/docs/introduction" target="_blank">ChatGPT 3.5 turbo</a>
+- Custom web API for making predictions on the types of products based on images
+- ZXing library for generating barcode images for saved products
 
 ## Features
 
@@ -23,4 +25,4 @@ FridgeMate is application that helps you manage your fridge, generate shopping l
 - Add products to your list manually or by scanning barcodes using Google's ML Kit.
 
 ### Usage: 
-- You will need a chatGPT api key to use the application.
+- You will need a chatGPT API key to use the application.
