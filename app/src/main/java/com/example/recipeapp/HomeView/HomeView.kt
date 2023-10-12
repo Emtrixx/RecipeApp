@@ -87,15 +87,15 @@ fun HomeView() {
 
     val homeViewModel = HomeViewModel(context)
 
-    val productList by homeViewModel.getProductsLiveData().observeAsState(emptyList())
+    val productList by homeViewModel.getProductsExpiringSoon().observeAsState(emptyList())
 
     val recipeList by homeViewModel.getRecipesLiveData().observeAsState(emptyList())
 
     //val scrollBehavior = rememberUpdatedState(TopAppBarDefaults.exitUntilCollapsedScrollBehavior())
 
     LaunchedEffect(Unit) {
-        homeViewModel.getProductsLiveData()
-        homeViewModel.getRecipesLiveData()
+        homeViewModel.getProductsExpiringSoon()
+        //homeViewModel.getRecipesLiveData()
         //homeViewModel.addProduct()
     }
 
@@ -228,12 +228,11 @@ fun HomeListView(
                         horizontalArrangement = Arrangement.SpaceBetween,
                     ) {
                         Text(
-                            text = "Time to get more",
+                            text = "Expiring soon",
                             fontSize = 24.sp,
                             modifier = Modifier
                                 .padding(4.dp),
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
-
                             )
                         Button(
                             onClick = { navController.navigate("allItems") },
