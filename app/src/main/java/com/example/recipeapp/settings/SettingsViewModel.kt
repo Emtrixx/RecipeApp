@@ -16,16 +16,41 @@ import com.example.recipeapp.lib.sendNotification
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
+enum class DarkModeState(val value: String) {
+    LIGHT("light"),
+    DARK("dark"),
+}
+
 class SettingsViewModel(application: Application) : AndroidViewModel(application) {
 
     var notificationsState by mutableStateOf(false)
         private set
 
+    var darkModeState: String? by mutableStateOf(null)
+        private set
+
     init {
         getNotificationState()
+        getDarkModeState()
     }
 
-    fun getNotificationState() {
+    private fun getDarkModeState() {
+        val context = getApplication<Application>().applicationContext
+        viewModelScope.launch {
+            darkModeState = context.dataStore.data.first()[DARK_MODE]
+        }
+    }
+
+    fun setDarkModeState(context: Activity, state: String) {
+        viewModelScope.launch {
+            context.dataStore.edit { settings ->
+                settings[DARK_MODE] = state
+                darkModeState = state
+            }
+        }
+    }
+
+    private fun getNotificationState() {
         val context = getApplication<Application>().applicationContext
         viewModelScope.launch {
             notificationsState = context.dataStore.data.first()[NOTIFICATIONS_STATE] ?: false

@@ -9,7 +9,6 @@ import Recipedescription
 import RecipesScreen
 import android.util.Log
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.material.BottomNavigation
 import androidx.compose.material.BottomNavigationItem
@@ -141,7 +140,7 @@ fun NavGraph(
                         }
 
                         "Appearance" -> {
-                            AppearanceSettings()
+                            AppearanceSettings(settingsViewModel)
                         }
 
                         "Dev" -> {
@@ -251,7 +250,7 @@ fun RowScope.AddItem(
             )
         },
         selected = currentDestination?.hierarchy?.any {
-            Log.d("DBG", screen.screen ?: "empty")
+            Log.d("DBG", screen.screen)
             it.route == screen.screen
         } == true,
         onClick = {

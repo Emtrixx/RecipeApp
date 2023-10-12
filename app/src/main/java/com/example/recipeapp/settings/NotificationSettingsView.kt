@@ -67,7 +67,7 @@ fun NotificationSettingsView(viewModel: SettingsViewModel) {
                 icon = {
                     Icon(
                         Icons.Default.Star,
-                        contentDescription = "Appearance settings"
+                        contentDescription = "create test Notification"
                     )
                 },
                 onClick = { viewModel.testNotification() },
