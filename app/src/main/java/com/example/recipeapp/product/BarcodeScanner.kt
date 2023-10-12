@@ -70,6 +70,9 @@ fun BarcodeScannerView(viewModel: BarcodeViewModel, navController: NavController
 
     val cameraLauncher =
         rememberLauncherForActivityResult(ActivityResultContracts.TakePicture()) {
+            if (!it) {
+                return@rememberLauncherForActivityResult
+            }
             capturedImageUri = uri
             imageBitmap = BitmapFactory.decodeFile(file.absolutePath)
             viewModel.getScannedValue(imageBitmap!!)

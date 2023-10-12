@@ -83,5 +83,9 @@ class BarcodeScannerInstance {
             .addOnFailureListener {
                 Log.d("BarcodeScanner", "Failure")
             }
+            .addOnCanceledListener {
+                error.postValue("Cancelled")
+                Log.d("BarcodeScanner", "Cancelled")
+            }
     }
 }

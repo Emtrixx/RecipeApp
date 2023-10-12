@@ -194,31 +194,33 @@ fun ShoppingCard(item: ShoppingItem, onDeleteItem: (ShoppingItem) -> Unit) {
         Row(
             Modifier
                 .fillMaxWidth()
-                .height(50.dp)
                 .toggleable(
                     value = checkedState,
                     onValueChange = { onStateChange(!checkedState) },
                     role = Role.Checkbox
                 )
-                .padding(4.dp),
+                .padding(8.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Checkbox(
                 checked = checkedState,
                 onCheckedChange = null
             )
-            Text(
-                text = item.name,
-                modifier = Modifier
-                    .padding(start = 16.dp),
-                color = if (checkedState) MaterialTheme.colorScheme.outline else MaterialTheme.colorScheme.onSurfaceVariant,
-            )
-            Text(
-                text = "qty: ${item.amount}",
-                modifier = Modifier
-                    .padding(start = 16.dp),
-                color = if (checkedState) MaterialTheme.colorScheme.outline else MaterialTheme.colorScheme.onSurfaceVariant,
-            )
+            Column() {
+                Text(
+                    text = item.name,
+                    modifier = Modifier
+                        .padding(horizontal = 8.dp,),
+                    color = if (checkedState) MaterialTheme.colorScheme.outline else MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+                Text(
+                    text = item.amount,
+                    modifier = Modifier
+                        .padding(horizontal = 8.dp),
+                    fontSize = 12.sp,
+                    color = if (checkedState) MaterialTheme.colorScheme.outline else MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+            }
             Row(
                 Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.End
@@ -239,4 +241,5 @@ fun ShoppingCard(item: ShoppingItem, onDeleteItem: (ShoppingItem) -> Unit) {
         }
     }
 }
+
 

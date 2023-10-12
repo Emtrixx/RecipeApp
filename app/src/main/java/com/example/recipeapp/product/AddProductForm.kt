@@ -20,7 +20,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.Card
@@ -29,8 +29,8 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarColors
 import androidx.compose.runtime.Composable
@@ -121,7 +121,7 @@ fun AddProductForm(viewModel: AddProductViewModel, navController: NavController)
                                 ?: BottomNavItem.Home.screen
                         )
                     }) {
-                        Icon(Icons.Default.ArrowBack, contentDescription = "Back")
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
                     }
                 },
                 colors = TopAppBarColors(
@@ -144,92 +144,6 @@ fun AddProductForm(viewModel: AddProductViewModel, navController: NavController)
                         .fillMaxWidth()
                         .padding(top = 8.dp)
                 ) {
-                    Column {
-                        Text(
-                            text = "Product Details",
-                            fontWeight = FontWeight.Bold,
-                            modifier = Modifier.padding(8.dp),
-                            fontSize = 18.sp
-                        )
-                        OutlinedTextField(
-                            value = name,
-                            label = { Text(text = stringResource(R.string.addProductNameLabel)) },
-                            singleLine = true,
-                            shape = CircleShape,
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(8.dp),
-                            onValueChange = { viewModel.updateName(it) },
-                            keyboardOptions = KeyboardOptions.Default.copy(
-                                imeAction = ImeAction.Done
-                            ),
-                            colors = TextFieldDefaults.outlinedTextFieldColors(
-                                focusedBorderColor = MaterialTheme.colorScheme.primaryContainer,
-                                focusedLabelColor = MaterialTheme.colorScheme.primaryContainer,
-                                containerColor = MaterialTheme.colorScheme.surfaceVariant,
-                            )
-                        )
-                        ErrorLabel(nameErrors)
-                    }
-                    Column {
-                        OutlinedTextField(
-                            value = description,
-                            label = { Text(text = stringResource(R.string.addProductDescriptionLabel)) },
-                            singleLine = true,
-                            shape = CircleShape,
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(8.dp),
-                            onValueChange = { viewModel.updateDescription(it) },
-                            keyboardOptions = KeyboardOptions.Default.copy(
-                                imeAction = ImeAction.Done
-                            ),
-                            colors = TextFieldDefaults.outlinedTextFieldColors(
-                                focusedBorderColor = MaterialTheme.colorScheme.primaryContainer,
-                                focusedLabelColor = MaterialTheme.colorScheme.primaryContainer,
-                                containerColor = MaterialTheme.colorScheme.surfaceVariant,
-                            )
-                        )
-                        ErrorLabel(descriptionErrors)
-                    }
-                    Column {
-                        IntegerInputStepper(
-                            value = amount,
-                            onValueChange = { viewModel.updateAmount(it) },
-                            modifier = Modifier
-                                .align(Alignment.CenterHorizontally)
-                                .padding(8.dp),
-                            minValue = 1,
-                            maxValue = 100,
-                        )
-                        ErrorLabel(amountErrors)
-                    }
-
-                    Column(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(8.dp)
-                    ) {
-                        Text(
-                            text = "Best before",
-                            fontWeight = FontWeight.Bold,
-                            modifier = Modifier.padding(8.dp),
-                            fontSize = 18.sp
-                        )
-                        bestBeforeList.forEachIndexed { index, date ->
-                            // Assuming there's a DatePicker or similar component to pick dates
-                            ProductFormDatePicker(
-                                date = date,
-                                onDateSelected = {
-                                    viewModel.updateBestBefore(it, index)
-                                }
-                            )
-                        }
-                        ErrorLabel(bestBeforeErrors)
-                    }
-                }
-
-                Card(modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp)) {
                     Text(
                         text = "Product image",
                         fontWeight = FontWeight.Bold,
@@ -286,47 +200,157 @@ fun AddProductForm(viewModel: AddProductViewModel, navController: NavController)
                             }
                         }
                     }
-
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.Center
-                    ) {
-                        Button(
+                }
+                Card(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 8.dp)
+                ) {
+                    Column {
+                        Text(
+                            text = "Product Details",
+                            fontWeight = FontWeight.Bold,
+                            modifier = Modifier.padding(8.dp),
+                            fontSize = 18.sp
+                        )
+                        OutlinedTextField(
+                            value = name,
+                            label = { Text(text = stringResource(R.string.addProductNameLabel)) },
+                            singleLine = true,
+                            shape = CircleShape,
                             modifier = Modifier
-                                .padding(8.dp)
-                                .fillMaxWidth(),
-                            onClick = {
-                                if (capturedImageUri != Uri.EMPTY) {
-                                    val path =
-                                        saveImageToInternalStorage(
-                                            context,
-                                            capturedImageUri,
-                                            barcode
-                                        )
-                                    if (path != null) {
-                                        viewModel.updateSavedImagePath(path)
-                                    } else {
-                                        Toast.makeText(
-                                            context,
-                                            "Saving image failed",
-                                            Toast.LENGTH_SHORT
-                                        )
-                                            .show()
-                                        return@Button
-                                    }
-                                }
-                                viewModel.upsertProduct()
-                                navController.navigate(BottomNavItem.Home.screen)
-                            }, enabled = !anyError,
-                            colors = ButtonColors(
-                                containerColor = MaterialTheme.colorScheme.primaryContainer,
-                                contentColor = Color.White,
-                                disabledContainerColor = MaterialTheme.colorScheme.errorContainer,
-                                disabledContentColor = MaterialTheme.colorScheme.onErrorContainer
+                                .fillMaxWidth()
+                                .padding(8.dp),
+                            onValueChange = { viewModel.updateName(it) },
+                            keyboardOptions = KeyboardOptions.Default.copy(
+                                imeAction = ImeAction.Done
+                            ),
+                            colors = OutlinedTextFieldDefaults.colors(
+                                focusedContainerColor = MaterialTheme.colorScheme.surfaceVariant,
+                                unfocusedContainerColor = MaterialTheme.colorScheme.surfaceVariant,
+                                disabledContainerColor = MaterialTheme.colorScheme.surfaceVariant,
+                                focusedBorderColor = MaterialTheme.colorScheme.primaryContainer,
+                                focusedLabelColor = MaterialTheme.colorScheme.primaryContainer,
                             )
-                        ) {
-                            Text(text = "Save")
+                        )
+                        ErrorLabel(nameErrors)
+                    }
+                    Column {
+                        OutlinedTextField(
+                            value = description,
+                            label = { Text(text = stringResource(R.string.addProductDescriptionLabel)) },
+                            singleLine = true,
+                            shape = CircleShape,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(8.dp),
+                            onValueChange = { viewModel.updateDescription(it) },
+                            keyboardOptions = KeyboardOptions.Default.copy(
+                                imeAction = ImeAction.Done
+                            ),
+                            colors = OutlinedTextFieldDefaults.colors(
+                                focusedContainerColor = MaterialTheme.colorScheme.surfaceVariant,
+                                unfocusedContainerColor = MaterialTheme.colorScheme.surfaceVariant,
+                                disabledContainerColor = MaterialTheme.colorScheme.surfaceVariant,
+                                focusedBorderColor = MaterialTheme.colorScheme.primaryContainer,
+                                focusedLabelColor = MaterialTheme.colorScheme.primaryContainer,
+                            )
+                        )
+                        ErrorLabel(descriptionErrors)
+                    }
+                    Column {
+                        IntegerInputStepper(
+                            value = amount,
+                            onValueChange = { viewModel.updateAmount(it) },
+                            modifier = Modifier
+                                .align(Alignment.CenterHorizontally)
+                                .padding(8.dp),
+                            minValue = 1,
+                            maxValue = 100,
+                        )
+                        ErrorLabel(amountErrors)
+                    }
+
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(8.dp)
+                    ) {
+                        Text(
+                            text = "Best before",
+                            fontWeight = FontWeight.Bold,
+                            modifier = Modifier.padding(8.dp),
+                            fontSize = 18.sp
+                        )
+                        bestBeforeList.forEachIndexed { index, date ->
+                            // Assuming there's a DatePicker or similar component to pick dates
+                            ProductFormDatePicker(
+                                date = date,
+                                onDateSelected = {
+                                    viewModel.updateBestBefore(it, index)
+                                }
+                            )
                         }
+                        ErrorLabel(bestBeforeErrors)
+                    }
+                }
+
+
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth(),
+                    horizontalArrangement = Arrangement.Center
+                ) {
+                    Button(
+                        modifier = Modifier
+                            .padding(bottom = 16.dp)
+                            .fillMaxWidth()
+                            .height(60.dp),
+                        onClick = {
+
+                            if (!viewModel.validateAll()) {
+                                Toast.makeText(
+                                    context,
+                                    "Please fill in all required fields",
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                                return@Button
+                            }
+
+
+                            if (capturedImageUri != Uri.EMPTY) {
+                                val path =
+                                    saveImageToInternalStorage(
+                                        context,
+                                        capturedImageUri,
+                                        barcode
+                                    )
+                                if (path != null) {
+                                    viewModel.updateSavedImagePath(path)
+                                } else {
+                                    Toast.makeText(
+                                        context,
+                                        "Saving image failed",
+                                        Toast.LENGTH_SHORT
+                                    )
+                                        .show()
+                                    return@Button
+                                }
+                            }
+                            viewModel.upsertProduct(context)
+                            navController.navigate(BottomNavItem.Home.screen)
+                        }, enabled = !anyError,
+                        colors = ButtonColors(
+                            containerColor = MaterialTheme.colorScheme.primaryContainer,
+                            contentColor = Color.White,
+                            disabledContainerColor = MaterialTheme.colorScheme.errorContainer,
+                            disabledContentColor = MaterialTheme.colorScheme.onErrorContainer
+                        )
+                    ) {
+                        Text(text = "Save",
+                            color = Color.White,
+                            modifier = Modifier,
+                            fontSize = 16.sp)
                     }
                 }
             }

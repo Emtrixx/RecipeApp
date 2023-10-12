@@ -55,21 +55,6 @@ class HomeViewModel(context: Context) : ViewModel() {
     }
 
     var date: LocalDate = LocalDate.of(2000, 10, 3)
-    fun addProduct() {
-        viewModelScope.launch{
-            db.RecipeappDao().InsertProduct(
-                Product(
-                    barcode = Random.Default.nextInt(1, 1000000).toString(),
-                    name = "egg ${Random.Default.nextInt(1, 100000)}",
-                    description = "pirkka eggs, the best ones",
-                    amount = 2,
-                    tags = listOf("egg"),
-                    image = null,
-                    bestbefore = listOf(date),
-                )
-            )
-        }
-    }
 
     fun removeProduct(product: Product) {
         viewModelScope.launch() {
@@ -81,7 +66,7 @@ class HomeViewModel(context: Context) : ViewModel() {
 
     fun addToShoppingList(product: Product) {
         viewModelScope.launch {
-            val shoppingItem = ShoppingItem(name = product.name, amount = 1,)
+            val shoppingItem = ShoppingItem(name = product.name, amount = "1",)
             db.shoppingItemDao().insertShoppingItem(shoppingItem)
         }
     }

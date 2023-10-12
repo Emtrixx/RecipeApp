@@ -134,7 +134,8 @@ fun HomeView() {
             }
         },
         bottomBar = {
-            Box(modifier = Modifier.fillMaxWidth(),
+            Box(
+                modifier = Modifier.fillMaxWidth(),
                 contentAlignment = Alignment.Center
             ) {
                 BottomNavigationBar(navController = navController)
@@ -228,7 +229,6 @@ fun HomeListView(
                     ) {
                         Text(
                             text = "Time to get more",
-                            fontWeight = FontWeight.Bold,
                             fontSize = 24.sp,
                             modifier = Modifier
                                 .padding(4.dp),
@@ -250,7 +250,7 @@ fun HomeListView(
                         }
                     }
                 }
-                items(items = productList) { item ->
+                items(items = productList.take(3)) { item ->
                     ItemCard(
                         product = item,
                         navController = navController,
@@ -258,12 +258,18 @@ fun HomeListView(
                     )
                 }
                 stickyHeader {
-                    Text(
-                        text = "Recipes",
-                        fontSize = 24.sp,
+                    Row(
                         modifier = Modifier
-                            .padding(8.dp)
-                    )
+                            .fillMaxWidth()
+                            .background(MaterialTheme.colorScheme.background),
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        Text(
+                            text = "Recipes",
+                            fontSize = 24.sp,
+                            modifier = Modifier.padding(8.dp)
+                        )
+                    }
                 }
 
                 if (recipeList.isNullOrEmpty()) {
@@ -334,7 +340,7 @@ fun ItemCard(
                 navController.navigate("itemDetail/${product.barcode}")
             },
         elevation = CardDefaults.cardElevation(
-            defaultElevation = 12.dp
+            defaultElevation = 4.dp
         ),
     ) {
         Column(
@@ -416,10 +422,16 @@ fun ItemCard(
                             openDialog.value = false
                         },
                         title = {
-                            Text(text = "Are you sure you want to delete this item?", color = Color.Black)
+                            Text(
+                                text = "Are you sure you want to delete this item?",
+                                color = Color.Black
+                            )
                         },
                         text = {
-                            Text("This will remove ${product.name} permanently", color = Color.Black)
+                            Text(
+                                "This will remove ${product.name} permanently",
+                                color = Color.Black
+                            )
                         },
                         confirmButton = {
                             Button(
@@ -433,7 +445,8 @@ fun ItemCard(
                                     contentColor = Color.White,
                                     disabledContainerColor = MaterialTheme.colorScheme.errorContainer,
                                     disabledContentColor = MaterialTheme.colorScheme.onErrorContainer
-                                ),) {
+                                ),
+                            ) {
                                 Text("Confirm", color = Color.White)
                             }
                         },
@@ -448,8 +461,11 @@ fun ItemCard(
                                     disabledContainerColor = MaterialTheme.colorScheme.errorContainer,
                                     disabledContentColor = MaterialTheme.colorScheme.onErrorContainer
                                 ),
-                                border = BorderStroke(2.dp, MaterialTheme.colorScheme.primaryContainer)
-                                ) {
+                                border = BorderStroke(
+                                    2.dp,
+                                    MaterialTheme.colorScheme.primaryContainer
+                                )
+                            ) {
                                 Text("Cancel", color = Color.Black)
                             }
                         }
@@ -549,5 +565,4 @@ fun RecipeItemCard(recipe: Recipe) {
         }
     }
 }
-
 

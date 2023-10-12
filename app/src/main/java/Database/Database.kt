@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.annotation.NonNull
 import androidx.room.Dao
 import androidx.room.Database
+import androidx.room.Delete
 import androidx.room.Entity
 import androidx.room.Insert
 import androidx.room.PrimaryKey
@@ -14,14 +15,15 @@ import androidx.room.TypeConverter
 import androidx.room.TypeConverters
 import androidx.room.Upsert
 import java.time.LocalDate
-import androidx.room.Delete
 import androidx.room.Update
 
-@Database(entities = [Product::class, Recipe::class, ShoppingItem::class], version = 2, exportSchema = false)
+@Database(entities = [Product::class, Recipe::class, ShoppingItem::class, FavoriteShoppingItem::class], version = 1, exportSchema = false)
 @TypeConverters(ListDateConverter::class, ListStringConverter::class)
 abstract class Recipeapp : RoomDatabase() {
     abstract fun RecipeappDao(): ProductRecipeDao
     abstract fun shoppingItemDao(): ShoppingItemDao
+    abstract fun favoriteShoppingItemDao(): FavoriteShoppingItemDao
+
     companion object {
         @Volatile
         private var INSTANCE: Recipeapp? = null
@@ -48,7 +50,8 @@ data class Product(
     val description: String,
     val amount: Int,
     @TypeConverters(ListStringConverter::class) val tags: List<String>,
-    val image: String?
+    val image: String?,
+    val carbonFootprint: String?
 )
 
 @Entity
@@ -63,7 +66,15 @@ data class ShoppingItem(
     @PrimaryKey(autoGenerate = true)
     val id: Long = 0,
     val name: String,
-    val amount: Int,
+    val amount: String,
+    var addedCount: Int = 0
+)
+
+@Entity
+data class FavoriteShoppingItem(
+    @PrimaryKey(autoGenerate = true)
+    val id: Long = 0,
+    val name: String
 )
 @Dao
 interface ProductRecipeDao {
@@ -72,8 +83,6 @@ interface ProductRecipeDao {
 
     @Query("SELECT * FROM Recipe")
     suspend  fun GetRecipes(): List<Recipe>
-    @Query("SELECT * FROM Recipe WHERE name LIKE '%'||:search||'%'")
-    suspend  fun GetSearchedRecipes(search: String): List<Recipe>
 
     @Query("SELECT * FROM Product WHERE barcode = :barcode")
     suspend fun GetProductInfo(barcode: String): Product?
@@ -81,14 +90,14 @@ interface ProductRecipeDao {
     @Query("DELETE FROM Product WHERE barcode = :barcode")
     suspend fun deleteProductById(barcode: String)
 
-    @Query("DELETE FROM Recipe WHERE name = :name")
-    suspend fun deleteRecipeById(name: String)
+    @Query("DELETE FROM Recipe WHERE id = :id")
+    suspend fun deleteRecipeById(id: Long)
 
     @Query("SELECT * FROM Recipe WHERE id = :id")
     suspend fun GetRecipeInfo(id: Long): Recipe
 
     @Insert
-    suspend  fun InsertRecipe(recipe: Recipe)
+    suspend  fun InsertRecipe(vararg recipe: Recipe)
 
     @Insert
     suspend  fun InsertProduct(vararg product: Product)
@@ -102,6 +111,11 @@ interface ProductRecipeDao {
     @Update
     suspend fun UpdateRecipe(vararg recipe: Recipe)
 
+    @Query("UPDATE Product SET tags = :newTags WHERE barcode = :barcode")
+    suspend fun UpdateProductTags(barcode: String, newTags: List<String>)
+
+    @Query("UPDATE Product SET carbonFootprint = :carbonFootprint WHERE barcode = :barcode")
+    suspend fun UpdateProductCarbonFootprint(barcode: String, carbonFootprint: String)
 }
 
 @Dao
@@ -112,8 +126,25 @@ interface ShoppingItemDao {
     @Insert
     suspend fun insertShoppingItem(shoppingItem: ShoppingItem)
 
+    @Query("UPDATE ShoppingItem SET addedCount = addedCount + 1 WHERE name = :name")
+    suspend fun incrementAddedCount(name: String)
+
+    @Query("SELECT addedCount FROM ShoppingItem WHERE name = :itemName")
+    suspend fun getAddedCountByName(itemName: String): Int
+
     @Delete
     suspend fun deleteShoppingItem(shoppingItem: ShoppingItem)
+
+    @Query("SELECT * FROM ShoppingItem WHERE name = :name")
+    suspend fun getShoppingItemByName(name: String): ShoppingItem?
+}
+
+@Dao
+interface FavoriteShoppingItemDao {
+    @Query("SELECT * FROM FavoriteShoppingItem")
+    suspend fun getFavoriteItems(): List<FavoriteShoppingItem>
+    @Insert
+    suspend fun insertFavoriteItem(favoriteItem: FavoriteShoppingItem)
 }
 
 class DateConverter {
@@ -156,10 +187,3 @@ class ListDateConverter {
         }
     }
 }
-
-/*val database = Recipeapp.getInstance(applicationContext)
-            val viewModel: RecipeappViewModel by viewModels()
-            val actorList by viewModel.getProductsAsLiveData().observeAsState(initial = emptyList())
-            LaunchedEffect(Unit) {
-                viewModel.fetchProducts()
-            }*/
