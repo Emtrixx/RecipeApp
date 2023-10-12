@@ -1,4 +1,4 @@
-package com.example.recipeapp.Database
+package Database
 
 import android.content.Context
 import androidx.annotation.NonNull
@@ -12,11 +12,10 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverter
 import androidx.room.TypeConverters
-import java.util.Date
 import androidx.room.Upsert
 import java.time.LocalDate
-import androidx.room.ColumnInfo
 import androidx.room.Delete
+import androidx.room.Update
 
 @Database(entities = [Product::class, Recipe::class, ShoppingItem::class], version = 2, exportSchema = false)
 @TypeConverters(ListDateConverter::class, ListStringConverter::class)
@@ -54,10 +53,10 @@ data class Product(
 
 @Entity
 data class Recipe(
-   // @TypeConverters(ListStringConverter::class) @NonNull val ingredients: List<String>,
-    @NonNull @PrimaryKey val name: String,
+    @PrimaryKey (autoGenerate = true)
+    val id: Long = 0,
+    @NonNull val name: String,
     val description: String,
-   // @TypeConverters(ListStringConverter::class) val tags: List<String>
 )
 @Entity
 data class ShoppingItem(
@@ -85,11 +84,11 @@ interface ProductRecipeDao {
     @Query("DELETE FROM Recipe WHERE name = :name")
     suspend fun deleteRecipeById(name: String)
 
-    @Query("SELECT * FROM Recipe WHERE name = :name")
-    suspend fun GetRecipeInfo(name: String): Recipe
+    @Query("SELECT * FROM Recipe WHERE id = :id")
+    suspend fun GetRecipeInfo(id: Long): Recipe
 
     @Insert
-    suspend  fun InsertRecipe(vararg recipe: Recipe)
+    suspend  fun InsertRecipe(recipe: Recipe)
 
     @Insert
     suspend  fun InsertProduct(vararg product: Product)
@@ -99,6 +98,9 @@ interface ProductRecipeDao {
 
     @Upsert
     suspend  fun UpsertRecipe(vararg recipe: Recipe)
+
+    @Update
+    suspend fun UpdateRecipe(vararg recipe: Recipe)
 
 }
 
