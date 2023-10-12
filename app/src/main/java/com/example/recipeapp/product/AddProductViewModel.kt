@@ -15,7 +15,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.recipeapp.AddingProductFieldsService
 import com.example.recipeapp.components.camera.getImageFromInternalStorage
+import com.example.recipeapp.lib.uploadImageToServer
 import kotlinx.coroutines.launch
+import java.io.File
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.time.format.DateTimeParseException
@@ -36,9 +38,13 @@ class AddProductViewModel(barcodeArg: String?, context: Context, val edit: Boole
         private set
     var nameErrors by mutableStateOf<List<String>>(listOf())
         private set
-    var capturedImageUri by mutableStateOf(Uri.EMPTY)
+    var capturedImageUri: Uri by mutableStateOf(Uri.EMPTY)
         private set
     var storedImage by mutableStateOf<Bitmap?>(null)
+        private set
+    var predictedName by mutableStateOf("")
+        private set
+    var showPredictionDialog: Boolean by mutableStateOf(false)
         private set
     var barcode by mutableStateOf("")
         private set
@@ -224,6 +230,19 @@ class AddProductViewModel(barcodeArg: String?, context: Context, val edit: Boole
         this.capturedImageUri = uri
     }
 
+    fun getImagePrediction(file: File) {
+        viewModelScope.launch {
+            uploadImageToServer(file) { prediction ->
+                predictedName = prediction
+                updateShowPredictionDialog(true)
+            }
+        }
+    }
+
+    fun updateShowPredictionDialog(showPredictionDialog: Boolean) {
+        this.showPredictionDialog = showPredictionDialog
+    }
+
     fun updateSavedImagePath(path: String) {
         this.savedImagePath = path
     }
@@ -233,7 +252,7 @@ class AddProductViewModel(barcodeArg: String?, context: Context, val edit: Boole
         valid = validateName(name) && valid
         valid = validateDescription(description) && valid
         valid = validateAmount(amount) && valid
-        bestBeforeList.forEachIndexed { i, bestBefore ->
+        bestBeforeList.forEach { bestBefore ->
             valid = validateBestBefore(bestBefore ?: "") && valid
         }
         return valid

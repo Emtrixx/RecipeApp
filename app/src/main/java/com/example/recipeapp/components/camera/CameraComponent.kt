@@ -24,12 +24,13 @@ import androidx.core.content.FileProvider
 import com.example.recipeapp.R
 import com.example.recipeapp.product.createImageFile
 import com.google.android.datatransport.BuildConfig
+import java.io.File
 import java.util.Objects
 
 @Composable
 fun CameraComponent(
     modifier: Modifier = Modifier,
-    photoCallback: (boolean: Boolean, uri: Uri) -> Unit
+    photoCallback: (boolean: Boolean, uri: Uri, file: File) -> Unit
 ) {
     val context = LocalContext.current
     val file = rememberSaveable {
@@ -45,7 +46,7 @@ fun CameraComponent(
 
     val cameraLauncher =
         rememberLauncherForActivityResult(ActivityResultContracts.TakePicture()) {
-            photoCallback(it, uri)
+            photoCallback(it, uri, file)
         }
 
     val permissionLauncher = rememberLauncherForActivityResult(
