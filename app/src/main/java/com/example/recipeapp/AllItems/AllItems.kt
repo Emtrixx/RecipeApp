@@ -1,7 +1,6 @@
 package com.example.recipeapp.AllItems
 
 import Database.Product
-import android.annotation.SuppressLint
 import android.widget.Toast
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
@@ -32,13 +31,10 @@ import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Card
 import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -58,79 +54,38 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
-import com.example.recipeapp.Navigation.NavGraph
 import com.example.recipeapp.R
-
-@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun AllItems() {
-    val navController = rememberNavController()
-
-    val context = LocalContext.current
-
-    val allItemsViewModel = AllItemsViewModel(context)
-
-    val productList by allItemsViewModel.getProductsLiveData().observeAsState(emptyList())
-
-    val recipeList by allItemsViewModel.getRecipesLiveData().observeAsState(emptyList())
-
-    LaunchedEffect(Unit) {
-        allItemsViewModel.getProductsLiveData()
-        allItemsViewModel.getProductsLiveData()
-    }
-
-    // Set up the navigation route
-    /*NavHost(navController, startDestination = "allItemsList") {
-        composable("allItemsList") {
-            Scaffold(
-                content = {
-                    AllItemsListView(productList = productList, navController = navController)
-                },
-            )
-        }
-        composable(
-            route = "itemDetail/{itemId}",
-            arguments = listOf(navArgument("itemId") { type = NavType.StringType })
-        ) { backStackEntry ->
-            // Extract the itemId from the route and find the corresponding item
-            val itemId = backStackEntry.arguments?.getString("itemId")
-            val selectedItem = productList?.find { it.barcode == itemId }
-
-            if (selectedItem != null) {
-                ItemDetailView(product = selectedItem)
-            } else {
-                Text("Item not found")
-            }
-        }
-    }*/
-    NavGraph(navController = navController, productList = productList , recipeList = recipeList)
-}
 
 @OptIn(ExperimentalFoundationApi::class, ExperimentalMaterialApi::class)
 @Composable
 fun AllItemsListView(productList: List<Product>?, navController: NavController) {
 
+    // Initialize and manage search text
     var searchText by remember { mutableStateOf("") }
 
+    // Get the current context
     val context = LocalContext.current
+
+    // Initialize and manage dropdown menu state
     var expanded by remember { mutableStateOf(false) }
     var selectedTag by remember { mutableStateOf<String?>(null) }
 
     if (productList.isNullOrEmpty()) {
+        // Display a message when the product list is empty
         Column(
             modifier = Modifier.fillMaxWidth(),
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
+            // Inform the user that no products are saved
             Text(
                 text = "You don't have any products saved yet.",
                 style = androidx.compose.material3.MaterialTheme.typography.bodyMedium,
                 modifier = Modifier,
                 fontStyle = FontStyle.Italic
-
             )
+
+            // Provide an option to add the first product
             ClickableText(
                 text = AnnotatedString("Click here to add your first one"),
                 modifier = Modifier.padding(8.dp),
@@ -140,21 +95,24 @@ fun AllItemsListView(productList: List<Product>?, navController: NavController) 
                     }
                 },
                 style = TextStyle(
-                    color = Color.Blue, // Set the text color to blue
+                    color = Color.Blue,
                 )
             )
         }
     } else {
+        // Display the product list
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(4.dp)
         ) {
+            // Create a sticky header with search and dropdown
             LazyColumn(
                 modifier = Modifier
                     .weight(1f)
                     .fillMaxHeight()
             ) {
+                // Sticky header with search bar and dropdown
                 stickyHeader {
                     Box(
                         modifier = Modifier
@@ -166,6 +124,7 @@ fun AllItemsListView(productList: List<Product>?, navController: NavController) 
                                 .fillMaxWidth(),
                             verticalAlignment = Alignment.CenterVertically
                         ) {
+                            // Search bar
                             OutlinedTextField(
                                 value = searchText,
                                 label = { Text(text = "Search Products") },
@@ -194,6 +153,7 @@ fun AllItemsListView(productList: List<Product>?, navController: NavController) 
                                     unfocusedLabelColor = MaterialTheme.colorScheme.onSurfaceVariant,
                                 )
                             )
+                            // Dropdown menu for tags
                             Box(
                                 modifier = Modifier
                                     .weight(0.5f)
@@ -223,7 +183,7 @@ fun AllItemsListView(productList: List<Product>?, navController: NavController) 
                                             disabledIndicatorColor = Color.Transparent
                                         )
                                     )
-
+                                    // Dropdown menu for tags
                                     ExposedDropdownMenu(
                                         expanded = expanded,
                                         onDismissRequest = { expanded = false }
@@ -245,6 +205,7 @@ fun AllItemsListView(productList: List<Product>?, navController: NavController) 
                     }
                 }
 
+                // List items (product cards)
                 val filteredProductList = productList.filter { product ->
                     product.name.contains(searchText, ignoreCase = true)
                 }
@@ -258,6 +219,7 @@ fun AllItemsListView(productList: List<Product>?, navController: NavController) 
                 }
 
                 items(filteredProductListWithTag) { item ->
+                    // Display individual product cards
                     ItemCard(
                         product = item,
                         navController = navController
@@ -273,26 +235,32 @@ fun ItemCard(
     product: Product,
     navController: NavController
 ) {
-
+    // Get the current context
     val context = LocalContext.current
 
+    // Initialize and manage view model for all items
     val allItemsViewModel = AllItemsViewModel(context)
 
+    // Load the product image
     allItemsViewModel.getProductImage(product, context)
 
+    // Get the stored image, or use a placeholder if not available
     val storedImage = allItemsViewModel.storedImage
 
+    // Create a painter for the product image
     val painter = if (storedImage != null) {
         BitmapPainter(storedImage.asImageBitmap())
     } else {
         painterResource(R.drawable.placeholder)
     }
 
+    // Display an individual product card
     Card(
         modifier = Modifier
             .padding(4.dp)
             .fillMaxWidth()
             .clickable {
+                // Navigate to the product details when clicked
                 navController.navigate("itemDetail/${product.barcode}")
             }
     ) {
@@ -301,12 +269,14 @@ fun ItemCard(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
+            // Display the product name
             Text(
                 text = product.name,
                 fontSize = 20.sp,
                 modifier = Modifier
                     .padding(8.dp)
             )
+            // Display the product image
             Image(
                 painter = painter,
                 contentDescription = "Product image",

@@ -91,12 +91,8 @@ fun HomeView() {
 
     val recipeList by homeViewModel.getRecipesLiveData().observeAsState(emptyList())
 
-    //val scrollBehavior = rememberUpdatedState(TopAppBarDefaults.exitUntilCollapsedScrollBehavior())
-
     LaunchedEffect(Unit) {
         homeViewModel.getProductsExpiringSoon()
-        //homeViewModel.getRecipesLiveData()
-        //homeViewModel.addProduct()
     }
 
     val topAppBarTitle =
@@ -114,7 +110,6 @@ fun HomeView() {
 
     Scaffold(
         modifier = Modifier
-            //.nestedScroll(scrollBehavior.value.nestedScrollConnection)
             .fillMaxSize(),
         topBar = {
             if (topAppBarTitle != "hide") {
@@ -129,7 +124,6 @@ fun HomeView() {
                     colors = topAppBarColors(
                         containerColor = MaterialTheme.colorScheme.secondaryContainer,
                     ),
-                    //scrollBehavior = scrollBehavior.value
                 )
             }
         },
@@ -317,7 +311,6 @@ fun ItemCard(
 ) {
     val context = LocalContext.current
     val homeViewModel = HomeViewModel(context)
-    //val dateFormatter = SimpleDateFormat("dd.MM", Locale.getDefault())
     val openDialog = remember { mutableStateOf(false) }
 
     var expanded by remember { mutableStateOf(false) }

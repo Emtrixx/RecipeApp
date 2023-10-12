@@ -31,13 +31,9 @@ class HomeViewModel(context: Context) : ViewModel() {
 
     private val productsLiveData: MutableLiveData<List<Product>> = MutableLiveData()
 
-    private val expiringProductsLiveData: MutableLiveData<List<Product>> = MutableLiveData()
-
     private val recipesLiveData: MutableLiveData<List<Recipe>> = MutableLiveData()
 
     private var savedImagePath = ""
-
-    val expiringSoon: MutableLiveData<List<Product>> = MutableLiveData()
 
     var storedImage by mutableStateOf<Bitmap?>(null)
         private set
