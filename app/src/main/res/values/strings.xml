@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">RecipeApp</string>
+    <string name="app_name">FridgeMate</string>
     <string name="addProductNameLabel">Name</string>
     <string name="addProductDescriptionLabel">Description</string>
     <string name="addProductAmountLabel">Amount</string>

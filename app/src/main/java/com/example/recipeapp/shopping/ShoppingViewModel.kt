@@ -1,7 +1,6 @@
 package com.example.recipeapp.shopping
 
 import Database.FavoriteShoppingItem
-import Database.FavoriteShoppingItemDao
 import Database.Recipeapp
 import Database.ShoppingItem
 import android.app.Application
