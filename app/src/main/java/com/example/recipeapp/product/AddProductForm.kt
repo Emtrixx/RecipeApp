@@ -51,6 +51,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -239,7 +240,8 @@ fun AddProductForm(viewModel: AddProductViewModel, navController: NavController)
                                 .padding(8.dp),
                             onValueChange = { viewModel.updateName(it) },
                             keyboardOptions = KeyboardOptions.Default.copy(
-                                imeAction = ImeAction.Done
+                                imeAction = ImeAction.Done,
+                                capitalization = KeyboardCapitalization.Sentences
                             ),
                             colors = OutlinedTextFieldDefaults.colors(
                                 focusedContainerColor = MaterialTheme.colorScheme.surfaceVariant,
@@ -262,7 +264,8 @@ fun AddProductForm(viewModel: AddProductViewModel, navController: NavController)
                                 .padding(8.dp),
                             onValueChange = { viewModel.updateDescription(it) },
                             keyboardOptions = KeyboardOptions.Default.copy(
-                                imeAction = ImeAction.Done
+                                imeAction = ImeAction.Done,
+                                capitalization = KeyboardCapitalization.Sentences
                             ),
                             colors = OutlinedTextFieldDefaults.colors(
                                 focusedContainerColor = MaterialTheme.colorScheme.surfaceVariant,

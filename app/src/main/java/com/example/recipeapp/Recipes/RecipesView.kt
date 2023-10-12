@@ -1,4 +1,3 @@
-
 import Database.Recipe
 import android.annotation.SuppressLint
 import android.util.Log
@@ -17,6 +16,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
@@ -109,15 +109,19 @@ fun IngredientsSelectionScreen(
             .fillMaxSize()
             .padding(16.dp)
     ) {
-        Column (modifier = Modifier
-            .fillMaxWidth()
-            .weight(1f)){
-            Column(modifier = Modifier
+        Column(
+            modifier = Modifier
                 .fillMaxWidth()
-                .background(
-                    MaterialTheme.colorScheme.surfaceVariant,
-                    CircleShape
-                )) {
+                .weight(1f)
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(
+                        MaterialTheme.colorScheme.surfaceVariant,
+                        CircleShape
+                    )
+            ) {
                 Text(
                     text = "Choose Ingredients",
                     style = MaterialTheme.typography.titleLarge,
@@ -157,8 +161,8 @@ fun IngredientsSelectionScreen(
                             .border(2.dp, MaterialTheme.colorScheme.surfaceVariant, CircleShape),
                         interactionSource = interactionSource,
                         colors = ButtonDefaults.buttonColors(
-                            containerColor = if (ingredientItem.isSelected)  MaterialTheme.colorScheme.surfaceVariant else MaterialTheme.colorScheme.onSurfaceVariant,
-                            contentColor = if (ingredientItem.isSelected) MaterialTheme.colorScheme.onSurfaceVariant else  MaterialTheme.colorScheme.surfaceVariant
+                            containerColor = if (ingredientItem.isSelected) MaterialTheme.colorScheme.surfaceVariant else MaterialTheme.colorScheme.onSurfaceVariant,
+                            contentColor = if (ingredientItem.isSelected) MaterialTheme.colorScheme.onSurfaceVariant else MaterialTheme.colorScheme.surfaceVariant
                         )
 
                     ) {
@@ -173,7 +177,7 @@ fun IngredientsSelectionScreen(
                 }
             }
         }
-        Column (modifier = Modifier.fillMaxWidth()){
+        Column(modifier = Modifier.fillMaxWidth()) {
             Button(
                 onClick = {
                     if (selectedIngredients.isNotEmpty()) {
@@ -181,19 +185,28 @@ fun IngredientsSelectionScreen(
                         navController.navigate("recipes?ingredients=${ingredientsString}?all=${false}")
                     } else {
                         navController.navigate("recipes?ingredients=${allproducts}?all=${true}")
-                        Log.d("DBG","recipes?ingredients=${allproducts}?all=${true}")
+                        Log.d("DBG", "recipes?ingredients=${allproducts}?all=${true}")
                     }
                 },
                 modifier = Modifier
                     .align(CenterHorizontally)
                     .padding(top = 16.dp),
-                colors = ButtonColors(MaterialTheme.colorScheme.primaryContainer,MaterialTheme.colorScheme.onPrimaryContainer,MaterialTheme.colorScheme.onPrimaryContainer,MaterialTheme.colorScheme.primaryContainer),
+                colors = ButtonColors(
+                    MaterialTheme.colorScheme.primaryContainer,
+                    MaterialTheme.colorScheme.onPrimaryContainer,
+                    MaterialTheme.colorScheme.onPrimaryContainer,
+                    MaterialTheme.colorScheme.primaryContainer
+                ),
             ) {
-                Text(text = buttontext, modifier = Modifier.padding(8.dp), color=MaterialTheme.colorScheme.onSurfaceVariant)
+                Text(
+                    text = buttontext,
+                    modifier = Modifier.padding(8.dp),
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
             }
         }
-        }
     }
+}
 
 
 @SuppressLint("CoroutineCreationDuringComposition")
@@ -211,10 +224,16 @@ fun RecipesScreen(
     LaunchedEffect(selectedIngredients) {
         if (!selectedIngredients.isNullOrBlank()) {
             val userMessage =
-                if(allproducts)
-                    Message(role = "user", content = "Generate a new recipe with some of these ingredients: $selectedIngredients print only the title, the ingredients and the instructions. if there are some ingredients not eatable don't use them")
-            else
-                Message(role = "user", content = "Generate a different recipe with these ingredients: $selectedIngredients print only the title, the ingredients and the instructions")
+                if (allproducts)
+                    Message(
+                        role = "user",
+                        content = "Generate a new recipe with some of these ingredients: $selectedIngredients print only the title, the ingredients and the instructions. if there are some ingredients not eatable don't use them"
+                    )
+                else
+                    Message(
+                        role = "user",
+                        content = "Generate a different recipe with these ingredients: $selectedIngredients print only the title, the ingredients and the instructions"
+                    )
             viewModel.addMessage(userMessage)
             viewModel.sendMessage(apiKey)?.let {
                 val assistantMessage = it.choices[0].message.content
@@ -238,7 +257,8 @@ fun RecipesScreen(
                 .fillMaxWidth()
                 .weight(1f)
                 .verticalScroll(rememberScrollState())
-                .height(10.dp)) {
+                .height(10.dp)
+        ) {
             if (response.isEmpty()) {
                 Column(
                     modifier = Modifier
@@ -250,13 +270,15 @@ fun RecipesScreen(
                 }
 
             } else {
-                Column(modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(bottom = 8.dp)
-                    .background(
-                        MaterialTheme.colorScheme.surfaceVariant,
-                        MaterialTheme.shapes.extraLarge
-                    )) {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(bottom = 8.dp)
+                        .background(
+                            MaterialTheme.colorScheme.surfaceVariant,
+                            MaterialTheme.shapes.extraLarge
+                        )
+                ) {
                     Text(
                         text = title,
                         style = MaterialTheme.typography.headlineSmall,
@@ -264,20 +286,24 @@ fun RecipesScreen(
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }
-                Box(modifier = Modifier
-                    .fillMaxSize()
-                    .border(
-                        4.dp,
-                        MaterialTheme.colorScheme.surfaceVariant,
-                        MaterialTheme.shapes.extraLarge
-                    )
-                    .background(
-                        MaterialTheme.colorScheme.surfaceVariant,
-                        MaterialTheme.shapes.extraLarge
-                    )) {
-                    Column (modifier = Modifier
+                Box(
+                    modifier = Modifier
                         .fillMaxSize()
-                        .verticalScroll(rememberScrollState())){
+                        .border(
+                            4.dp,
+                            MaterialTheme.colorScheme.surfaceVariant,
+                            MaterialTheme.shapes.extraLarge
+                        )
+                        .background(
+                            MaterialTheme.colorScheme.surfaceVariant,
+                            MaterialTheme.shapes.extraLarge
+                        )
+                ) {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .verticalScroll(rememberScrollState())
+                    ) {
                         Text(
                             text = body,
                             style = MaterialTheme.typography.bodyLarge,
@@ -296,15 +322,16 @@ fun RecipesScreen(
                 .padding(12.dp),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
-        ){
-            Button(onClick = {
-                coroutineScope.launch {
-                    viewModel.sendMessage(apiKey)?.let {
-                        val assistantMessage = it.choices[0].message.content
-                        response = assistantMessage
+        ) {
+            Button(
+                onClick = {
+                    coroutineScope.launch {
+                        viewModel.sendMessage(apiKey)?.let {
+                            val assistantMessage = it.choices[0].message.content
+                            response = assistantMessage
+                        }
                     }
-                }
-            },
+                },
                 enabled = if (response.isNullOrEmpty()) false else true,
                 colors = ButtonColors(
                     containerColor = MaterialTheme.colorScheme.primaryContainer,
@@ -312,11 +339,12 @@ fun RecipesScreen(
                     disabledContainerColor = MaterialTheme.colorScheme.errorContainer,
                     disabledContentColor = MaterialTheme.colorScheme.onErrorContainer
                 )
-                ) {
+            ) {
                 Text(text = "Another one", modifier = Modifier.padding(8.dp))
             }
-            Button(onClick =
-            { showsavescreen=true },
+            Button(
+                onClick =
+                { showsavescreen = true },
                 enabled = if (response.isNullOrEmpty()) false else true,
                 colors = ButtonColors(
                     containerColor = MaterialTheme.colorScheme.primaryContainer,
@@ -329,8 +357,8 @@ fun RecipesScreen(
             }
         }
     }
-    if (showsavescreen){
-        Saverecipe(title = title, body = body,viewModel= viewModel) {
+    if (showsavescreen) {
+        Saverecipe(title = title, body = body, viewModel = viewModel) {
             navController.navigate("recipes")
         }
     }
@@ -376,48 +404,72 @@ fun Recipedescription(viewModel: RecipeViewModel, recipe: Recipe, navController:
         viewModel.removeRecipe(recipe = item)
     }
 
-        Column(
+    Column(
         modifier = Modifier
             .fillMaxSize()
             .padding(start = 16.dp, end = 16.dp, top = 12.dp, bottom = 16.dp)
     ) {
-        Row(
+        Column(
             modifier = Modifier
-                .padding(bottom = 8.dp)
-                .fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-            Button(onClick = { showeditsreen = true }, colors = ButtonColors(MaterialTheme.colorScheme.primaryContainer,MaterialTheme.colorScheme.onPrimaryContainer,MaterialTheme.colorScheme.onPrimaryContainer,MaterialTheme.colorScheme.primaryContainer)) {
-                Icon(
-                    Icons.Filled.Edit,
-                    contentDescription = "Edit recipe",
-                    modifier = Modifier.padding(vertical = 6.dp)
-                )
-            }
-            Button(onClick = { deleterecipe = true }, colors = ButtonColors(MaterialTheme.colorScheme.primaryContainer,Color.Red,MaterialTheme.colorScheme.onPrimaryContainer,MaterialTheme.colorScheme.primaryContainer)) {
-                Icon(
-                    Icons.Filled.Delete,
-                    contentDescription = "Delete",
-                    tint = Color.Red,
-                    modifier = Modifier.padding(vertical = 6.dp)
-                )
-            }
-        }
-            Column(modifier = Modifier
                 .fillMaxWidth()
                 .padding(bottom = 8.dp)
                 .background(
                     MaterialTheme.colorScheme.surfaceVariant,
                     MaterialTheme.shapes.extraLarge
-                )) {
-                Text(
-                    text = recipe.name,
-                    style = MaterialTheme.typography.headlineSmall,
-                    modifier = Modifier.padding(16.dp),
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
+        ) {
+            Text(
+                text = recipe.name,
+                style = MaterialTheme.typography.headlineSmall,
+                modifier = Modifier.padding(16.dp),
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+            Row(
+                modifier = Modifier
+                    .padding(8.dp)
+                    .fillMaxWidth(),
+                horizontalArrangement = Arrangement.End
+            ) {
+                Button(
+                    onClick = { showeditsreen = true },
+                    colors = ButtonColors(
+                        MaterialTheme.colorScheme.primaryContainer,
+                        MaterialTheme.colorScheme.onPrimaryContainer,
+                        MaterialTheme.colorScheme.onPrimaryContainer,
+                        MaterialTheme.colorScheme.primaryContainer
+                    ),
+                    modifier = Modifier.padding(horizontal = 4.dp)
+                ) {
+                    Icon(
+                        Icons.Filled.Edit,
+                        contentDescription = "Edit recipe",
+                        modifier = Modifier
+                            .padding()
+                            .size(18.dp),
+                        tint = Color.White
+                    )
+                }
+                Button(
+                    onClick = { deleterecipe = true },
+                    colors = ButtonColors(
+                        MaterialTheme.colorScheme.primaryContainer,
+                        Color.Red, MaterialTheme.colorScheme.onPrimaryContainer,
+                        MaterialTheme.colorScheme.primaryContainer
+                    )
+                ) {
+                    Icon(
+                        Icons.Filled.Delete,
+                        contentDescription = "Delete",
+                        tint = Color.Red,
+                        modifier = Modifier
+                            .padding()
+                            .size(18.dp)
+                    )
+                }
             }
-            Box(modifier = Modifier
+        }
+        Box(
+            modifier = Modifier
                 .fillMaxSize()
                 .border(
                     4.dp,
@@ -427,19 +479,22 @@ fun Recipedescription(viewModel: RecipeViewModel, recipe: Recipe, navController:
                 .background(
                     MaterialTheme.colorScheme.surfaceVariant,
                     MaterialTheme.shapes.extraLarge
-                )) {
-                Column (modifier = Modifier
+                )
+        ) {
+            Column(
+                modifier = Modifier
                     .fillMaxSize()
-                    .verticalScroll(rememberScrollState())){
-                    Text(
-                        text = recipe.description,
-                        style = MaterialTheme.typography.bodyLarge,
-                        modifier = Modifier.padding(22.dp),
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                }
-
+                    .verticalScroll(rememberScrollState())
+            ) {
+                Text(
+                    text = recipe.description,
+                    style = MaterialTheme.typography.bodyLarge,
+                    modifier = Modifier.padding(22.dp),
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
             }
+
+        }
 
     }
     if (showeditsreen) {
@@ -529,8 +584,8 @@ fun RecipeNavigation() {
             route = "recipes?ingredients={ingredients}?all={all}",
             arguments = listOf(
                 navArgument("ingredients") { type = NavType.StringType },
-                navArgument("all") {type = NavType.BoolType}
-                )
+                navArgument("all") { type = NavType.BoolType }
+            )
         ) { backStackEntry ->
             val selectedIngredients =
                 backStackEntry.arguments?.getString("ingredients")
@@ -538,7 +593,7 @@ fun RecipeNavigation() {
             RecipesScreen(
                 viewModel = viewModel,
                 selectedIngredients,
-                navController=navController,
+                navController = navController,
                 allproducts
             )
         }
@@ -554,7 +609,11 @@ fun RecipeNavigation() {
             val selectedItem = recipeList?.find { it.id == recipeid }
 
             if (selectedItem != null) {
-                Recipedescription(recipe = selectedItem, viewModel = viewModel, navController = navController)
+                Recipedescription(
+                    recipe = selectedItem,
+                    viewModel = viewModel,
+                    navController = navController
+                )
             } else {
                 androidx.compose.material.Text("Item not found")
             }
@@ -641,15 +700,36 @@ fun Myrecipes(
                 .padding(8.dp), horizontalArrangement = Arrangement.spacedBy(8.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Button(onClick = { navController.navigate("ingredients") }, modifier = Modifier.weight(1f), colors = ButtonColors(MaterialTheme.colorScheme.primaryContainer,Color.White,MaterialTheme.colorScheme.onPrimaryContainer,MaterialTheme.colorScheme.primaryContainer)) {
-                Text(text = "Generate a new recipe",modifier = Modifier.padding(vertical = 8.dp))
+            Button(
+                onClick = { navController.navigate("ingredients") },
+                modifier = Modifier.weight(1f),
+                colors = ButtonColors(
+                    MaterialTheme.colorScheme.primaryContainer,
+                    Color.White,
+                    MaterialTheme.colorScheme.onPrimaryContainer,
+                    MaterialTheme.colorScheme.primaryContainer
+                )
+            ) {
+                Text(text = "Generate a new recipe", modifier = Modifier.padding(vertical = 8.dp))
             }
-            Button(onClick = {
-                save = true
-            },modifier = Modifier.weight(0.3f), colors = ButtonColors(MaterialTheme.colorScheme.primaryContainer,Color.White,MaterialTheme.colorScheme.onPrimaryContainer,MaterialTheme.colorScheme.primaryContainer)) {
-                Icon( Icons.Filled.Add,
+            Button(
+                onClick = {
+                    save = true
+                },
+                modifier = Modifier.weight(0.3f),
+                colors = ButtonColors(
+                    MaterialTheme.colorScheme.primaryContainer,
+                    Color.White,
+                    MaterialTheme.colorScheme.onPrimaryContainer,
+                    MaterialTheme.colorScheme.primaryContainer
+                )
+            ) {
+                Icon(
+                    Icons.Filled.Add,
                     contentDescription = "New recipe",
-                    modifier = Modifier.padding(vertical = 6.dp))
+                    modifier = Modifier.padding(vertical = 6.dp),
+                    tint = Color.White
+                )
             }
         }
 
@@ -660,8 +740,9 @@ fun Myrecipes(
         }
     }
 }
+
 @Composable
-fun Saverecipe(title : String, body:String, viewModel: RecipeViewModel, onDismiss: () -> Unit) {
+fun Saverecipe(title: String, body: String, viewModel: RecipeViewModel, onDismiss: () -> Unit) {
     var value by remember { mutableStateOf(title) }
     var tmp by remember { mutableStateOf("") }
     var title by remember { mutableStateOf("Title") }
@@ -669,74 +750,15 @@ fun Saverecipe(title : String, body:String, viewModel: RecipeViewModel, onDismis
     var buttontext by remember { mutableStateOf("Next") }
 
     Column(Modifier.padding(36.dp)) {
-        AlertDialog(onDismissRequest = {onDismiss()},
+        AlertDialog(
+            onDismissRequest = { onDismiss() },
             text = {
                 Column {
-                    Text(text = title, fontSize = 16.sp, color = MaterialTheme.colorScheme.onPrimary)
-                        OutlinedTextField(
-                            value = value,
-                            onValueChange = { newText ->
-                                value = newText
-                            },
-                            Modifier
-                                .padding(vertical = 8.dp),
-                            maxLines = 15,
-                            shape = MaterialTheme.shapes.extraLarge,
-                            colors = TextFieldDefaults.outlinedTextFieldColors(
-                                focusedBorderColor = if (value.isEmpty()) Color.Red else MaterialTheme.colorScheme.primaryContainer,
-                                unfocusedBorderColor = if (value.isEmpty()) Color.Red else Color.Transparent,
-                                focusedLabelColor = MaterialTheme.colorScheme.onSurfaceVariant,
-                                textColor = MaterialTheme.colorScheme.onSurfaceVariant,
-                                backgroundColor = MaterialTheme.colorScheme.surfaceVariant,
-                                unfocusedLabelColor = MaterialTheme.colorScheme.onSurfaceVariant,
-                            )
-                        )
-
-                    if (value.isEmpty()) {
-                        Text("This field cannot be empty", color = Color.Red, modifier = Modifier.padding(horizontal = 8.dp))
-                    }
-                }
-            },
-            confirmButton = {
-                Button(
-                    onClick = {
-                        if (currentPage == 0) {
-                            tmp = value
-                            value = body
-                            title = "Description"
-                            buttontext = "Save"
-                        } else if(currentPage == 1) {
-                            viewModel.addRecipe(tmp,value)
-                            onDismiss()
-                        }
-                        if(currentPage < 1) {
-                            currentPage++
-                        }
-                    },
-                    enabled = if (value.isEmpty()) false else true
-                ){
-                    Text(buttontext)
-                }
-            },
-            properties = DialogProperties(dismissOnBackPress = true)
-        )
-    }
-
-}
-
-@Composable
-fun Editrecipe(recipe: Recipe, viewModel: RecipeViewModel, onDismiss: () -> Unit) {
-    var value by remember { mutableStateOf(recipe.name) }
-    var tmp by remember { mutableStateOf("") }
-    var title by remember { mutableStateOf("Title") }
-    var currentPage by remember { mutableStateOf(0) }
-    var buttontext by remember { mutableStateOf("Next") }
-
-    Column(Modifier.padding(36.dp)) {
-        AlertDialog(onDismissRequest = {onDismiss()},
-            text = {
-                Column {
-                    Text(text = title, fontSize = 16.sp, color = MaterialTheme.colorScheme.onPrimary)
+                    Text(
+                        text = title,
+                        fontSize = 16.sp,
+                        color = MaterialTheme.colorScheme.onPrimary
+                    )
                     OutlinedTextField(
                         value = value,
                         onValueChange = { newText ->
@@ -757,7 +779,84 @@ fun Editrecipe(recipe: Recipe, viewModel: RecipeViewModel, onDismiss: () -> Unit
                     )
 
                     if (value.isEmpty()) {
-                        Text("This field cannot be empty", color = Color.Red, modifier = Modifier.padding(horizontal = 8.dp))
+                        Text(
+                            "This field cannot be empty",
+                            color = Color.Red,
+                            modifier = Modifier.padding(horizontal = 8.dp)
+                        )
+                    }
+                }
+            },
+            confirmButton = {
+                Button(
+                    onClick = {
+                        if (currentPage == 0) {
+                            tmp = value
+                            value = body
+                            title = "Description"
+                            buttontext = "Save"
+                        } else if (currentPage == 1) {
+                            viewModel.addRecipe(tmp, value)
+                            onDismiss()
+                        }
+                        if (currentPage < 1) {
+                            currentPage++
+                        }
+                    },
+                    enabled = if (value.isEmpty()) false else true
+                ) {
+                    Text(buttontext)
+                }
+            },
+            properties = DialogProperties(dismissOnBackPress = true)
+        )
+    }
+
+}
+
+@Composable
+fun Editrecipe(recipe: Recipe, viewModel: RecipeViewModel, onDismiss: () -> Unit) {
+    var value by remember { mutableStateOf(recipe.name) }
+    var tmp by remember { mutableStateOf("") }
+    var title by remember { mutableStateOf("Title") }
+    var currentPage by remember { mutableStateOf(0) }
+    var buttontext by remember { mutableStateOf("Next") }
+
+    Column(Modifier.padding(36.dp)) {
+        AlertDialog(
+            onDismissRequest = { onDismiss() },
+            text = {
+                Column {
+                    Text(
+                        text = title,
+                        fontSize = 16.sp,
+                        color = MaterialTheme.colorScheme.onPrimary
+                    )
+                    OutlinedTextField(
+                        value = value,
+                        onValueChange = { newText ->
+                            value = newText
+                        },
+                        Modifier
+                            .padding(vertical = 8.dp),
+                        maxLines = 15,
+                        shape = MaterialTheme.shapes.extraLarge,
+                        colors = TextFieldDefaults.outlinedTextFieldColors(
+                            focusedBorderColor = if (value.isEmpty()) Color.Red else MaterialTheme.colorScheme.primaryContainer,
+                            unfocusedBorderColor = if (value.isEmpty()) Color.Red else Color.Transparent,
+                            focusedLabelColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                            textColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                            backgroundColor = MaterialTheme.colorScheme.surfaceVariant,
+                            unfocusedLabelColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                        )
+                    )
+
+                    if (value.isEmpty()) {
+                        Text(
+                            "This field cannot be empty",
+                            color = Color.Red,
+                            modifier = Modifier.padding(horizontal = 8.dp)
+                        )
                     }
                 }
             },
@@ -769,16 +868,16 @@ fun Editrecipe(recipe: Recipe, viewModel: RecipeViewModel, onDismiss: () -> Unit
                             value = recipe.description
                             title = "Description"
                             buttontext = "Save"
-                        } else if(currentPage == 1) {
-                            viewModel.editRecipe(recipe.id,tmp,value)
+                        } else if (currentPage == 1) {
+                            viewModel.editRecipe(recipe.id, tmp, value)
                             onDismiss()
                         }
-                        if(currentPage < 1) {
+                        if (currentPage < 1) {
                             currentPage++
                         }
                     },
                     enabled = if (value.isEmpty()) false else true
-                ){
+                ) {
                     Text(buttontext)
                 }
             },
