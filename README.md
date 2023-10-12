@@ -4,7 +4,7 @@ FridgeMate is application that helps you manage your fridge, generate shopping l
 
 <div style="display: flex;">
     <img src="[https://raw.githubusercontent.com/Emtrixx/RecipeApp/main/README_res/home.jpg](https://github.com/Emtrixx/RecipeApp/blob/main/README_res/home.jpg)" width="180" height="400" />
-    <img src="[https://raw.githubusercontent.com/Emtrixx/RecipeApp/main/README_res/homeDark.jpg](https://github.com/Emtrixx/RecipeApp/blob/main/README_res/homeDark.jpg)" width="180" height="400" />
+    <img src="https://github.com/Emtrixx/RecipeApp/blob/main/README_res/homeDark.jpg" width="180" height="400" />
 </div>
 
 ## Dependencies
