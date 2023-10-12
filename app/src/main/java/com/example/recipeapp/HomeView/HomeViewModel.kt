@@ -67,14 +67,15 @@ class HomeViewModel(context: Context) : ViewModel() {
 
     // function to sort products by closest expiry date
     private fun sortProductsByClosestExpiryDate(products: List<Product>, currentDate: LocalDate): List<Product> {
-        return products.filter { product ->
-            product.bestbefore.isNotEmpty()
-        }.sortedBy { product ->
-            product.bestbefore.minBy { bestBeforeDate ->
+        val filteredProducts = products.filter { product ->
+            product.bestbefore.filterNotNull().isNotEmpty()
+        }
+        val sortedProducts = filteredProducts.sortedBy { product ->
+            product.bestbefore.filterNotNull().minBy { bestBeforeDate ->
                 abs(currentDate.until(bestBeforeDate).days)
             }
         }
-
+        return sortedProducts
     }
 
     // function to get products that are expiring soon

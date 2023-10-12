@@ -17,6 +17,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -43,6 +44,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.painter.BitmapPainter
@@ -77,6 +80,8 @@ fun AddProductForm(viewModel: AddProductViewModel, navController: NavController)
 
     val context = LocalContext.current
     val cameraViewModel: CameraViewModel = viewModel()
+
+    val focusRequesterDesc = remember { FocusRequester() }
 
     val loading = viewModel.loading
     val name = viewModel.name
@@ -260,8 +265,13 @@ fun AddProductForm(viewModel: AddProductViewModel, navController: NavController)
                                 .padding(8.dp),
                             onValueChange = { viewModel.updateName(it) },
                             keyboardOptions = KeyboardOptions.Default.copy(
-                                imeAction = ImeAction.Done,
+                                imeAction = ImeAction.Next,
                                 capitalization = KeyboardCapitalization.Sentences
+                            ),
+                            keyboardActions = KeyboardActions(
+                                onNext = {
+                                    focusRequesterDesc.requestFocus()
+                                }
                             ),
                             colors = OutlinedTextFieldDefaults.colors(
                                 focusedContainerColor = MaterialTheme.colorScheme.surfaceVariant,
@@ -281,7 +291,9 @@ fun AddProductForm(viewModel: AddProductViewModel, navController: NavController)
                             shape = CircleShape,
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(8.dp),
+                                .padding(8.dp)
+                                .focusRequester(focusRequesterDesc)
+                            ,
                             onValueChange = { viewModel.updateDescription(it) },
                             keyboardOptions = KeyboardOptions.Default.copy(
                                 imeAction = ImeAction.Done,

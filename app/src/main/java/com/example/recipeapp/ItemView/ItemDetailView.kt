@@ -99,7 +99,7 @@ fun ItemView(product: Product, navController: NavController) {
         viewModel.removeProduct(product = item)
     }
 
-    val allDatesNoRepetition = product.bestbefore.filterNotNull().distinct()
+    val allDatesNoRepetition = product.bestbefore.filterNotNull().distinct().sorted()
 
     LazyColumn(modifier = Modifier.fillMaxWidth()) {
         stickyHeader {
@@ -282,12 +282,19 @@ fun ItemView(product: Product, navController: NavController) {
                 ) {
                     Column(Modifier.padding(8.dp)) {
                         Text(text = "Description", fontWeight = FontWeight.Bold)
-                        Text(
-                            text = product.description,
-                            fontSize = 18.sp,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
-                            modifier = Modifier.padding(8.dp)
-                        )
+                        if (product.description.isEmpty()) {
+                            Text(
+                                text = "No description",
+                                fontStyle = FontStyle.Italic
+                            )
+                        } else {
+                            Text(
+                                text = product.description,
+                                fontSize = 18.sp,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                modifier = Modifier.padding(8.dp)
+                            )
+                        }
                     }
                 }
                 Row(
