@@ -150,5 +150,9 @@ class ShoppingViewModel(application: Application) : AndroidViewModel(application
         }
     }
 
+    fun hasCheckedItems(): Boolean {
+        return shoppingLiveData.value?.any { it.checked } == true
+    }
+
 
 }

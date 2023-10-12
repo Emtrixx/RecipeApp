@@ -33,6 +33,7 @@ import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
@@ -41,6 +42,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -51,6 +53,7 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.Dialog
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -64,6 +67,8 @@ import com.example.recipeapp.R
 fun ShoppingList() {
     val viewModel: ShoppingViewModel = viewModel()
     val navController = rememberNavController()
+    var showDialog by remember { mutableStateOf(false) }
+    var isDeleteConfirmed by remember { mutableStateOf(false) }
     val shoppingList by viewModel.getShoppingListLiveData().observeAsState(emptyList())
 
     val onDeleteItem: (ShoppingItem) -> Unit = { item ->
@@ -102,18 +107,19 @@ fun ShoppingList() {
                         )
                     },
                     actions = {
-                            FilledTonalIconButton(
-                                colors = IconButtonDefaults.filledIconButtonColors(MaterialTheme.colorScheme.primaryContainer),
-                                onClick = {
-                                    viewModel.deleteCheckedItems()
+                        FilledTonalIconButton(
+                            colors = IconButtonDefaults.filledIconButtonColors(MaterialTheme.colorScheme.primaryContainer),
+                            onClick = {
+                                if (viewModel.hasCheckedItems()) {
+                                    showDialog = true
                                 }
-                            ) {
-                                Icon(
-                                    imageVector = Icons.Default.Delete,
-                                    contentDescription = "Delete checked items",
-                                    tint = Color.Red)
                             }
-
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Delete,
+                                contentDescription = "Delete checked items",
+                                tint = Color.Red)
+                        }
                         FilledTonalIconButton(
                             colors = IconButtonDefaults.filledIconButtonColors(MaterialTheme.colorScheme.primaryContainer),
                             onClick = {
@@ -191,6 +197,73 @@ fun ShoppingList() {
             }
         }
     )
+    // Add the DeleteConfirmationDialog and pass isOpen
+    DeleteConfirmationDialog(
+        isOpen = showDialog,
+        onConfirmDelete = {
+            isDeleteConfirmed = true
+            showDialog = false
+        },
+        onDismiss = {
+            showDialog = false
+            isDeleteConfirmed = false
+        }
+    )
+
+    // Update this section to delete items only when confirmed
+    if (isDeleteConfirmed) {
+        viewModel.deleteCheckedItems()
+        isDeleteConfirmed = false
+    }
+}
+
+@Composable
+fun DeleteConfirmationDialog(
+    isOpen: Boolean,
+    onConfirmDelete: () -> Unit,
+    onDismiss: () -> Unit
+) {
+    if (isOpen) {
+        Dialog(
+            onDismissRequest = onDismiss
+        ) {
+            Card(
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Column(
+                    modifier = Modifier.padding(16.dp),
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    Text(
+                        text = "Are you sure you want to delete the checked items?",
+                        style = MaterialTheme.typography.bodyMedium
+                    )
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        TextButton(
+                            onClick = {
+                                onConfirmDelete()
+                                onDismiss()
+                            }
+                        ) {
+                            Text(
+                                color = Color.Black,
+                                text = "Cancel")
+                        }
+                        TextButton(
+                            onClick = onConfirmDelete
+                        ) {
+                            Text(
+                                color = Color.Black,
+                                text = "Delete")
+                        }
+                    }
+                }
+            }
+        }
+    }
 }
 
 @Composable
