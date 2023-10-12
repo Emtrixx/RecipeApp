@@ -38,6 +38,7 @@ class HomeViewModel(context: Context) : ViewModel() {
     var storedImage by mutableStateOf<Bitmap?>(null)
         private set
 
+    //function to get all products from the database
     fun getProductsLiveData(): LiveData<List<Product>> {
         viewModelScope.launch {
             val products = db.RecipeappDao().GetProducts()
@@ -46,6 +47,7 @@ class HomeViewModel(context: Context) : ViewModel() {
         return productsLiveData
     }
 
+    //function to get all recipes from the database
     fun getRecipesLiveData(): LiveData<List<Recipe>> {
         viewModelScope.launch(Dispatchers.IO) {
             val recipes = db.RecipeappDao().GetRecipes()
@@ -54,6 +56,7 @@ class HomeViewModel(context: Context) : ViewModel() {
         return recipesLiveData
     }
 
+    //function to add a product to the database
     fun removeProduct(product: Product) {
         viewModelScope.launch() {
             db.RecipeappDao().deleteProductById(product.barcode)
@@ -62,6 +65,7 @@ class HomeViewModel(context: Context) : ViewModel() {
         }
     }
 
+    // function to sort products by closest expiry date
     private fun sortProductsByClosestExpiryDate(products: List<Product>, currentDate: LocalDate): List<Product> {
         return products.filter { product ->
             product.bestbefore.isNotEmpty()
@@ -73,6 +77,7 @@ class HomeViewModel(context: Context) : ViewModel() {
 
     }
 
+    // function to get products that are expiring soon
     fun getProductsExpiringSoon(): LiveData<List<Product>> {
         val currentDate = LocalDate.now()
 
@@ -86,6 +91,7 @@ class HomeViewModel(context: Context) : ViewModel() {
         return productsLiveData
     }
 
+    // function to add a recipe to the shopping list
     fun addToShoppingList(product: Product) {
         viewModelScope.launch {
             val shoppingItem = ShoppingItem(name = product.name, amount = "1")
@@ -102,6 +108,9 @@ class HomeViewModel(context: Context) : ViewModel() {
         }
     }
 
+
+    // functio to generate a barcode image using the product barcode
+    // using the ZXing library
     fun generateBarcodeImage(barcodeValue: String): Bitmap? {
         try {
             val multiFormatWriter = MultiFormatWriter()

@@ -54,6 +54,7 @@ import com.example.recipeapp.settings.SettingsPage
 import com.example.recipeapp.settings.SettingsViewModel
 import com.example.recipeapp.shopping.ShoppingList
 
+// class for bottom navigation bar items
 sealed class BottomNavItem(var title: String, var icon: ImageVector, var screen: String) {
 
     object Home : BottomNavItem("Home", Icons.Default.Home, "home")
@@ -65,6 +66,7 @@ sealed class BottomNavItem(var title: String, var icon: ImageVector, var screen:
 
 }
 
+// navigation graph for all of the application views
 @Composable
 fun NavGraph(
     navController: NavHostController,
