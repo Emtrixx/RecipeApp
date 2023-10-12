@@ -2,6 +2,7 @@ package com.example.recipeapp.shopping
 
 import Database.ShoppingItem
 import android.annotation.SuppressLint
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -101,6 +102,18 @@ fun ShoppingList() {
                         )
                     },
                     actions = {
+                            FilledTonalIconButton(
+                                colors = IconButtonDefaults.filledIconButtonColors(MaterialTheme.colorScheme.primaryContainer),
+                                onClick = {
+                                    viewModel.deleteCheckedItems()
+                                }
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.Delete,
+                                    contentDescription = "Delete checked items",
+                                    tint = Color.Red)
+                            }
+
                         FilledTonalIconButton(
                             colors = IconButtonDefaults.filledIconButtonColors(MaterialTheme.colorScheme.primaryContainer),
                             onClick = {
@@ -183,6 +196,7 @@ fun ShoppingList() {
 @Composable
 fun ShoppingCard(item: ShoppingItem, onDeleteItem: (ShoppingItem) -> Unit) {
 
+    val viewModel: ShoppingViewModel = viewModel()
     val (checkedState, onStateChange) = remember { mutableStateOf(false) }
 
     Card(
@@ -198,7 +212,11 @@ fun ShoppingCard(item: ShoppingItem, onDeleteItem: (ShoppingItem) -> Unit) {
                 .fillMaxWidth()
                 .toggleable(
                     value = checkedState,
-                    onValueChange = { onStateChange(!checkedState) },
+                    onValueChange = {
+                        Log.d("ShoppingCard", "Checkbox checked: $it") // Log checkbox checked state
+                        onStateChange(it)
+                        viewModel.toggleItemCheckedState(item, it)
+                    },
                     role = Role.Checkbox
                 )
                 .padding(8.dp),
@@ -206,7 +224,11 @@ fun ShoppingCard(item: ShoppingItem, onDeleteItem: (ShoppingItem) -> Unit) {
         ) {
             Checkbox(
                 checked = checkedState,
-                onCheckedChange = null
+                onCheckedChange = { isChecked ->
+                    Log.d("ShoppingCard", "Checkbox checked: $isChecked") // Log checkbox checked state
+                    onStateChange(isChecked)
+                    viewModel.toggleItemCheckedState(item, isChecked)
+                }
             )
             Column {
                 Text(

@@ -67,7 +67,8 @@ data class ShoppingItem(
     val id: Long = 0,
     val name: String,
     val amount: String,
-    var addedCount: Int = 0
+    var addedCount: Int = 0,
+    var checked: Boolean = false
 )
 
 @Entity
@@ -134,6 +135,12 @@ interface ShoppingItemDao {
 
     @Delete
     suspend fun deleteShoppingItem(shoppingItem: ShoppingItem)
+
+    @Delete
+    suspend fun deleteShoppingItems(items: List<ShoppingItem>)
+
+    @Update
+    suspend fun updateShoppingItem(item: ShoppingItem)
 
     @Query("SELECT * FROM ShoppingItem WHERE name = :name")
     suspend fun getShoppingItemByName(name: String): ShoppingItem?
