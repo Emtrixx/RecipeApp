@@ -74,6 +74,8 @@ import androidx.navigation.compose.rememberNavController
 import com.example.recipeapp.Navigation.BottomNavigationBar
 import com.example.recipeapp.Navigation.NavGraph
 import com.example.recipeapp.R
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
@@ -319,6 +321,11 @@ fun ItemCard(
     val homeViewModel = HomeViewModel(context)
     val openDialog = remember { mutableStateOf(false) }
 
+    val nextBestBefore: LocalDate? = remember {
+        product.bestbefore.filterNotNull().minOrNull()
+    }
+
+
     var expanded by remember { mutableStateOf(false) }
 
     homeViewModel.getProductImage(product, context)
@@ -366,7 +373,7 @@ fun ItemCard(
                             .padding(end = 8.dp)
                     )
 
-                    if (!(product.bestbefore.all { it.toString() == "null" })) {
+                    if (nextBestBefore != null) {
                         Box(
                             modifier = Modifier
                                 .background(
@@ -387,7 +394,7 @@ fun ItemCard(
                                     tint = MaterialTheme.colorScheme.onTertiaryContainer
                                 )
                                 Text(
-                                    text = product.bestbefore.take(1).toString(),
+                                    text = nextBestBefore.format(DateTimeFormatter.ofPattern("dd/MM/yyyy")),
                                     fontSize = 10.sp,
                                     modifier = Modifier
                                         .padding(start = 4.dp),

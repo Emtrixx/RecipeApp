@@ -60,6 +60,7 @@ import androidx.navigation.compose.rememberNavController
 import com.example.recipeapp.HomeView.HomeViewModel
 import com.example.recipeapp.Navigation.NavGraph
 import com.example.recipeapp.R
+import java.time.format.DateTimeFormatter
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -97,6 +98,8 @@ fun ItemView(product: Product, navController: NavController) {
     val onDeleteItem: (Product) -> Unit = { item ->
         viewModel.removeProduct(product = item)
     }
+
+    val allDatesNoRepetition = product.bestbefore.filterNotNull().distinct()
 
     LazyColumn(modifier = Modifier.fillMaxWidth()) {
         stickyHeader {
@@ -356,16 +359,15 @@ fun ItemView(product: Product, navController: NavController) {
                             fontWeight = FontWeight.Bold
                         )
 
-                        if (product.bestbefore.all { it.toString() == "null" }) {
-
+                        if (allDatesNoRepetition.isEmpty()) {
                             Text(
                                 text = "This product doesn't have expiry dates",
                                 fontStyle = FontStyle.Italic
                             )
                         } else {
-                            for (date in product.bestbefore.filterNotNull()) {
+                            for (date in allDatesNoRepetition) {
                                 Text(
-                                    text = date.toString(),
+                                    text = date.format(DateTimeFormatter.ofPattern("dd/MM/yyyy")),
                                     modifier = Modifier.padding(bottom = 8.dp)
                                 )
                             }

@@ -112,6 +112,12 @@ class HomeViewModel(context: Context) : ViewModel() {
     // functio to generate a barcode image using the product barcode
     // using the ZXing library
     fun generateBarcodeImage(barcodeValue: String): Bitmap? {
+
+        // If barcode is a valid UUID return null
+        if (barcodeValue.length == 36) {
+            return null
+        }
+
         try {
             val multiFormatWriter = MultiFormatWriter()
             val bitMatrix: BitMatrix =
