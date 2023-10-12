@@ -114,6 +114,6 @@ class ShoppingViewModel(application: Application) : AndroidViewModel(application
 
     // Add from favorites to shopping list
     fun addFavoriteToShoppingList(item: FavoriteShoppingItem) {
-        addShoppingItem(item.name, amount = 1)
+        addShoppingItem(item.name, amount = "1")
     }
 }
