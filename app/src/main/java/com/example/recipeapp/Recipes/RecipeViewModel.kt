@@ -12,47 +12,48 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 const val apiKey = "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"
-class RecipeViewModel (context: Context) : ViewModel() {
-        private val db: Recipeapp by lazy {
-            Recipeapp.getInstance(context)
-        }
 
-        private val productsLiveData: MutableLiveData<List<Product>> = MutableLiveData()
-        private val recipesLiveData: MutableLiveData<List<Recipe>> = MutableLiveData()
-        private val recipeLiveData: MutableLiveData<Recipe> = MutableLiveData()
+class RecipeViewModel(context: Context) : ViewModel() {
+    private val db: Recipeapp by lazy {
+        Recipeapp.getInstance(context)
+    }
 
-        fun getProductsAsLiveData(): LiveData<List<Product>> {
-            return productsLiveData
-        }
+    private val productsLiveData: MutableLiveData<List<Product>> = MutableLiveData()
+    private val recipesLiveData: MutableLiveData<List<Recipe>> = MutableLiveData()
+    private val recipeLiveData: MutableLiveData<Recipe> = MutableLiveData()
 
-        fun getRecipesAsLiveData(): LiveData<List<Recipe>> {
-            return recipesLiveData
-        }
+    fun getProductsAsLiveData(): LiveData<List<Product>> {
+        return productsLiveData
+    }
 
-        fun getRecipeAsLiveData(): LiveData<Recipe> {
-            return recipeLiveData
-        }
+    fun getRecipesAsLiveData(): LiveData<List<Recipe>> {
+        return recipesLiveData
+    }
 
-        fun fetchRecipe(id: Long) {
-            viewModelScope.launch(Dispatchers.IO) {
-                val Recipe = db.RecipeappDao().GetRecipeInfo(id)
-                recipeLiveData.postValue(Recipe)
-            }
-        }
+    fun getRecipeAsLiveData(): LiveData<Recipe> {
+        return recipeLiveData
+    }
 
-        fun fetchProducts() {
-            viewModelScope.launch(Dispatchers.IO) {
-                val products = db.RecipeappDao().GetProducts()
-                productsLiveData.postValue(products)
-            }
+    fun fetchRecipe(id: Long) {
+        viewModelScope.launch(Dispatchers.IO) {
+            val Recipe = db.RecipeappDao().GetRecipeInfo(id)
+            recipeLiveData.postValue(Recipe)
         }
+    }
 
-        fun fetchRecipes() {
-            viewModelScope.launch(Dispatchers.IO) {
-                val recipes = db.RecipeappDao().GetRecipes()
-                recipesLiveData.postValue(recipes)
-            }
+    fun fetchProducts() {
+        viewModelScope.launch(Dispatchers.IO) {
+            val products = db.RecipeappDao().GetProducts()
+            productsLiveData.postValue(products)
         }
+    }
+
+    fun fetchRecipes() {
+        viewModelScope.launch(Dispatchers.IO) {
+            val recipes = db.RecipeappDao().GetRecipes()
+            recipesLiveData.postValue(recipes)
+        }
+    }
 
     fun removeRecipe(recipe: Recipe) {
         viewModelScope.launch() {
@@ -63,26 +64,27 @@ class RecipeViewModel (context: Context) : ViewModel() {
         fetchRecipes()
     }
 
-        fun addRecipe(
-                      name: String,
-                      description: String, ) {
-            val recipe = Recipe(name = name,description = description)
-            viewModelScope.launch { db.RecipeappDao().InsertRecipe(recipe) }
-            fetchRecipes()
-        }
+    fun addRecipe(
+        name: String,
+        description: String,
+    ) {
+        val recipe = Recipe(name = name, description = description)
+        viewModelScope.launch { db.RecipeappDao().InsertRecipe(recipe) }
+        fetchRecipes()
+    }
 
-        fun editRecipe(id: Long,name: String, description: String) {
-            viewModelScope.launch {
-                val editedRecipe = Recipe(id, name, description)
-                db.RecipeappDao().UpdateRecipe(editedRecipe)
-            }
-            fetchRecipe(id)
+    fun editRecipe(id: Long, name: String, description: String) {
+        viewModelScope.launch {
+            val editedRecipe = Recipe(id, name, description)
+            db.RecipeappDao().UpdateRecipe(editedRecipe)
         }
+        fetchRecipe(id)
+    }
 
     val chatMessages = mutableListOf<Message>()
 
     fun addMessage(message: Message) {
-        chatMessages.add(0,message)
+        chatMessages.add(0, message)
     }
 
     suspend fun sendMessage(apiKey: String): ChatResponse? {
@@ -96,4 +98,4 @@ class RecipeViewModel (context: Context) : ViewModel() {
         }
     }
 
-    }
+}

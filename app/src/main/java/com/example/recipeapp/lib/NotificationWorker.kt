@@ -2,6 +2,7 @@ package com.example.recipeapp.lib
 
 import Database.Recipeapp
 import android.content.Context
+import android.util.Log
 import androidx.core.app.NotificationCompat
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
@@ -17,9 +18,9 @@ class NotificationWorker(appContext: Context, workerParams: WorkerParameters) : 
         val notificationsState = applicationContext.dataStore.data.first()[NOTIFICATIONS_STATE] ?: false
 
         if (!notificationsState) {
+            Log.d("NotificationWorker", "Notifications are disabled")
             return Result.success()
         }
-
 
         val db = Recipeapp.getInstance(applicationContext)
 
@@ -34,6 +35,8 @@ class NotificationWorker(appContext: Context, workerParams: WorkerParameters) : 
                 }
             }
         }
+
+        Log.d("NotificationWorker", "Expiring products: ${expiringProducts.size}")
 
         if (expiringProducts.isNotEmpty()) {
             val builder = NotificationCompat.Builder(applicationContext, EXPIRY_CHANNEL_ID)

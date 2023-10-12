@@ -6,7 +6,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -141,7 +140,7 @@ fun IngredientsSelectionScreen(
                 items(ingredientItems) { ingredientItem ->
 
                     val interactionSource = remember { MutableInteractionSource() }
-                    val isPressed = interactionSource.collectIsPressedAsState().value
+//                    val isPressed = interactionSource.collectIsPressedAsState().value
                     allproducts += ingredientItem.name + ", "
 
                     Button(
@@ -227,12 +226,12 @@ fun RecipesScreen(
                 if (allproducts)
                     Message(
                         role = "user",
-                        content = "Generate a new recipe with some of these ingredients: $selectedIngredients print only the title, the ingredients and the instructions. if there are some ingredients not eatable don't use them"
+                        content = "Generate a new recipe with some of these ingredients: $selectedIngredients but only the ones that are eatable. Respond with only the title of the recipe at the start, then the ingredients and the instructions."
                     )
                 else
                     Message(
                         role = "user",
-                        content = "Generate a different recipe with these ingredients: $selectedIngredients print only the title, the ingredients and the instructions"
+                        content = "Generate a different recipe with these ingredients: $selectedIngredients but only the ones that are eatable. Respond with only the title of the recipe at the start, then the ingredients and the instructions."
                     )
             viewModel.addMessage(userMessage)
             viewModel.sendMessage(apiKey)?.let {
@@ -332,7 +331,7 @@ fun RecipesScreen(
                         }
                     }
                 },
-                enabled = if (response.isNullOrEmpty()) false else true,
+                enabled = !response.isEmpty(),
                 colors = ButtonColors(
                     containerColor = MaterialTheme.colorScheme.primaryContainer,
                     contentColor = Color.White,
@@ -345,7 +344,7 @@ fun RecipesScreen(
             Button(
                 onClick =
                 { showsavescreen = true },
-                enabled = if (response.isNullOrEmpty()) false else true,
+                enabled = !response.isEmpty(),
                 colors = ButtonColors(
                     containerColor = MaterialTheme.colorScheme.primaryContainer,
                     contentColor = Color.White,
@@ -358,7 +357,7 @@ fun RecipesScreen(
         }
     }
     if (showsavescreen) {
-        Saverecipe(title = title, body = body, viewModel = viewModel) {
+        Saverecipe(titleParam = title, body = body, viewModel = viewModel) {
             navController.navigate("recipes")
         }
     }
@@ -606,7 +605,7 @@ fun RecipeNavigation() {
 
             val recipeList by viewModel.getRecipesAsLiveData().observeAsState(emptyList())
 
-            val selectedItem = recipeList?.find { it.id == recipeid }
+            val selectedItem = recipeList.find { it.id == recipeid }
 
             if (selectedItem != null) {
                 Recipedescription(
@@ -735,15 +734,20 @@ fun Myrecipes(
 
     }
     if (save) {
-        Saverecipe(title = "", body = "", viewModel = viewModel) {
+        Saverecipe(titleParam = "", body = "", viewModel = viewModel) {
             navController.navigate("recipes")
         }
     }
 }
 
 @Composable
-fun Saverecipe(title: String, body: String, viewModel: RecipeViewModel, onDismiss: () -> Unit) {
-    var value by remember { mutableStateOf(title) }
+fun Saverecipe(
+    titleParam: String,
+    body: String,
+    viewModel: RecipeViewModel,
+    onDismiss: () -> Unit
+) {
+    var value by remember { mutableStateOf(titleParam) }
     var tmp by remember { mutableStateOf("") }
     var title by remember { mutableStateOf("Title") }
     var currentPage by remember { mutableStateOf(0) }
@@ -803,7 +807,7 @@ fun Saverecipe(title: String, body: String, viewModel: RecipeViewModel, onDismis
                             currentPage++
                         }
                     },
-                    enabled = if (value.isEmpty()) false else true
+                    enabled = value.isNotEmpty()
                 ) {
                     Text(buttontext)
                 }
