@@ -11,6 +11,7 @@ import Database.Recipeapp
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
+const val apiKey = "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"
 class RecipeViewModel (application: Application) : AndroidViewModel(application) {
         private val db: Recipeapp by lazy {
             Recipeapp.getInstance(application)
@@ -55,7 +56,7 @@ class RecipeViewModel (application: Application) : AndroidViewModel(application)
 
     fun removeRecipe(recipe: Recipe) {
         viewModelScope.launch() {
-            db.RecipeappDao().deleteRecipeById(recipe.name)
+            db.RecipeappDao().deleteRecipeById(recipe.id)
             val recipes = db.RecipeappDao().GetRecipes()
             recipesLiveData.postValue(recipes)
         }

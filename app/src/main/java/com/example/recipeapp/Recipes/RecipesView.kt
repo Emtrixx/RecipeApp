@@ -1,4 +1,3 @@
-import Database.Product
 import android.annotation.SuppressLint
 import android.app.Application
 import androidx.compose.foundation.border
@@ -25,7 +24,6 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
@@ -45,7 +43,6 @@ import Database.Recipe
 import android.util.Log
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
-import androidx.compose.foundation.gestures.ScrollableState
 import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.height
@@ -68,10 +65,9 @@ import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.window.DialogProperties
 import com.example.recipeapp.Recipes.RecipeViewModel
+import com.example.recipeapp.Recipes.apiKey
 import kotlinx.coroutines.launch
 import com.example.recipeapp.components.DotsPulsing
-
-const val apiKey = "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"
 
 @Composable
 fun IngredientsSelectionScreen(
@@ -274,7 +270,7 @@ fun RecipesScreen(
                     )
                 }
                 Box(modifier = Modifier
-                    .fillMaxWidth()
+                    .fillMaxSize()
                     .border(
                         4.dp,
                         MaterialTheme.colorScheme.surfaceVariant,
@@ -290,7 +286,7 @@ fun RecipesScreen(
                         Text(
                             text = body,
                             style = MaterialTheme.typography.bodyLarge,
-                            modifier = Modifier.padding(16.dp),
+                            modifier = Modifier.padding(22.dp),
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     }
@@ -422,7 +418,7 @@ fun Recipedescription(viewModel: RecipeViewModel, id: Long, navController: NavCo
                 )
             }
             Box(modifier = Modifier
-                .fillMaxWidth()
+                .fillMaxSize()
                 .border(
                     4.dp,
                     MaterialTheme.colorScheme.surfaceVariant,
@@ -438,7 +434,7 @@ fun Recipedescription(viewModel: RecipeViewModel, id: Long, navController: NavCo
                     Text(
                         text = recipe.description,
                         style = MaterialTheme.typography.bodyLarge,
-                        modifier = Modifier.padding(16.dp),
+                        modifier = Modifier.padding(22.dp),
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }

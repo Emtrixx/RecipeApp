@@ -5,10 +5,10 @@ import android.app.Service
 import android.content.Intent
 import android.os.IBinder
 import android.util.Log
-import com.example.recipeapp.ChatGPT.ChatRequest
-import com.example.recipeapp.ChatGPT.Message
-import com.example.recipeapp.ChatGPT.RetrofitInstance
-import com.example.recipeapp.RecipeView.apiKey
+import com.example.recipeapp.Recipes.ChatRequest
+import com.example.recipeapp.Recipes.Message
+import com.example.recipeapp.Recipes.RetrofitInstance
+import com.example.recipeapp.Recipes.apiKey
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
