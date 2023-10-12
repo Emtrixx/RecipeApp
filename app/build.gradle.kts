@@ -55,6 +55,7 @@ dependencies {
     implementation("com.google.mlkit:barcode-scanning:17.2.0")
     // Loading images
     implementation("io.coil-kt:coil-compose:2.4.0")
+    implementation("androidx.datastore:datastore-core:1.0.0")
     // Live Data
     val compose_version = "1.5.1"
     implementation("androidx.lifecycle:lifecycle-runtime-compose:2.6.2")

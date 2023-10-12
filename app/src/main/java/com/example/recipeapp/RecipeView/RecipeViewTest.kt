@@ -19,6 +19,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
@@ -30,6 +31,7 @@ import kotlinx.coroutines.launch
 // Replace with your api key
 val apiKey = "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"
 
+@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun RecipeViewTest(viewModel: TestRecipeViewModel) {
     var message by remember { mutableStateOf("") }
