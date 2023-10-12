@@ -63,6 +63,7 @@ import com.example.recipeapp.components.IntegerInputStepper
 import com.example.recipeapp.components.MyDatePickerDialog
 import com.example.recipeapp.components.camera.CameraComponent
 import com.example.recipeapp.components.camera.saveImageToInternalStorage
+import com.example.recipeapp.product.components.PredictionDialog
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -81,6 +82,8 @@ fun AddProductForm(viewModel: AddProductViewModel, navController: NavController)
     val amountErrors: List<String> = viewModel.amountErrors
     val capturedImageUri = viewModel.capturedImageUri
     val storedImage = viewModel.storedImage
+    val predictedName = viewModel.predictedName
+    val showPredictionDialog = viewModel.showPredictionDialog
 
     val barcode = viewModel.barcode
     val title = if (viewModel.edit) {
@@ -109,6 +112,18 @@ fun AddProductForm(viewModel: AddProductViewModel, navController: NavController)
             DotsPulsing()
         }
     } else {
+        if (showPredictionDialog) {
+            PredictionDialog(
+                predictedName = predictedName,
+                onConfirm = {
+                    viewModel.updateName(predictedName)
+                    viewModel.updateShowPredictionDialog(false)
+                },
+                onDismiss = {
+                    viewModel.updateShowPredictionDialog(false)
+                }
+            )
+        }
         Column(modifier = Modifier) {
             TopAppBar(
                 title = {
@@ -180,9 +195,10 @@ fun AddProductForm(viewModel: AddProductViewModel, navController: NavController)
                                 Modifier
                                     .fillMaxWidth()
                                     .alpha(0f)
-                            ) { success, uri ->
+                            ) { success, uri, file ->
                                 if (success) {
                                     viewModel.updatePicture(uri)
+                                    viewModel.getImagePrediction(file)
                                 }
                             }
                             Column(
@@ -347,10 +363,12 @@ fun AddProductForm(viewModel: AddProductViewModel, navController: NavController)
                             disabledContentColor = MaterialTheme.colorScheme.onErrorContainer
                         )
                     ) {
-                        Text(text = "Save",
+                        Text(
+                            text = "Save",
                             color = Color.White,
                             modifier = Modifier,
-                            fontSize = 16.sp)
+                            fontSize = 16.sp
+                        )
                     }
                 }
             }
