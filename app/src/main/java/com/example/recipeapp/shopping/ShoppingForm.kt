@@ -19,6 +19,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.ExposedDropdownMenuBox
@@ -48,6 +49,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -134,6 +136,7 @@ fun ShoppingForm(
                     placeholder = { Text(text = "e.g. 2") },
                     isError = isAmountInvalid,
                     singleLine = true,
+                    keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number),
                     shape = RoundedCornerShape(32.dp, 4.dp, 4.dp, 32.dp),
                     colors = TextFieldDefaults.textFieldColors(
                         focusedIndicatorColor = Color.Transparent,
@@ -257,7 +260,7 @@ fun ShoppingFavorites(
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .border(2.dp, Color.LightGray)
+            .border(2.dp, Color.LightGray, shape = RoundedCornerShape(16.dp))
     ) {
         LazyColumn(
             modifier = Modifier
@@ -271,7 +274,8 @@ fun ShoppingFavorites(
                     modifier = Modifier
                         .height(40.dp)
                         .fillMaxWidth()
-                        .border(2.dp, Color.LightGray)
+                        .border(2.dp, Color.LightGray,
+                            shape = RoundedCornerShape(16.dp, 16.dp, 0.dp, 0.dp))
                         .padding(top = 8.dp)
                 )
             }
@@ -279,7 +283,7 @@ fun ShoppingFavorites(
             if (favoriteItems.isEmpty()) {
                 item {
                     Column(
-                        modifier = Modifier.fillMaxWidth(),
+                        modifier = Modifier.fillMaxWidth().padding(8.dp),
                         verticalArrangement = Arrangement.Center
                     ) {
                         Text(
