@@ -57,7 +57,7 @@ class ShoppingViewModel(application: Application) : AndroidViewModel(application
         }
     }
 
-    //Delete items
+    // Delete items from shopping list
     fun deleteShoppingItem(item: ShoppingItem) {
         viewModelScope.launch(Dispatchers.IO) {
             db.shoppingItemDao().deleteShoppingItem(item)
@@ -70,7 +70,6 @@ class ShoppingViewModel(application: Application) : AndroidViewModel(application
     fun incrementAddedCount(itemName: String) {
         viewModelScope.launch(Dispatchers.IO) {
             db.shoppingItemDao().incrementAddedCount(itemName)
-            //fetchFavoriteItems()
 
             // Fetch the updated count
             val updatedCount = db.shoppingItemDao().getAddedCountByName(itemName)
@@ -99,6 +98,7 @@ class ShoppingViewModel(application: Application) : AndroidViewModel(application
     }
 
     private val addedToFavoritesSet = mutableSetOf<String>()
+
     // Function to add an item to favorites
     fun addFavoriteItem(name: String) {
         viewModelScope.launch(Dispatchers.IO) {

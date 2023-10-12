@@ -15,7 +15,9 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.ExperimentalMaterialApi
+//noinspection UsingMaterialAndMaterial3Libraries
 import androidx.compose.material.ExposedDropdownMenuBox
+//noinspection UsingMaterialAndMaterial3Libraries
 import androidx.compose.material.OutlinedTextField
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
@@ -81,7 +83,7 @@ fun ShoppingForm(
                 style = MaterialTheme.typography.bodyLarge
             )
 
-            //TextField for adding items to ShoppingList
+            // TextField for adding product name to ShoppingList
             TextField(
                 modifier = Modifier.fillMaxWidth(),
                 value = newItem,
@@ -100,7 +102,7 @@ fun ShoppingForm(
                 )
             )
 
-            //Error handling
+            // Error handling if name is something else than String
             if (isItemInvalid) {
                 Text(
                     text = "Invalid item. Please enter a valid item name.",
@@ -118,7 +120,8 @@ fun ShoppingForm(
 
             Row(modifier = Modifier,
                 verticalAlignment = Alignment.CenterVertically) {
-                //TextField for adding the amount of items to ShoppingList
+
+                // TextField for adding the amount of items to ShoppingList
                 TextField(
                     modifier = Modifier.weight(1f),
                     value = newAmount,
@@ -136,15 +139,9 @@ fun ShoppingForm(
                     )
                 )
 
-                //Error handling
-                if (isAmountInvalid) {
-                    Text(
-                        text = "Invalid amount. Please enter a valid number.",
-                        color = Color.Red,
-                        modifier = Modifier.padding(top = 4.dp)
-                    )
-                }
 
+
+                // Type of amount
                 Box(
                     modifier = Modifier
                         .weight(0.5f)
@@ -195,7 +192,16 @@ fun ShoppingForm(
                 }
             }
 
-            //Button for adding items to list
+            // Error handling for amount
+             if (isAmountInvalid) {
+                 Text(
+                    text = "Invalid amount. Please enter a valid number.",
+                    color = Color.Red,
+                    modifier = Modifier.padding(top = 4.dp)
+                )
+            }
+
+            // Button for adding items to list
             Column(
                 horizontalAlignment = Alignment.End,
                 modifier = Modifier
@@ -209,16 +215,16 @@ fun ShoppingForm(
                         val amountValue = newAmount.toIntOrNull()
                         val hasNonNumeric = newItem.any { it.isLetter() }
 
-                        //Checks that the user puts required values
+                        // Checks that the user puts required values
                         if (newItem.isNotBlank() && hasNonNumeric && amountValue != null) {
                             viewModel.incrementAddedCount(newItem)
 
                             onItemAdded(newItem, StringBuilder().append(amountValue).append(selectedAmountType).toString())
 
-                            newItem = ""
-                            newAmount = ""
-                            isItemInvalid = false // Reset item name error flag
-                            isAmountInvalid = false // Reset amount error flag
+                            newItem = "" // Set empty field
+                            newAmount = "" // Set empty field
+                            isItemInvalid = false // Reset item name error
+                            isAmountInvalid = false // Reset amount error
                         } else {
                             isItemInvalid = newItem.isBlank() || !hasNonNumeric
                             isAmountInvalid = amountValue == null

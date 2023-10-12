@@ -120,7 +120,7 @@ fun ShoppingList() {
             }
         },
         content = {
-            // Nav routes
+            // Nav routes for ShoppingList
             NavHost(navController, startDestination = "shoppingList") {
                 composable("shoppingList") {
                     Column(
@@ -182,7 +182,9 @@ fun ShoppingList() {
 
 @Composable
 fun ShoppingCard(item: ShoppingItem, onDeleteItem: (ShoppingItem) -> Unit) {
+
     val (checkedState, onStateChange) = remember { mutableStateOf(false) }
+
     Card(
         colors = CardColors(
             containerColor = MaterialTheme.colorScheme.secondaryContainer,
@@ -206,19 +208,19 @@ fun ShoppingCard(item: ShoppingItem, onDeleteItem: (ShoppingItem) -> Unit) {
                 checked = checkedState,
                 onCheckedChange = null
             )
-            Column() {
+            Column {
                 Text(
                     text = item.name,
                     modifier = Modifier
                         .padding(horizontal = 8.dp,),
-                    color = if (checkedState) MaterialTheme.colorScheme.outline else MaterialTheme.colorScheme.onSurfaceVariant,
+                    color = if (checkedState) MaterialTheme.colorScheme.outline else MaterialTheme.colorScheme.onSurfaceVariant, // If item is checked, color changes
                 )
                 Text(
                     text = item.amount,
                     modifier = Modifier
                         .padding(horizontal = 8.dp),
                     fontSize = 12.sp,
-                    color = if (checkedState) MaterialTheme.colorScheme.outline else MaterialTheme.colorScheme.onSurfaceVariant,
+                    color = if (checkedState) MaterialTheme.colorScheme.outline else MaterialTheme.colorScheme.onSurfaceVariant, // If item is checked, color changes
                 )
             }
             Row(
