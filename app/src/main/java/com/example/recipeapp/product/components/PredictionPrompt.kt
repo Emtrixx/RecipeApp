@@ -1,6 +1,7 @@
 package com.example.recipeapp.product.components
 
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -15,9 +16,10 @@ fun PredictionDialog(
         onDismissRequest = {
             onDismiss()
         },
-        title = { Text(text = "Product prediction") },
+        containerColor = MaterialTheme.colorScheme.surfaceVariant,
+        title = { Text(text = "Product prediction", color = MaterialTheme.colorScheme.onSurfaceVariant) },
         text = {
-            Text("Is the predicted name $predictedName correct?")
+            Text("Is the predicted name $predictedName correct?", color = MaterialTheme.colorScheme.onSurfaceVariant)
         },
         confirmButton = {
             TextButton(
