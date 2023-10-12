@@ -3,8 +3,8 @@
 FridgeMate is application that helps you manage your fridge, generate shopping lists, and explore new recipes using AI-powered features.
 
 <div style="display: flex;">
-    <img src="https://raw.githubusercontent.com/Emtrixx/RecipeApp/main/README_res/home.jpg" width="180" height="400" />
-    <img src="https://raw.githubusercontent.com/Emtrixx/RecipeApp/main/README_res/homeDark.jpg" width="180" height="400" />
+    <img src="https://github.com/Emtrixx/RecipeApp/blob/main/README_res/home.jpg" width="180" height="400" />
+    <img src="https://github.com/Emtrixx/RecipeApp/blob/main/README_res/homeDark.jpg" width="180" height="400" />
 </div>
 
 ## Dependencies
@@ -33,11 +33,13 @@ FridgeMate is application that helps you manage your fridge, generate shopping l
 - You will need a chatGPT API key to use the application.
 
 ### Fridgemate:
-![itemdetail](https://github.com/Emtrixx/RecipeApp/assets/91603202/02850934-cf3f-4024-97ea-60a5b384cf47)
-![recipesView](https://github.com/Emtrixx/RecipeApp/assets/91603202/70d8e407-ca4b-41eb-8d11-a86164179a36)
-![recipesViewDark](https://github.com/Emtrixx/RecipeApp/assets/91603202/fec9d3e1-81b1-42ee-aac7-72ab2631de48)
-![addProduct](https://github.com/Emtrixx/RecipeApp/assets/91603202/ab20053d-6b51-44a0-9472-40bd0c69a63b)
-![generateRecipe](https://github.com/Emtrixx/RecipeApp/assets/91603202/c1c6ed24-13a4-420e-a9b2-5e62cfbc60e3)
-![shoppinglist](https://github.com/Emtrixx/RecipeApp/assets/91603202/b9890420-740e-476a-98aa-8d6f4c45dc64)
 
+<div style="display: flex;">
+    <img src="https://github.com/Emtrixx/RecipeApp/blob/main/README_res/generateRecipe.jpg" width="180" height="400" />
+    <img src="https://github.com/Emtrixx/RecipeApp/blob/main/README_res/addProduct.jpg" width="180" height="400" />
+    <img src="https://github.com/Emtrixx/RecipeApp/blob/main/README_res/recipesView.jpg" width="180" height="400" />
+    <img src="https://github.com/Emtrixx/RecipeApp/blob/main/README_res/recipesViewDark.jpg" width="180" height="400" />
+    <img src="https://github.com/Emtrixx/RecipeApp/blob/main/README_res/itemdetail.jpg" width="180" height="400" />
+    <img src="https://github.com/Emtrixx/RecipeApp/blob/main/README_res/shoppinglist.jpg" width="180" height="400" />
+</div>
 
