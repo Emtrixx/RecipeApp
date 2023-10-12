@@ -1,8 +1,11 @@
 # FridgeMate
 
 FridgeMate is application that helps you manage your fridge, generate shopping lists, and explore new recipes using AI-powered features.
-![home](https://github.com/Emtrixx/RecipeApp/assets/91603202/da88704c-557e-461e-b3a4-fc380ca54bfc)
-![homeDark](https://github.com/Emtrixx/RecipeApp/assets/91603202/06fb5fe9-be7e-4b85-a995-4f479edc78a1)
+
+<div style="display: flex;">
+    <img src="https://raw.githubusercontent.com/Emtrixx/RecipeApp/main/README_res/home.jpg" width="180" height="400" />
+    <img src="https://raw.githubusercontent.com/Emtrixx/RecipeApp/main/README_res/homeDark.jpg" width="180" height="400" />
+</div>
 
 ## Dependencies
 
