@@ -9,12 +9,13 @@ import android.net.Uri
 import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.recipeapp.AddingProductFieldsService
-import com.example.recipeapp.components.camera.getImageFromInternalStorage
+import com.example.recipeapp.lib.getImageFromInternalStorage
 import com.example.recipeapp.lib.uploadImageToServer
 import kotlinx.coroutines.launch
 import java.io.File
@@ -39,6 +40,8 @@ class AddProductViewModel(barcodeArg: String?, context: Context, val edit: Boole
     var nameErrors by mutableStateOf<List<String>>(listOf())
         private set
     var capturedImageUri: Uri by mutableStateOf(Uri.EMPTY)
+        private set
+    var imageTimeStamp by mutableLongStateOf(0L)
         private set
     var storedImage by mutableStateOf<Bitmap?>(null)
         private set
@@ -227,6 +230,7 @@ class AddProductViewModel(barcodeArg: String?, context: Context, val edit: Boole
     }
 
     fun updatePicture(uri: Uri) {
+        this.imageTimeStamp = System.currentTimeMillis()
         this.capturedImageUri = uri
     }
 

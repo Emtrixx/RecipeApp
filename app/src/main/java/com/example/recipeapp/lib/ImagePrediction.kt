@@ -34,7 +34,7 @@ object PredictionRetrofitClient {
     }
 
     private val client = OkHttpClient.Builder()
-        .addInterceptor(interceptor)
+//        .addInterceptor(interceptor)
         .connectTimeout(30, TimeUnit.SECONDS)
         .readTimeout(30, TimeUnit.SECONDS)
         .writeTimeout(30, TimeUnit.SECONDS)

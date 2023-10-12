@@ -35,6 +35,7 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarColors
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -55,15 +56,19 @@ import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import coil.compose.rememberAsyncImagePainter
+import coil.request.CachePolicy
+import coil.request.ImageRequest
 import com.example.recipeapp.Navigation.BottomNavItem
 import com.example.recipeapp.R
 import com.example.recipeapp.components.DotsPulsing
 import com.example.recipeapp.components.IntegerInputStepper
 import com.example.recipeapp.components.MyDatePickerDialog
 import com.example.recipeapp.components.camera.CameraComponent
-import com.example.recipeapp.components.camera.saveImageToInternalStorage
+import com.example.recipeapp.components.camera.CameraViewModel
+import com.example.recipeapp.lib.saveImageToInternalStorage
 import com.example.recipeapp.product.components.PredictionDialog
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -71,6 +76,7 @@ import com.example.recipeapp.product.components.PredictionDialog
 fun AddProductForm(viewModel: AddProductViewModel, navController: NavController) {
 
     val context = LocalContext.current
+    val cameraViewModel: CameraViewModel = viewModel()
 
     val loading = viewModel.loading
     val name = viewModel.name
@@ -82,6 +88,7 @@ fun AddProductForm(viewModel: AddProductViewModel, navController: NavController)
     val amount = viewModel.amount
     val amountErrors: List<String> = viewModel.amountErrors
     val capturedImageUri = viewModel.capturedImageUri
+    val imageTimeStamp = viewModel.imageTimeStamp
     val storedImage = viewModel.storedImage
     val predictedName = viewModel.predictedName
     val showPredictionDialog = viewModel.showPredictionDialog
@@ -101,7 +108,19 @@ fun AddProductForm(viewModel: AddProductViewModel, navController: NavController)
     val painter = if (storedImage != null && capturedImageUri == Uri.EMPTY) {
         BitmapPainter(storedImage.asImageBitmap())
     } else {
-        rememberAsyncImagePainter(capturedImageUri)
+        // to trigger recomposition when file changes
+        key(imageTimeStamp) {
+            rememberAsyncImagePainter(
+                model = ImageRequest.Builder(context)
+                    .data(capturedImageUri)
+                    .crossfade(true).memoryCachePolicy(
+                        CachePolicy.DISABLED
+                    ).diskCachePolicy(
+                        CachePolicy.DISABLED
+                    )
+                    .build()
+            )
+        }
     }
 
     if (loading) {
@@ -193,6 +212,7 @@ fun AddProductForm(viewModel: AddProductViewModel, navController: NavController)
                                 contentDescription = stringResource(R.string.product_image_desc)
                             )
                             CameraComponent(
+                                cameraViewModel,
                                 Modifier
                                     .fillMaxWidth()
                                     .alpha(0f)

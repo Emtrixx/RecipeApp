@@ -12,7 +12,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.recipeapp.components.camera.getImageFromInternalStorage
+import com.example.recipeapp.lib.getImageFromInternalStorage
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
