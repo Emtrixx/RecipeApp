@@ -9,6 +9,7 @@ import Recipedescription
 import RecipesScreen
 import android.util.Log
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.material.BottomNavigation
 import androidx.compose.material.BottomNavigationItem
@@ -45,6 +46,7 @@ import com.example.recipeapp.product.AddProductForm
 import com.example.recipeapp.product.AddProductViewModel
 import com.example.recipeapp.product.BarcodeScannerView
 import com.example.recipeapp.product.BarcodeViewModel
+import com.example.recipeapp.settings.About
 import com.example.recipeapp.settings.AppearanceSettings
 import com.example.recipeapp.settings.DevSettings
 import com.example.recipeapp.settings.GeneralSettings
@@ -131,7 +133,7 @@ fun NavGraph(
                 settingName?.let {
                     when (it) {
                         "General" -> {
-                            GeneralSettings()
+                            GeneralSettings(navController)
                         }
 
                         "Notifications" -> {
@@ -147,6 +149,9 @@ fun NavGraph(
                         }
                     }
                 }
+            }
+            composable("about") {
+                About()
             }
         }
         composable(
@@ -252,7 +257,8 @@ fun RowScope.AddItem(
         onClick = {
             navController.navigate(screen.screen)
         },
-        modifier = Modifier.background(androidx.compose.material3.MaterialTheme.colorScheme.secondaryContainer),
+        modifier = Modifier
+            .background(androidx.compose.material3.MaterialTheme.colorScheme.secondaryContainer),
         selectedContentColor = Color.White,
         unselectedContentColor = Color.Gray,
     )
