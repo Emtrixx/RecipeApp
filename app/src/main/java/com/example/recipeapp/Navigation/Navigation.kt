@@ -38,8 +38,6 @@ import androidx.navigation.navigation
 import com.example.recipeapp.AllItems.AllItemsListView
 import com.example.recipeapp.HomeView.HomeListView
 import com.example.recipeapp.ItemView.ItemView
-import com.example.recipeapp.RecipeView.RecipeViewTest
-import com.example.recipeapp.RecipeView.TestRecipeViewModel
 import com.example.recipeapp.product.AddProductForm
 import com.example.recipeapp.product.AddProductViewModel
 import com.example.recipeapp.product.BarcodeScannerView
