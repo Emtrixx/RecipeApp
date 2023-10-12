@@ -5,6 +5,8 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.ui.platform.LocalContext
 import com.example.compose.md_theme_dark_background
 import com.example.compose.md_theme_dark_error
 import com.example.compose.md_theme_dark_errorContainer
@@ -63,8 +65,11 @@ import com.example.compose.md_theme_light_surfaceTint
 import com.example.compose.md_theme_light_surfaceVariant
 import com.example.compose.md_theme_light_tertiary
 import com.example.compose.md_theme_light_tertiaryContainer
+import com.example.recipeapp.dataStore
+import com.example.recipeapp.settings.DARK_MODE
+import com.example.recipeapp.settings.DarkModeState
 
-private val LightColors = lightColorScheme(
+private val lightColors = lightColorScheme(
     primary = md_theme_light_primary,
     onPrimary = md_theme_light_onPrimary,
     primaryContainer = md_theme_light_primaryContainer,
@@ -97,7 +102,7 @@ private val LightColors = lightColorScheme(
 )
 
 
-private val DarkColors = darkColorScheme(
+private val darkColors = darkColorScheme(
     primary = md_theme_dark_primary,
     onPrimary = md_theme_dark_onPrimary,
     primaryContainer = md_theme_dark_primaryContainer,
@@ -163,13 +168,18 @@ fun RecipeAppTheme(
 
 @Composable
 fun RecipeAppTheme(
-    useDarkTheme: Boolean = isSystemInDarkTheme(),
-    content: @Composable() () -> Unit
+    systemUsesDarkTheme: Boolean = isSystemInDarkTheme(),
+    content: @Composable () -> Unit
 ) {
+    val context = LocalContext.current
+    val theme = context.dataStore.data.collectAsState(initial = null).value?.get(DARK_MODE)
+
+    val useDarkTheme = theme?.let { it == DarkModeState.DARK.value } ?: systemUsesDarkTheme
+
     val colors = if (!useDarkTheme) {
-        LightColors
+        lightColors
     } else {
-        DarkColors
+        darkColors
     }
 
     MaterialTheme(
