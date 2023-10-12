@@ -142,7 +142,7 @@ fun AddProductForm(viewModel: AddProductViewModel, navController: NavController)
                 Card(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(bottom = 8.dp)
+                        .padding(top = 8.dp)
                 ) {
                     Text(
                         text = "Product image",
@@ -298,14 +298,14 @@ fun AddProductForm(viewModel: AddProductViewModel, navController: NavController)
 
                 Row(
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(top = 8.dp),
+                        .fillMaxWidth(),
                     horizontalArrangement = Arrangement.Center
                 ) {
                     Button(
                         modifier = Modifier
-                            .padding(8.dp)
-                            .fillMaxWidth(),
+                            .padding(bottom = 16.dp)
+                            .fillMaxWidth()
+                            .height(60.dp),
                         onClick = {
 
                             if (!viewModel.validateAll()) {
@@ -347,7 +347,10 @@ fun AddProductForm(viewModel: AddProductViewModel, navController: NavController)
                             disabledContentColor = MaterialTheme.colorScheme.onErrorContainer
                         )
                     ) {
-                        Text(text = "Save")
+                        Text(text = "Save",
+                            color = Color.White,
+                            modifier = Modifier,
+                            fontSize = 16.sp)
                     }
                 }
             }
