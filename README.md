@@ -39,8 +39,8 @@ FridgeMate is application that helps you manage your fridge, generate shopping l
     <img src="https://github.com/Emtrixx/RecipeApp/blob/main/README_res/addProduct.jpg" width="180" height="400" />
     <img src="https://github.com/Emtrixx/RecipeApp/blob/main/README_res/recipesView.jpg" width="180" height="400" />
     <img src="https://github.com/Emtrixx/RecipeApp/blob/main/README_res/recipesViewDark.jpg" width="180" height="400" />
-    <img src="https://github.com/Emtrixx/RecipeApp/blob/main/README_res/itemDetail.jpg" width="180" height="400" />
-    <img src="https://github.com/Emtrixx/RecipeApp/blob/main/README_res/shoppingList.jpg" width="180" height="400" />
+    <img src="https://github.com/Emtrixx/RecipeApp/blob/main/README_res/itemdetail.jpg" width="180" height="400" />
+    <img src="https://github.com/Emtrixx/RecipeApp/blob/main/README_res/shoppinglist.jpg" width="180" height="400" />
 </div>
 
 
