@@ -21,3 +21,6 @@ FridgeMate is application that helps you manage your fridge, generate shopping l
 ### 3. Shopping Lists
 - Create and manage your shopping lists.
 - Add products to your list manually or by scanning barcodes using Google's ML Kit.
+
+### Usage: 
+- You will need a chatGPT api key to use the application.
